@@ -425,8 +425,8 @@ header.site::after{
 }
 .btn svg{ width:16px; height:16px; flex:none; }
 
-.btn-primary{ background:var(--ink); color:var(--paper); }
-.btn-primary:hover{ background:var(--ink-2); }
+.btn-primary{ background:var(--clay); color:var(--paper); }
+.btn-primary:hover{ background:var(--clay-deep); }
 .btn-secondary{ background:var(--purple-btn); color:var(--paper); }
 .btn-secondary:hover{ background:var(--purple-deep); }
 .btn-ink{ background:var(--ink); color:var(--paper); }
@@ -456,7 +456,10 @@ header.site::after{
   position:relative; overflow:hidden;
   padding-block:clamp(64px, 6vw + 30px, 128px) clamp(56px, 5vw + 26px, 104px);
   background:
-    radial-gradient(ellipse 70% 60% at 88% 6%, rgba(28,110,150,0.07), transparent 66%),
+    radial-gradient(ellipse 55% 52% at 88% 4%,  rgba(3,146,212,0.16),  transparent 62%),
+    radial-gradient(ellipse 46% 46% at 4% 96%,  rgba(125,74,177,0.12), transparent 60%),
+    radial-gradient(ellipse 42% 40% at 60% 112%, rgba(89,179,6,0.10),  transparent 60%),
+    radial-gradient(ellipse 30% 30% at 30% -6%,  rgba(222,53,72,0.07), transparent 60%),
     var(--paper);
 }
 .hero-grid{
@@ -521,7 +524,10 @@ header.site::after{
 .inner-hero{
   position:relative;
   padding-block:clamp(44px, 4vw + 22px, 80px) clamp(48px, 4vw + 24px, 84px);
-  background:var(--paper);
+  background:
+    radial-gradient(ellipse 50% 60% at 90% 0%, rgba(3,146,212,0.12),  transparent 62%),
+    radial-gradient(ellipse 40% 50% at 2% 100%, rgba(125,74,177,0.09), transparent 60%),
+    var(--paper);
   border-bottom:1px solid var(--rule);
 }
 .inner-hero h1{ margin-top:var(--sp-5); max-width:19ch; }
@@ -537,9 +543,19 @@ header.site::after{
 /* --------------------------------------------------------------------------
    7. SURFACES
    -------------------------------------------------------------------------- */
-.surface-paper2{ background:var(--paper-2); }
+.surface-paper2{
+  background:
+    linear-gradient(165deg, rgba(3,146,212,0.06) 0%, rgba(125,74,177,0.045) 45%,
+                    rgba(89,179,6,0.055) 100%),
+    var(--paper-2);
+}
 .surface-ink,
-.surface-purple{ background:var(--ink); color:rgba(252,250,246,0.78); }
+.surface-purple{
+  background:
+    radial-gradient(ellipse 60% 70% at 90% 0%, rgba(3,146,212,0.22), transparent 60%),
+    linear-gradient(140deg, #4A2E6B 0%, #3A2355 55%, #2C1A42 100%);
+  color:rgba(252,250,246,0.82);
+}
 
 .surface-ink h1, .surface-ink h2, .surface-ink h3,
 .surface-purple h1, .surface-purple h2, .surface-purple h3{ color:var(--paper); }
@@ -761,11 +777,14 @@ header.site::after{
 @media (max-width:920px){ .story-grid{ grid-template-columns:1fr; } }
 
 .trust-panel{
-  border:1px solid var(--rule);
   border-radius:var(--radius);
   padding:var(--sp-6);
-  background:var(--paper);
+  background:linear-gradient(150deg, #4A2E6B 0%, #33204C 100%);
+  color:rgba(252,250,246,0.85);
 }
+.trust-panel dd{ color:var(--paper); }
+.trust-panel dt{ color:rgba(252,250,246,0.6); }
+.trust-panel h3{ color:var(--paper); }
 .trust-panel h3{ margin-bottom:var(--sp-5); }
 .trust-panel dl{ display:grid; gap:var(--sp-4); margin:0; }
 .trust-panel dt{
@@ -773,9 +792,8 @@ header.site::after{
   text-transform:uppercase; letter-spacing:0.16em;
   color:var(--text-mute); margin-bottom:5px;
 }
-.trust-panel dd{ margin:0; font-weight:500; font-size:var(--fs-sm); color:var(--ink); }
-.surface-ink .trust-panel,
-.surface-paper2 .trust-panel{ background:var(--paper); }
+.trust-panel dd{ margin:0; font-weight:500; font-size:var(--fs-sm); }
+
 
 .statement{
   font-family:var(--font-display); font-weight:400; font-style:italic;
@@ -843,10 +861,14 @@ header.site::after{
    12. CTA BAND + BANK DETAILS
    -------------------------------------------------------------------------- */
 .ctaband{
-  background:var(--paper-2);
+  background:linear-gradient(120deg, var(--blue-deep) 0%, #0278AE 38%, var(--purple-deep) 100%);
   padding-block:var(--section-y-s);
-  border-top:1px solid var(--rule);
 }
+.ctaband h2{ color:var(--paper); }
+.ctaband .btn-primary{ background:var(--paper); color:var(--ink); }
+.ctaband .btn-primary:hover{ background:var(--paper-3); }
+.ctaband .btn-ghost{ color:var(--paper); border-color:rgba(252,250,246,0.45); }
+.ctaband .btn-ghost:hover{ background:rgba(252,250,246,0.12); border-color:var(--paper); color:var(--paper); }
 .ctaband-head{
   display:flex; align-items:flex-end; justify-content:space-between;
   gap:var(--sp-6); flex-wrap:wrap;
@@ -1150,7 +1172,8 @@ fieldset.field{ border:none; padding:0; margin:0; }
   gap:clamp(32px, 4vw, 64px); align-items:start;
 }
 .contact-info-card{
-  background:var(--ink); color:rgba(252,250,246,0.8);
+  background:linear-gradient(150deg, #4A2E6B 0%, #33204C 100%);
+  color:rgba(252,250,246,0.85);
   border-radius:var(--radius); padding:var(--sp-6);
 }
 .contact-info-card h3{ color:var(--paper); margin-bottom:var(--sp-5); }
@@ -1226,7 +1249,7 @@ footer.site::before{
 }
 footer.site{
   position:relative;
-  background:var(--ink);
+  background:linear-gradient(160deg, #1A2333 0%, #241A3D 60%, #2C1A42 100%);
   color:rgba(252,250,246,0.72);
   padding-block:var(--sp-9) var(--sp-6);
 }
