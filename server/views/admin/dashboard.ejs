@@ -1,0 +1,16 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'dash'}) %>
+<div class="wrap">
+<p class="eyebrow">Admin</p><h1>Overview</h1>
+<div class="grid g4">
+  <div class="card stat"><b><%= active %></b><span>Active members</span></div>
+  <div class="card stat"><b><%= guests %></b><span>Guest signups</span></div>
+  <% const m = donations.find(d=>d._id==='member')||{n:0,total:0}; const g = donations.find(d=>d._id==='guest')||{n:0,total:0}; %>
+  <div class="card stat"><b>₹<%= (m.total/100).toLocaleString('en-IN') %></b><span>Member donations (<%= m.n %>)</span></div>
+  <div class="card stat"><b>₹<%= (g.total/100).toLocaleString('en-IN') %></b><span>Guest donations (<%= g.n %>)</span></div>
+</div>
+<div class="card"><h3>Shortcuts</h3>
+<p><a class="btn btn-ghost btn-sm" href="/portal/admin/members">Active members</a>
+<a class="btn btn-ghost btn-sm" href="/portal/admin/members?status=guest">Guest list</a>
+<a class="btn btn-ghost btn-sm" href="/portal/admin/certificates">Certificates</a>
+<a class="btn btn-ghost btn-sm" href="/portal/admin/donations.csv">Export donations CSV</a></p></div>
+</div></body></html>

@@ -1,0 +1,24 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<div class="wrap">
+<p class="eyebrow">Certificates</p><h1>Certificate list</h1>
+<div class="grid g2">
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Title</th><th>Issued</th><th></th></tr>
+<% if (!certs.length) { %><tr><td colspan="3" class="muted">No certificates yet.</td></tr><% } %>
+<% certs.forEach(c => { %>
+<tr><td><%= c.title %></td><td><%= c.issued.length %></td>
+<td><a href="/portal/admin/certificates/<%= c._id %>">open →</a></td></tr>
+<% }) %>
+</table>
+</div>
+<div class="card">
+<h3>Add a certificate</h3>
+<form method="post" action="/portal/admin/certificates">
+<label>Title *</label><input name="title" required placeholder="Certificate of Appreciation 2026">
+<label>Description</label><textarea name="description" rows="3" placeholder="For outstanding contribution to..."></textarea>
+<div style="margin-top:18px"><button class="btn btn-purple" type="submit">Create</button></div>
+</form>
+</div>
+</div>
+</div></body></html>

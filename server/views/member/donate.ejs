@@ -1,0 +1,22 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap" style="max-width:640px">
+<p class="eyebrow">Add donation</p><h1>Support a program</h1>
+<div class="card">
+<form method="post" action="/portal/pay/donation">
+  <label>Program</label>
+  <select name="category"><% categories.forEach(c => { %><option><%= c %></option><% }) %></select>
+  <label>Amount (₹)</label><input type="number" name="amount" min="1" step="1" required placeholder="e.g. 500">
+  <% extraFields.forEach(f => { %>
+    <label><%= f.label %><%= f.required ? ' *' : '' %></label>
+    <% if (f.type === 'select') { %>
+      <select name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
+    <% } else if (f.type === 'textarea') { %>
+      <textarea name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
+    <% } else { %>
+      <input type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+    <% } %>
+  <% }) %>
+  <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue to payment</button></div>
+</form>
+</div>
+</div></body></html>

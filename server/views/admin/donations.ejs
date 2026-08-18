@@ -1,0 +1,25 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'don'}) %>
+<div class="wrap">
+<p class="eyebrow">Donations</p><h1>Donation list</h1>
+<div class="tabs">
+  <a href="/portal/admin/donations" class="<%= kind==='member'?'on':'' %>">Member donations</a>
+  <a href="/portal/admin/donations?kind=guest" class="<%= kind==='guest'?'on':'' %>">Guest donations</a>
+  <a href="/portal/admin/donations.csv">⬇ CSV</a>
+</div>
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Receipt</th><th>Date</th><th>Donor</th><th>Program</th><th>Amount</th><th>Txn</th></tr>
+<% if (!donations.length) { %><tr><td colspan="6" class="muted">None yet.</td></tr><% } %>
+<% donations.forEach(d => { const who = d.user || d.guest || {}; %>
+<tr>
+  <td class="serial"><%= d.receiptNo %></td>
+  <td><%= (d.paidAt || d.createdAt).toDateString() %></td>
+  <td><%= who.name %><br><span class="muted"><%= who.email %></span></td>
+  <td><%= d.category %></td>
+  <td>₹<%= (d.amount/100).toLocaleString('en-IN') %></td>
+  <td class="serial"><%= d.gatewayRef || d.txnId %></td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

@@ -1,0 +1,7 @@
+<%- include('partials/head') %><%- include('partials/nav') %>
+<div class="auth-wrap"><div class="card" style="text-align:center">
+<h2 style="color:<%= ok ? 'var(--green)' : 'var(--red)' %>"><%= title %></h2>
+<p class="muted"><%= message %></p>
+<% if (ok && typeof cta !== 'undefined' && cta) { %><a class="btn btn-purple" href="<%= cta.href %>"><%= cta.label %></a><% } %>
+<% if (!ok) { %><a class="btn btn-ghost" href="/portal">Back</a><% } %>
+</div></div></body></html>

@@ -1,0 +1,7 @@
+<%- include('partials/head') %><%- include('partials/nav') %>
+<div class="auth-wrap"><div class="card" style="text-align:center">
+<p class="eyebrow">Mock gateway (dev mode)</p>
+<h2>PhonePe is not configured</h2>
+<p class="muted">No merchant keys in .env, so this simulates the gateway. Nothing is charged.</p>
+<a class="btn btn-primary" href="/portal/pay/return?txnId=<%= txnId %>">Simulate successful payment</a>
+</div></div></body></html>

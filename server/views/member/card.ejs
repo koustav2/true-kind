@@ -1,0 +1,16 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap" style="max-width:640px">
+<p class="eyebrow">Membership card</p>
+<div class="card" style="overflow:hidden;padding:0">
+  <div style="background:linear-gradient(120deg,var(--purple-deep),var(--purple));color:#fff;padding:20px 26px">
+    <strong>True Kind Foundation</strong><br><span style="font-size:.72rem;letter-spacing:.2em">MEMBERSHIP CARD</span>
+  </div>
+  <div style="padding:26px">
+    <h2 style="margin-bottom:4px"><%= user.name %></h2>
+    <p class="serial" style="margin:0"><%= user.memberId %></p>
+    <p class="muted"><%= user.membership.plan %> · valid till <%= user.membership.validTill.toDateString() %><br><%= user.email %> · <%= user.phone %></p>
+    <div class="codebox"><img src="<%= qr %>" alt="QR code"><img src="<%= barcode %>" alt="Barcode"></div>
+    <p style="margin-top:18px"><a class="btn btn-primary btn-sm" href="/portal/member/card/pdf">Download PDF</a></p>
+  </div>
+</div>
+</div></body></html>

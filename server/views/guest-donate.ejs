@@ -1,0 +1,36 @@
+<%- include('partials/head') %><%- include('partials/nav') %>
+<div class="wrap" style="max-width:680px">
+<p class="eyebrow">Donate</p><h1>Guest donation</h1>
+<p class="muted">Donating without an account — we'll take your full details for the receipt. <a href="/portal/signup">Create an account</a> to track your donations and certificates.</p>
+<div class="card">
+<form method="post" action="/portal/pay/donation">
+  <div class="grid g2">
+    <div><label>Full name *</label><input name="name" required></div>
+    <div><label>Email *</label><input type="email" name="email" required></div>
+    <div><label>Mobile *</label><input type="tel" name="phone" required></div>
+    <div><label>City</label><input name="city"></div>
+  </div>
+  <label>Address</label><input name="address">
+  <label>Program</label>
+  <select name="category"><% categories.forEach(c => { %><option><%= c %></option><% }) %></select>
+  <label>Amount (₹) *</label><input type="number" name="amount" min="1" required>
+  <h3 style="margin-top:26px;font-size:1rem">For tax deduction (optional)</h3>
+  <div class="grid g3">
+    <div><label>PAN</label><input name="pan"></div>
+    <div><label>Bank name</label><input name="bankName"></div>
+    <div><label>Branch</label><input name="branchName"></div>
+  </div>
+  <% extraFields.forEach(f => { %>
+    <label><%= f.label %><%= f.required ? ' *' : '' %></label>
+    <% if (f.type === 'select') { %>
+      <select name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
+    <% } else if (f.type === 'textarea') { %>
+      <textarea name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
+    <% } else { %>
+      <input type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+    <% } %>
+  <% }) %>
+  <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue to payment</button></div>
+</form>
+</div>
+</div></body></html>

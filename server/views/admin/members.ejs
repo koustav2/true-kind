@@ -1,0 +1,22 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'members'}) %>
+<div class="wrap">
+<p class="eyebrow">Members</p><h1>Member list</h1>
+<div class="tabs">
+  <a href="/portal/admin/members" class="<%= status==='active'?'on':'' %>">Active</a>
+  <a href="/portal/admin/members?status=guest" class="<%= status==='guest'?'on':'' %>">Guest</a>
+</div>
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Name</th><th>Email</th><th>Phone</th><th>Member ID</th><th>Plan / valid till</th><th>Joined</th></tr>
+<% if (!members.length) { %><tr><td colspan="6" class="muted">Nobody here yet.</td></tr><% } %>
+<% members.forEach(u => { %>
+<tr>
+  <td><%= u.name %></td><td><%= u.email %></td><td><%= u.phone %></td>
+  <td class="serial"><%= u.memberId || '—' %></td>
+  <td><%= u.membership && u.membership.plan ? `${u.membership.plan} · ${u.membership.validTill.toDateString()}` : '—' %></td>
+  <td><%= u.createdAt.toDateString() %></td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

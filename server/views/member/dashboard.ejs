@@ -1,0 +1,43 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap">
+<p class="eyebrow">My profile</p><h1>Hello, <%= user.name %></h1>
+<% if (!user.membershipValid) { %>
+  <div class="card" style="border-color:var(--brand-red)">
+    <h3>Please verify your membership</h3>
+    <p class="muted">Pick a plan and pay to become an active member. You'll get a member ID and a card with a unique QR + barcode.</p>
+    <form method="post" action="/portal/pay/membership" class="grid g2" style="align-items:end">
+      <div>
+        <label>Plan</label>
+        <select name="plan">
+          <option value="annual">Annual — ₹<%= plans.annual.amount/100 %> (recommended)</option>
+          <option value="monthly">Monthly — ₹<%= plans.monthly.amount/100 %></option>
+        </select>
+      </div>
+      <div><button class="btn btn-primary" type="submit">Verify & pay</button></div>
+    </form>
+  </div>
+<% } else { %>
+  <div class="card">
+    <span class="pill ok">Active member</span>
+    <h3 style="margin-top:10px">Member ID <span class="serial"><%= user.memberId %></span></h3>
+    <p class="muted"><%= user.membership.plan %> plan · valid till <%= user.membership.validTill.toDateString() %></p>
+    <a class="btn btn-purple btn-sm" href="/portal/member/card">View membership card</a>
+    <a class="btn btn-ghost btn-sm" href="/portal/member/card/pdf">Download PDF</a>
+  </div>
+<% } %>
+<div class="grid g2">
+  <div class="card">
+    <h3>Quick actions</h3>
+    <p><a class="btn btn-primary btn-sm" href="/portal/member/donate">Add a donation</a>
+       <a class="btn btn-ghost btn-sm" href="/portal/member/donations">Your donations & certificates</a></p>
+  </div>
+  <div class="card">
+    <h3>Recent donations</h3>
+    <% if (!donations.length) { %><p class="muted">Nothing yet.</p><% } %>
+    <% donations.forEach(d => { %>
+      <p style="margin:6px 0">₹<%= (d.amount/100).toLocaleString('en-IN') %> — <%= d.category %>
+      <a class="muted" href="/portal/member/receipt/<%= d._id %>">receipt</a></p>
+    <% }) %>
+  </div>
+</div>
+</div></body></html>

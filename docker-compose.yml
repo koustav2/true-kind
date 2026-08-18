@@ -1,0 +1,23 @@
+# Runs the portal as a 4th container on the SAME network as TRUE HRMS.
+# The HRMS compose file is never touched. Postgres is reached internally
+# at truehr-db:5432 — no database port is published anywhere.
+#
+#   docker network ls | grep truehr     <- confirm the network name first;
+#   if it isn't truehr_default, set TRUEHR_NETWORK in .env
+services:
+  truekind:
+    build: .
+    container_name: truekind
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3000:3000"      # only nginx on this machine can reach it
+    volumes:
+      - ./uploads:/app/uploads      # admin-uploaded images survive rebuilds
+    networks:
+      - hrms
+
+networks:
+  hrms:
+    external: true
+    name: ${TRUEHR_NETWORK:-truehr_default}

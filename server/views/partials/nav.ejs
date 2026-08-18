@@ -1,0 +1,24 @@
+<nav class="topnav">
+  <a href="/"><img src="/assets/img/logo.png" alt="True Kind Foundation"></a>
+  <div class="links">
+    <% if (session && session.userId) { %>
+      <% if (session.role === 'admin') { %>
+        <a href="/portal/admin" class="<%= (typeof active!=='undefined'&&active==='dash')?'on':'' %>">Dashboard</a>
+        <a href="/portal/admin/members" class="<%= (typeof active!=='undefined'&&active==='members')?'on':'' %>">Members</a>
+        <a href="/portal/admin/certificates" class="<%= (typeof active!=='undefined'&&active==='certs')?'on':'' %>">Certificates</a>
+        <a href="/portal/admin/donations" class="<%= (typeof active!=='undefined'&&active==='don')?'on':'' %>">Donations</a>
+        <a href="/portal/admin/content" class="<%= (typeof active!=='undefined'&&active==='content')?'on':'' %>">Website</a>
+        <a href="/portal/admin/form" class="<%= (typeof active!=='undefined'&&active==='form')?'on':'' %>">Form fields</a>
+      <% } else { %>
+        <a href="/portal/member">Profile</a>
+        <a href="/portal/member/donate">Add donation</a>
+        <a href="/portal/member/donations">Your donations</a>
+        <a href="/portal/member/profile">Edit profile</a>
+      <% } %>
+      <form method="post" action="/portal/signout" style="display:inline"><button class="btn btn-ghost btn-sm" type="submit">Sign out</button></form>
+    <% } else { %>
+      <a href="/portal/signin">Sign in</a>
+      <a href="/portal/signup">Create account</a>
+    <% } %>
+  </div>
+</nav>

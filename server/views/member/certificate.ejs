@@ -1,0 +1,14 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap" style="max-width:720px">
+<p class="eyebrow">Certificate</p>
+<div class="card" style="text-align:center;padding:48px 30px;border-top:4px solid var(--brand-purple)">
+  <p class="eyebrow" style="color:var(--text-soft)">True Kind Foundation</p>
+  <h1><%= cert.title %></h1>
+  <p class="muted">proudly presented to</p>
+  <h2 style="color:var(--purple)"><%= user.name %></h2>
+  <% if (cert.description) { %><p class="muted" style="max-width:46ch;margin:0 auto"><%= cert.description %></p><% } %>
+  <p class="serial" style="margin-top:18px"><%= issuance.serial %> · <%= issuance.issuedAt.toDateString() %></p>
+  <div class="codebox" style="justify-content:center"><img src="<%= qr %>" alt="QR"><img src="<%= barcode %>" alt="Barcode"></div>
+  <p style="margin-top:18px"><a class="btn btn-primary btn-sm" href="/portal/member/certificate/<%= cert._id %>/<%= issuance.serial %>/pdf">Download PDF</a></p>
+</div>
+</div></body></html>

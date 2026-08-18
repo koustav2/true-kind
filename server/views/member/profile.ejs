@@ -1,0 +1,16 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap" style="max-width:640px">
+<p class="eyebrow">Edit profile</p><h1>Your details</h1>
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<div class="card">
+<form method="post" action="/portal/member/profile">
+  <label>Full name</label><input name="name" value="<%= user.name %>" required>
+  <label>Mobile</label><input name="phone" value="<%= user.phone %>" required>
+  <label>Address</label><input name="address" value="<%= user.address || '' %>">
+  <label>City</label><input name="city" value="<%= user.city || '' %>">
+  <label>PAN (for donation receipts)</label><input name="pan" value="<%= user.pan || '' %>">
+  <label>New password (leave blank to keep current)</label><input type="password" name="password" minlength="6">
+  <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Save changes</button></div>
+</form>
+</div>
+</div></body></html>

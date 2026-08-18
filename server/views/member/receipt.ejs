@@ -1,0 +1,17 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap" style="max-width:640px">
+<p class="eyebrow">Donation receipt</p>
+<div class="card">
+  <h2>Receipt <span class="serial"><%= d.receiptNo %></span></h2>
+  <table>
+    <tr><td>Date</td><td><%= (d.paidAt || d.createdAt).toDateString() %></td></tr>
+    <tr><td>Program</td><td><%= d.category %></td></tr>
+    <tr><td>Amount</td><td><strong>₹<%= (d.amount/100).toLocaleString('en-IN') %></strong></td></tr>
+    <tr><td>Transaction</td><td class="serial"><%= d.gatewayRef || d.txnId %></td></tr>
+  </table>
+  <div class="codebox"><img src="<%= qr %>" alt="QR"><img src="<%= barcode %>" alt="Barcode"></div>
+  <p style="margin-top:18px">
+    <a class="btn btn-primary btn-sm" href="<%= d.user ? `/portal/member/receipt/${d._id}/pdf` : `/portal/receipt/${d.txnId}/pdf` %>">Download PDF</a>
+  </p>
+</div>
+</div></body></html>

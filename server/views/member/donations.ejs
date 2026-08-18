@@ -1,0 +1,20 @@
+<%- include('../partials/head') %><%- include('../partials/nav') %>
+<div class="wrap">
+<p class="eyebrow">Your donations</p><h1>Donations & certificates</h1>
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Date</th><th>Program</th><th>Amount</th><th>Status</th><th>Receipt</th><th>Certificate</th></tr>
+<% if (!donations.length) { %><tr><td colspan="6" class="muted">No donations yet — <a href="/portal/member/donate">add one</a>.</td></tr><% } %>
+<% donations.forEach(d => { const c = certByDonation[String(d._id)]; %>
+<tr>
+  <td><%= d.createdAt.toDateString() %></td>
+  <td><%= d.category %></td>
+  <td>₹<%= (d.amount/100).toLocaleString('en-IN') %></td>
+  <td><span class="pill <%= d.status==='paid'?'ok':(d.status==='failed'?'warn':'info') %>"><%= d.status %></span></td>
+  <td><% if (d.status==='paid') { %><a href="/portal/member/receipt/<%= d._id %>">view</a><% } else { %>—<% } %></td>
+  <td><% if (c) { %><a href="/portal/member/certificate/<%= c.cert._id %>/<%= c.issuance.serial %>">view</a><% } else { %><span class="muted">not issued</span><% } %></td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>
