@@ -40,7 +40,10 @@ async function ensureDatabase() {
     });
     await client.connect();
     const exists = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [name]);
-    if (!exists.rowCount) await client.query(`CREATE DATABASE "${name}"`);
+    if (!exists.rowCount) {
+      try { await client.query(`CREATE DATABASE "${name}"`); }
+      catch (e) { if (e.code !== '23505' && e.code !== '42P04') throw e; } // race: another process created it first — fine
+    }
     await client.end();
   } else {
     const mysql = require('mysql2/promise');

@@ -74,7 +74,7 @@ app.use((req, res) => res.status(404).render('error', { title: 'Not found', mess
     await ensureDatabase();
     await sequelize.authenticate();
     await sequelize.sync();                 // creates tables on first boot
-    console.log('✓ MySQL connected, schema synced');
+    console.log(`✓ Database connected (${process.env.DB_DIALECT || 'postgres'}), schema synced`);
   } catch (e) {
     console.error('✗ Database not reachable — portal pages will fail until it is.', e.message);
   }
