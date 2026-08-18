@@ -1,23 +1,25 @@
 /* ==========================================================================
    True Kind Foundation — shared behaviour
    ==========================================================================
-   CONFIGURE ME: paste your form endpoint below, then the contact and
-   volunteer forms will POST submissions straight to your inbox/dashboard.
+   Forms post to the True Kind portal API — volunteer registrations and
+   contact enquiries land in the portal database and show up in the admin
+   (Volunteers / Enquiries tabs). Same-origin when the portal server itself
+   serves these pages; the public API host when served from Vercel.
 
-   Works out of the box with Formspree, Formsubmit, Basin, Getform, Web3Forms
-   or any endpoint that accepts a JSON or FormData POST.
-
-     Formspree  →  https://formspree.io/f/xxxxxxxx
-     Getform    →  https://getform.io/f/xxxxxxxx
-     Basin      →  https://usebasin.com/f/xxxxxxxx
-     Formsubmit →  https://formsubmit.co/info@truekindfoundation.org
-
-   Leave it as "" and the forms fall back to opening the visitor's email
-   app (the old behaviour), so nothing breaks before you set this up.
+   FORM_ENDPOINT is an optional override — set it to a Formspree-style URL
+   and ALL forms post there instead. Leave it "" to use the portal API.
    ========================================================================== */
 
 var FORM_ENDPOINT = "";
 var FALLBACK_EMAIL = "info@truekindfoundation.org";
+
+var SAME_ORIGIN_HOSTS = ["truekind.truehr.co.in", "localhost", "127.0.0.1"];
+var API_BASE = SAME_ORIGIN_HOSTS.indexOf(location.hostname) !== -1
+  ? "/api"
+  : "https://api.truehr.co.in/truekind/v1";
+
+// Which public form posts to which portal endpoint
+var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
 
 (function () {
   "use strict";
@@ -190,7 +192,14 @@ var FALLBACK_EMAIL = "info@truekindfoundation.org";
   /* ----------------------------------------------------------------------
      Forms — validation, POST submission, graceful mailto fallback
      ---------------------------------------------------------------------- */
-  var CONFIGURED = /^https?:\/\//i.test(FORM_ENDPOINT);
+  var OVERRIDE = /^https?:\/\//i.test(FORM_ENDPOINT);
+
+  // The portal endpoint for a form, or the override URL, or null (→ mailto)
+  function endpointFor(form) {
+    if (OVERRIDE) return FORM_ENDPOINT;
+    if (form.id && API_FORMS[form.id]) return API_BASE + API_FORMS[form.id];
+    return null;
+  }
 
   function showError(field, message) {
     field.classList.add("invalid");
@@ -300,7 +309,8 @@ var FALLBACK_EMAIL = "info@truekindfoundation.org";
       var box = form.querySelector(".form-alert");
       if (box) box.className = "form-alert";
 
-      if (!CONFIGURED) {
+      var endpoint = endpointFor(form);
+      if (!endpoint) {
         mailtoFallback(form, data);
         alertBox(form, "success", form.dataset.fallbackMessage ||
           "Your email app should now be open with these details filled in — send it and we'll reply shortly.");
@@ -310,21 +320,23 @@ var FALLBACK_EMAIL = "info@truekindfoundation.org";
 
       if (button) { button.setAttribute("aria-busy", "true"); button.disabled = true; }
 
-      fetch(FORM_ENDPOINT, {
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(data)
       })
         .then(function (res) {
-          if (!res.ok) throw new Error("Request failed with status " + res.status);
-          alertBox(form, "success", form.dataset.successMessage ||
-            "Thanks — we've received your message and will get back to you within a few working days.");
-          form.reset();
+          return res.json().catch(function () { return {}; }).then(function (body) {
+            if (!res.ok) throw new Error(body && body.error ? body.error : "Request failed with status " + res.status);
+            alertBox(form, "success", form.dataset.successMessage ||
+              "Thanks — we've received your message and will get back to you within a few working days.");
+            form.reset();
+          });
         })
-        .catch(function () {
-          alertBox(form, "error",
-            "Something went wrong sending that. Please email us directly at " + FALLBACK_EMAIL +
-            " or call +91 73700 67005.");
+        .catch(function (err) {
+          var specific = err && err.message && !/^Request failed|Failed to fetch|NetworkError|Load failed/i.test(err.message);
+          alertBox(form, "error", specific ? err.message :
+            "Something went wrong sending that. Please try again in a moment, or call +91 73700 67005.");
         })
         .finally(function () {
           if (button) { button.removeAttribute("aria-busy"); button.disabled = false; }

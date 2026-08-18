@@ -69,6 +69,31 @@ const FormConfig = sequelize.define('FormConfig', {
   fields:  { type: DataTypes.JSON, defaultValue: [] }
 });
 
+// Public-site volunteer registrations (no login — an application the admin
+// follows up on by phone/email, then tracks with a status).
+const Volunteer = sequelize.define('Volunteer', {
+  _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  name:  { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false },
+  phone: { type: DataTypes.STRING, allowNull: false },
+  city:  DataTypes.STRING,
+  type:  DataTypes.STRING,          // "I am a" — student / professional / ...
+  availability: DataTypes.STRING,
+  interests:    DataTypes.STRING,   // comma-joined program areas
+  message:      DataTypes.TEXT,
+  status: { type: DataTypes.ENUM('new', 'contacted', 'active', 'inactive'), defaultValue: 'new' }
+});
+
+// Public-site contact form enquiries.
+const Enquiry = sequelize.define('Enquiry', {
+  _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  name:  { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false },
+  subject: DataTypes.STRING,
+  message: { type: DataTypes.TEXT, allowNull: false },
+  status: { type: DataTypes.ENUM('new', 'replied', 'closed'), defaultValue: 'new' }
+});
+
 // Associations
 Donation.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(Donation, { as: 'donations', foreignKey: 'userId' });
@@ -77,4 +102,4 @@ CertificateIssue.belongsTo(Certificate, { as: 'certificate', foreignKey: 'certif
 CertificateIssue.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 CertificateIssue.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' });
 
-module.exports = { sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig };
+module.exports = { sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry };

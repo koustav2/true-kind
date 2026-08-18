@@ -1,0 +1,35 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'vols'}) %>
+<div class="wrap">
+<p class="eyebrow">Volunteers</p><h1>Volunteer registrations</h1>
+<div class="tabs">
+  <a href="/portal/admin/volunteers" class="<%= status==='all'?'on':'' %>">All</a>
+  <% statuses.forEach(s => { %>
+    <a href="/portal/admin/volunteers?status=<%= s %>" class="<%= status===s?'on':'' %>"><%= s.charAt(0).toUpperCase()+s.slice(1) %></a>
+  <% }) %>
+  <a href="/portal/admin/volunteers.csv">⬇ CSV</a>
+</div>
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Date</th><th>Name</th><th>Contact</th><th>Type / Availability</th><th>Areas</th><th>Message</th><th>Status</th></tr>
+<% if (!volunteers.length) { %><tr><td colspan="7" class="muted">No volunteer registrations<%= status!=='all' ? ' with this status' : ' yet' %>.</td></tr><% } %>
+<% volunteers.forEach(v => { %>
+<tr>
+  <td><%= v.createdAt.toDateString() %></td>
+  <td><b><%= v.name %></b><% if (v.city) { %><br><span class="muted"><%= v.city %></span><% } %></td>
+  <td><a href="tel:<%= v.phone %>"><%= v.phone %></a><br><a href="mailto:<%= v.email %>" class="muted"><%= v.email %></a></td>
+  <td><%= v.type || '—' %><% if (v.availability) { %><br><span class="muted"><%= v.availability %></span><% } %></td>
+  <td style="max-width:220px;white-space:normal"><%= v.interests || '—' %></td>
+  <td style="max-width:280px;white-space:normal"><%= v.message || '—' %></td>
+  <td>
+    <form method="post" action="/portal/admin/volunteers/<%= v.id %>/status">
+      <input type="hidden" name="back" value="<%= status==='all' ? '' : status %>">
+      <select name="status" onchange="this.form.submit()">
+        <% statuses.forEach(s => { %><option value="<%= s %>" <%= v.status===s?'selected':'' %>><%= s.charAt(0).toUpperCase()+s.slice(1) %></option><% }) %>
+      </select>
+    </form>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

@@ -118,6 +118,33 @@ process.env.ADMIN_PASSWORD = 'admin123';
   r = await call('GET', '/portal/member/donate');
   check('configured field appears on donation form', (await r.text()).includes('Occupation'));
 
+  // public volunteer + contact forms → portal DB → admin tabs
+  async function postJson(path, body) {
+    return fetch(base + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  }
+  r = await postJson('/api/volunteer', {
+    name: 'Vol Unteer', email: 'vol@x.org', phone: '7777777777', city: 'Bhadrak',
+    type: 'Student', availability: 'Weekends', interest: 'Environment, Health & Safety', message: 'Happy to help'
+  });
+  check('volunteer form accepted', r.status === 200 && (await r.json()).ok === true);
+  r = await postJson('/api/volunteer', { name: 'Bot', email: 'b@x.org', phone: '7777777777', _hp: 'spam' });
+  check('volunteer honeypot silently dropped', (await r.json()).ok === true && (await models.Volunteer.count()) === 1);
+  r = await postJson('/api/volunteer', { name: 'No Mail', email: 'bad', phone: '123' });
+  check('volunteer validation rejects bad input', r.status === 400);
+  r = await postJson('/api/contact', { name: 'Asker', email: 'ask@x.org', subject: 'Hello', message: 'A question about camps' });
+  check('contact form accepted', r.status === 200 && (await r.json()).ok === true);
+  r = await call('GET', '/portal/admin/volunteers', null, 'admin');
+  check('admin volunteers list shows entry', (await r.text()).includes('Vol Unteer'));
+  r = await call('GET', '/portal/admin/enquiries', null, 'admin');
+  check('admin enquiries list shows entry', (await r.text()).includes('A question about camps'));
+  const vol = await models.Volunteer.findOne({ where: { email: 'vol@x.org' } });
+  await call('POST', `/portal/admin/volunteers/${vol.id}/status`, { status: 'contacted' }, 'admin');
+  check('volunteer status updates', (await models.Volunteer.findByPk(vol.id)).status === 'contacted');
+  r = await call('GET', '/portal/admin/volunteers.csv', null, 'admin');
+  check('volunteers CSV', r.headers.get('content-type').includes('text/csv') && (await r.text()).includes('vol@x.org'));
+  r = await call('GET', '/portal/admin/enquiries.csv', null, 'admin');
+  check('enquiries CSV', r.headers.get('content-type').includes('text/csv') && (await r.text()).includes('ask@x.org'));
+
   console.log(results.join('\n'));
   console.log(results.every(x => x.startsWith('PASS')) ? '\nALL PASS' : '\nFAILURES ABOVE');
   process.exit(process.exitCode || 0);

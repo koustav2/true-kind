@@ -26,7 +26,7 @@ a{color:inherit}
 .topnav .links a{padding:8px 13px;border-radius:100px;font-size:.85rem;text-decoration:none;color:var(--text-soft)}
 .topnav .links a.on,.topnav .links a:hover{background:rgba(125,74,177,.1);color:var(--purple)}
 .wrap{max-width:1060px;margin:0 auto;padding:34px 24px 80px}
-.card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px;overflow-x:auto}
 .grid{display:grid;gap:18px}
 @media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:100px;font:500 .9rem 'Work Sans',sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer}
@@ -58,6 +58,40 @@ td{padding:12px;border-bottom:1px solid var(--rule);vertical-align:top}
 .serial{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--purple)}
 .muted{color:var(--text-soft);font-size:.88rem}
 .auth-wrap{max-width:420px;margin:60px auto;padding:0 20px}
+img{max-width:100%;height:auto}
+.tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{white-space:nowrap;flex:none}
+
+/* ---------- mobile ---------- */
+@media(max-width:880px){
+  .topnav{flex-wrap:wrap;gap:10px;padding:10px 16px}
+  .topnav img{height:34px}
+  /* nav links become one horizontally-scrollable row under the logo */
+  .topnav .links{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .topnav .links::-webkit-scrollbar{display:none}
+  .topnav .links a{white-space:nowrap;flex:none}
+  .topnav .links form{flex:none}
+  .wrap{padding:22px 16px 60px}
+  .card{padding:18px 16px}
+  h1{font-size:1.55rem}
+  h2{font-size:1.25rem}
+  /* stat tiles: two-up instead of a long single column */
+  .grid.g4{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stat b{font-size:1.5rem}
+  /* tables: keep natural width, scroll inside the card */
+  .card table td,.card table th{white-space:nowrap}
+  /* 16px inputs stop iOS zoom-on-focus */
+  input,select,textarea{font-size:16px}
+  .btn{padding:12px 18px}
+  .codebox{gap:12px;padding:12px}
+  .codebox img{max-height:64px}
+  .auth-wrap{margin:24px auto}
+}
+@media(max-width:400px){
+  .grid.g4{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>

@@ -1,0 +1,33 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'enq'}) %>
+<div class="wrap">
+<p class="eyebrow">Enquiries</p><h1>Contact form messages</h1>
+<div class="tabs">
+  <a href="/portal/admin/enquiries" class="<%= status==='all'?'on':'' %>">All</a>
+  <% statuses.forEach(s => { %>
+    <a href="/portal/admin/enquiries?status=<%= s %>" class="<%= status===s?'on':'' %>"><%= s.charAt(0).toUpperCase()+s.slice(1) %></a>
+  <% }) %>
+  <a href="/portal/admin/enquiries.csv">⬇ CSV</a>
+</div>
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Date</th><th>From</th><th>Subject</th><th>Message</th><th>Status</th></tr>
+<% if (!enquiries.length) { %><tr><td colspan="5" class="muted">No enquiries<%= status!=='all' ? ' with this status' : ' yet' %>.</td></tr><% } %>
+<% enquiries.forEach(e => { %>
+<tr>
+  <td><%= e.createdAt.toDateString() %></td>
+  <td><b><%= e.name %></b><br><a href="mailto:<%= e.email %>" class="muted"><%= e.email %></a></td>
+  <td style="max-width:200px;white-space:normal"><%= e.subject || '—' %></td>
+  <td style="max-width:360px;white-space:normal"><%= e.message %></td>
+  <td>
+    <form method="post" action="/portal/admin/enquiries/<%= e.id %>/status">
+      <input type="hidden" name="back" value="<%= status==='all' ? '' : status %>">
+      <select name="status" onchange="this.form.submit()">
+        <% statuses.forEach(s => { %><option value="<%= s %>" <%= e.status===s?'selected':'' %>><%= s.charAt(0).toUpperCase()+s.slice(1) %></option><% }) %>
+      </select>
+    </form>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

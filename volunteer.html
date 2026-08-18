@@ -54,7 +54,7 @@
     <p class="lede">Two hours on a weekend or a whole batch you run yourself &mdash; there's a place for both. We take individuals, students and organisation teams. No experience required; follow-through is the only prerequisite.</p>
     <div class="btn-row mt-6">
       <a href="#register" class="btn btn-primary">Register as a volunteer</a>
-      <button class="login-trigger" id="openLogin" type="button">Volunteer login</button>
+      <a href="/portal/signin" class="login-trigger">Member sign in</a>
     </div>
   </div>
 </section>
@@ -156,32 +156,9 @@
         </div>
         <div class="form-alert" aria-live="polite"></div>
       </form>
-      <p class="pending pending-block">Form endpoint not yet configured &mdash; until you add one in <code>assets/js/main.js</code>, submissions open the visitor's email app instead of landing in your inbox.</p>
     </div>
   </div>
 </section>
-
-<div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <div class="modal-panel">
-    <button class="modal-close" id="closeLogin" aria-label="Close dialog" type="button">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <h3 id="loginTitle">Volunteer login</h3>
-    <p class="modal-sub">Sign in to view your shifts and logged hours.</p>
-    <form id="loginForm" novalidate>
-      <div class="field">
-        <label for="l-email">Email</label>
-        <input type="email" id="l-email" autocomplete="email" required>
-      </div>
-      <div class="field">
-        <label for="l-pass">Password</label>
-        <input type="password" id="l-pass" autocomplete="current-password" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Log in</button>
-    </form>
-    <p class="modal-note">The volunteer portal isn't live yet &mdash; this is a placeholder screen. Once a volunteer database and authentication are connected, registered volunteers will sign in here to track their hours.</p>
-  </div>
-</div>
 
 </main>
 <footer class="site">

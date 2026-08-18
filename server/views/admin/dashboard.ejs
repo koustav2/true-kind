@@ -8,9 +8,15 @@
   <div class="card stat"><b>₹<%= (m.total/100).toLocaleString('en-IN') %></b><span>Member donations (<%= m.n %>)</span></div>
   <div class="card stat"><b>₹<%= (g.total/100).toLocaleString('en-IN') %></b><span>Guest donations (<%= g.n %>)</span></div>
 </div>
+<div class="grid g4" style="margin-top:14px">
+  <div class="card stat"><b><%= typeof newVolunteers!=='undefined' ? newVolunteers : 0 %></b><span>New volunteer signups</span></div>
+  <div class="card stat"><b><%= typeof newEnquiries!=='undefined' ? newEnquiries : 0 %></b><span>New enquiries</span></div>
+</div>
 <div class="card"><h3>Shortcuts</h3>
 <p><a class="btn btn-ghost btn-sm" href="/portal/admin/members">Active members</a>
 <a class="btn btn-ghost btn-sm" href="/portal/admin/members?status=guest">Guest list</a>
 <a class="btn btn-ghost btn-sm" href="/portal/admin/certificates">Certificates</a>
+<a class="btn btn-ghost btn-sm" href="/portal/admin/volunteers?status=new">New volunteers</a>
+<a class="btn btn-ghost btn-sm" href="/portal/admin/enquiries?status=new">New enquiries</a>
 <a class="btn btn-ghost btn-sm" href="/portal/admin/donations.csv">Export donations CSV</a></p></div>
 </div></body></html>
