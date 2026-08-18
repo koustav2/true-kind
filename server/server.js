@@ -56,6 +56,24 @@ app.get('/portal/receipt/:txnId/pdf', async (req, res) => {
   await receiptPdf(res, d, null);
 });
 
+// CORS for the /api routes — the public site runs on a different origin
+// (Vercel now, the real domain later). Comma-separated list in ALLOWED_ORIGINS.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://true-kind-psi.vercel.app')
+  .split(',').map(s => s.trim()).filter(Boolean);
+app.use('/api', (req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // Public content API for the static pages
 app.get('/api/content/:key', async (req, res) => {
   try {

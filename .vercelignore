@@ -1,0 +1,11 @@
+# Vercel serves only the public site — backend never ships there
+server/
+deploy/
+uploads/
+node_modules/
+Dockerfile
+docker-compose.yml
+package.json
+package-lock.json
+README-PORTAL.md
+.env.example
