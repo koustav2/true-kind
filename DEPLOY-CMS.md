@@ -103,20 +103,31 @@ to step 4 and push this one.
 # The Vercel CORS grant is dead — the site is served by this server now
 sed -i 's|^ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=|' .env
 
-# Make sure APP_BASE_URL matches how people actually reach the site.
-# While you are still on http:// (no certbot yet), it MUST say http://
-grep -E '^(APP_BASE_URL|ALLOWED_ORIGINS|SESSION_SECRET|DB_PASS)=' .env
+# APP_BASE_URL must match the scheme people actually reach the site on.
+grep -cE '^(APP_BASE_URL|ALLOWED_ORIGINS|SESSION_SECRET|DB_PASS)=' .env
+sed -n 's|^APP_BASE_URL=|APP_BASE_URL is |p' .env
+grep -q ssl_certificate /etc/nginx/sites-enabled/truekind && echo "TLS: LIVE" || echo "TLS: not yet"
 ```
 
-**Check:** the printout shows
+**Check:** `APP_BASE_URL`'s scheme must match the TLS line:
 
-- `ALLOWED_ORIGINS=` (empty)
-- `APP_BASE_URL=http://truekind.truehr.co.in` — **`http`, not `https`, until
-  certbot has run.** The session cookie's `secure` flag follows this value. Set
-  it to `https` too early and the browser silently throws away the login
-  cookie, which looks exactly like a wrong password.
-- `SESSION_SECRET=` something long and random, **not** `change-me-...`
-- `DB_PASS=` non-empty
+| TLS | APP_BASE_URL must be |
+|---|---|
+| LIVE | `https://truekind.truehr.co.in` |
+| not yet | `http://truekind.truehr.co.in` |
+
+This drives the session cookie's `secure` flag. A `secure` cookie is only ever
+sent over HTTPS, so `https` while the site is still plain HTTP means the browser
+silently discards the login cookie — the sign-in form just bounces you back with
+no error anywhere. `COOKIE_SECURE=true|false` overrides if you ever need it.
+
+Also check `ALLOWED_ORIGINS=` is empty, and that `SESSION_SECRET` is genuinely
+random — `openssl rand -hex 32`, not a hand-typed pattern. Anyone who can guess
+it can forge an admin session cookie. Changing it signs everyone out, which is
+cheap to do now and expensive later.
+
+Print secrets with `grep -c` or the `sed` form above rather than dumping values,
+so they stay out of terminal scrollback and chat logs.
 
 ### 8. Rebuild and restart
 
@@ -146,14 +157,15 @@ Nothing to migrate — the CMS text lives in the existing `SiteContent` JSON
 column, and the media library is a brand-new table, precisely so that a bare
 `sync()` is enough.
 
-You may also see:
+If TLS is not up yet you will also see:
 
 ```
 ⚠ Session cookie is NOT marked secure — APP_BASE_URL is not https.
 ```
 
-That is expected and correct while you are on plain HTTP. It goes away in
-step 14.
+That is correct while you are on plain HTTP, and disappears once APP_BASE_URL is
+an https URL. If you see it *after* TLS is live, APP_BASE_URL still says http —
+fix it and restart.
 
 ### 10. Update nginx — video upload does not work without this
 
@@ -161,10 +173,42 @@ This part lives outside Docker, so `docker compose up` does not touch it. At the
 old `client_max_body_size 5m`, nginx rejects any video with its own 413 before
 Node sees a single byte.
 
+**Check whether certbot has already rewritten the live config first:**
+
+```bash
+grep -n ssl_certificate /etc/nginx/sites-enabled/truekind
+```
+
+**If that prints nothing** (no TLS yet), copying the repo file is safe:
+
 ```bash
 cp deploy/nginx-truekind.conf /etc/nginx/sites-available/truekind
-nginx -t
-systemctl reload nginx
+nginx -t && systemctl reload nginx
+```
+
+**If it prints certificate paths, DO NOT COPY.** `deploy/nginx-truekind.conf` is
+the pre-TLS version — port 80 only, no SSL block. Copying it over a
+certbot-managed config deletes the `listen 443 ssl` lines, HTTPS stops working,
+and since `APP_BASE_URL` is https by then the session cookie is `secure` so
+nobody can sign in either. Two outages at once.
+
+Patch the live file in place instead:
+
+```bash
+cp /etc/nginx/sites-available/truekind ~/nginx-truekind.bak
+sed -i 's|^\( *\)client_max_body_size .*|\1client_max_body_size 210m;|' /etc/nginx/sites-available/truekind
+grep -n client_max_body_size /etc/nginx/sites-available/truekind
+nginx -t && systemctl reload nginx
+```
+
+Large video uploads also want these, inside the `location /` block that has
+`proxy_pass`, or they buffer to disk and time out at nginx's default 60s:
+
+```
+proxy_request_buffering off;
+proxy_read_timeout   300s;
+proxy_send_timeout   300s;
+client_body_timeout  300s;
 ```
 
 **Check:** `nginx -t` prints `syntax is ok` and `test is successful`. If it
@@ -187,11 +231,11 @@ returned 200 and handed out your route source.
 
 ### 12. Sign in and open the editor
 
-In a browser: `http://truekind.truehr.co.in/portal/signin`
+In a browser: `https://truekind.truehr.co.in/portal/signin` (http if TLS is not up yet)
 
 **Check:** you can sign in. If the page just bounces you back to the sign-in
 form, the cookie is being dropped — go back to step 7 and make sure
-`APP_BASE_URL` starts with `http://`.
+`APP_BASE_URL`'s scheme matches whether TLS is actually live.
 
 Then go to **Website** in the top nav (`/portal/admin/cms`).
 
@@ -202,7 +246,7 @@ the 9 pages, each with a field count. Homepage should show around 129.
 
 1. Click **Homepage**, open the first group, change any heading.
 2. Press **Save changes**. You should see "Saved 1 change".
-3. Open `http://truekind.truehr.co.in/` and **hard-refresh** — Cmd/Ctrl +
+3. Open `https://truekind.truehr.co.in/` and **hard-refresh** — Cmd/Ctrl +
    Shift + R. A normal reload serves the cached page and looks unchanged, which
    is the single most common reason to think this is broken.
 
