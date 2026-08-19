@@ -15,7 +15,7 @@
 </div>
 <div class="card">
 <h3>Issue to a member</h3>
-<form method="post" action="/portal/admin/certificates/<%= cert._id %><input type="hidden" name="_csrf" value="<%= csrfToken %>">/issue">
+<form method="post" action="/portal/admin/certificates/<%= cert._id %>/issue"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label>Active member</label>
 <select name="userId" required>
 <% members.forEach(m => { %><option value="<%= m._id %>"><%= m.name %> — <%= m.memberId || m.email %></option><% }) %>
@@ -23,5 +23,44 @@
 <div style="margin-top:18px"><button class="btn btn-purple" type="submit">Issue (generates unique serial + QR + barcode)</button></div>
 </form>
 </div>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">Certificate file</h3>
+<% if (saved) { %><div class="alert ok">File uploaded.</div><% } %>
+<% if (error === 'nofile') { %><div class="alert err">No file was selected.</div><% } %>
+
+<% if (file) { %>
+  <div class="codebox">
+    <% if ((file.mimetype || '').indexOf('image/') === 0) { %>
+      <img src="<%= file.url %>" alt="<%= cert.title %>">
+    <% } else { %>
+      <span class="serial">PDF</span>
+    <% } %>
+    <div>
+      <b><%= file.original || file.filename %></b><br>
+      <span class="muted"><%= Math.max(1, Math.round((file.bytes || 0) / 1024)) %> KB · uploaded <%= file.createdAt.toDateString() %></span>
+    </div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <a class="btn btn-ghost btn-sm" href="<%= file.url %>" target="_blank" rel="noopener">Open</a>
+      <form method="post" action="/portal/admin/certificates/<%= cert._id %>/file/delete" style="display:inline"
+            onsubmit="return confirm('Remove this certificate file?')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Remove</button>
+      </form>
+    </div>
+  </div>
+  <p class="cms-hint">Uploading again replaces this file.</p>
+<% } else { %>
+  <p class="muted">No file uploaded yet. Issued certificates still generate a PDF with a serial, QR and barcode — this is for a designed template or a scanned original.</p>
+<% } %>
+
+<form method="post" action="/portal/admin/certificates/<%= cert._id %>/file?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <label>Upload an image or a PDF</label>
+  <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.avif" required>
+  <p class="cms-hint">JPG, PNG, WebP, GIF, AVIF or PDF — up to 12 MB.</p>
+  <button class="btn btn-purple btn-sm" style="margin-top:12px" type="submit">Upload</button>
+</form>
 </div>
 </div></body></html>

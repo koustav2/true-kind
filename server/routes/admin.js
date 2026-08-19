@@ -1,13 +1,16 @@
 const router = require('express').Router();
 const { fn, col } = require('sequelize');
 const { requireAdmin } = require('../middleware/auth');
-const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry } = require('../models');
+const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry,
+        UserAccess, VolunteerLogin, CertificateFile } = require('../models');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const { serial } = require('../utils/codes');
 
 // Uploads moved to utils/media.js, which adds the extension+mimetype allowlist
 // this instance never had (an uploaded .html or .svg executed as first-party
 // script on the portal origin) and splits image/video size limits.
-const { uploadImage, uploadErrorMessage } = require('../utils/media');
+const { uploadImage, uploadDoc, uploadErrorMessage, UPLOAD_DIR } = require('../utils/media');
 
 router.use(requireAdmin);
 router.use(async (req, res, next) => {
@@ -35,7 +38,12 @@ router.get('/', async (req, res) => {
 router.get('/members', async (req, res) => {
   const status = req.query.status === 'guest' ? 'guest' : 'active';
   const members = await User.findAll({ where: { role: 'member', status }, order: [['createdAt', 'DESC']] });
-  res.render('admin/members', { title: 'Members', members, status });
+  // One query for the whole page rather than one per row.
+  const blocks = await UserAccess.findAll({ where: { blocked: true }, attributes: ['userId'] });
+  res.render('admin/members', {
+    title: 'Members', members, status,
+    blockedIds: blocks.map(b => b.userId)
+  });
 });
 
 // 2. Certificates
@@ -56,7 +64,11 @@ router.get('/certificates/:id', async (req, res) => {
   });
   if (!cert) return res.status(404).render('error', { title: 'Not found', message: 'No such certificate.' });
   const members = await User.findAll({ where: { role: 'member', status: 'active' }, order: [['name', 'ASC']] });
-  res.render('admin/certificate-detail', { title: cert.title, cert, members });
+  const file = await CertificateFile.findOne({ where: { certificateId: cert.id } });
+  res.render('admin/certificate-detail', {
+    title: cert.title, cert, members, file,
+    saved: req.query.saved, error: req.query.error
+  });
 });
 router.post('/certificates/:id/issue', async (req, res) => {
   await CertificateIssue.create({
@@ -130,7 +142,22 @@ router.get('/volunteers', async (req, res) => {
   const status = VOL_STATUSES.includes(req.query.status) ? req.query.status : 'all';
   const where = status === 'all' ? {} : { status };
   const volunteers = await Volunteer.findAll({ where, order: [['createdAt', 'DESC']] });
-  res.render('admin/volunteers', { title: 'Volunteers', volunteers, status, statuses: VOL_STATUSES });
+  const links = await VolunteerLogin.findAll({ attributes: ['volunteerId', 'userId'] });
+
+  // A freshly generated password is passed through the redirect and shown once.
+  // It is never persisted in plaintext — only its bcrypt hash reached the
+  // database — so this is the only moment it can be read.
+  let issued = { password: null, email: null, name: null };
+  if (req.query.pw && req.query.issued) {
+    const u = await User.findByPk(parseInt(req.query.issued, 10));
+    if (u) issued = { password: String(req.query.pw), email: u.email, name: u.name };
+  }
+
+  res.render('admin/volunteers', {
+    title: 'Volunteers', volunteers, status, statuses: VOL_STATUSES,
+    loginIds: links.map(l => l.volunteerId),
+    issuedPassword: issued.password, issuedEmail: issued.email, issuedFor: issued.name
+  });
 });
 router.post('/volunteers/:id/status', async (req, res) => {
   if (VOL_STATUSES.includes(req.body.status))
@@ -197,4 +224,146 @@ router.post('/form/remove', async (req, res) => {
   if (form) { form.fields = form.fields.filter(f => f.name !== req.body.name); await form.save(); }
   res.redirect('/portal/admin/form');
 });
+
+/* ==========================================================================
+   Account control — activate / deactivate
+   ========================================================================== */
+
+/* Deliberately NOT User.status. That column is a membership state (payment.js
+   sets it to 'active' when someone pays), so reusing it would make a deactivated
+   member look like an unpaid guest — and paying again would silently reactivate
+   them. Access lives in its own table. */
+router.post('/members/:id/access', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const block = req.body.action === 'block';
+
+  const target = await User.findByPk(id);
+  if (!target) return res.status(404).send('No such user');
+
+  // Two guards against locking the organisation out of its own portal.
+  if (target.id === req.session.userId) {
+    return res.status(400).render('error', { title: 'Not allowed',
+      message: 'You cannot deactivate your own account.' });
+  }
+  if (block && target.role === 'admin') {
+    const admins = await User.count({ where: { role: 'admin' } });
+    if (admins <= 1) {
+      return res.status(400).render('error', { title: 'Not allowed',
+        message: 'This is the only administrator account. Promote another admin before deactivating this one.' });
+    }
+  }
+
+  const [access] = await UserAccess.findOrCreate({ where: { userId: id }, defaults: {} });
+  access.blocked = block;
+  access.blockedAt = block ? new Date() : null;
+  access.blockedBy = block ? req.session.userId : null;
+  access.note = String(req.body.note || '').slice(0, 255);
+  await access.save();
+  res.redirect(req.get('referer') || '/portal/admin/members');
+});
+
+/* ==========================================================================
+   Volunteer logins
+   ========================================================================== */
+
+/* A readable one-time password. Ambiguous characters are left out so it survives
+   being read off a screen and typed on a phone — no O/0, l/1/I. */
+function tempPassword() {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const bytes = crypto.randomBytes(12);
+  let out = '';
+  for (const b of bytes) out += alphabet[b % alphabet.length];
+  return out.slice(0, 4) + '-' + out.slice(4, 8) + '-' + out.slice(8, 12);
+}
+
+/* Create a login for a volunteer, or reissue its password.
+
+   The generated password is returned to the admin ONCE, in this response, and
+   never stored — only its bcrypt hash goes to the database. That is why there is
+   no "show password" screen anywhere: a stored password that can be displayed is
+   a stored password that can be stolen. Reissuing is free, so losing it costs
+   nothing.  */
+router.post('/volunteers/:id/login', async (req, res) => {
+  const vol = await Volunteer.findByPk(req.params.id);
+  if (!vol) return res.status(404).send('No such volunteer');
+
+  const password = tempPassword();
+  const hash = await bcrypt.hash(password, 10);
+  const email = String(vol.email || '').toLowerCase().trim();
+
+  let link = await VolunteerLogin.findOne({ where: { volunteerId: vol.id } });
+  let user = link ? await User.findByPk(link.userId) : await User.findOne({ where: { email } });
+
+  if (user) {
+    user.passwordHash = hash;
+    await user.save();
+  } else {
+    user = await User.create({
+      name: vol.name, email, phone: vol.phone || '0',
+      role: 'member', status: 'guest', passwordHash: hash
+    });
+  }
+  if (!link) await VolunteerLogin.create({ volunteerId: vol.id, userId: user.id });
+  else { link.issuedAt = new Date(); await link.save(); }
+
+  // Force a change at first sign-in; until then the account can reach nothing
+  // but the change-password page (see middleware/auth.js).
+  const [access] = await UserAccess.findOrCreate({ where: { userId: user.id }, defaults: {} });
+  access.mustChangePassword = true;
+  access.passwordIssuedAt = new Date();
+  await access.save();
+
+  const status = req.query.status || 'all';
+  res.redirect(`/portal/admin/volunteers?status=${encodeURIComponent(status)}` +
+               `&issued=${user.id}&pw=${encodeURIComponent(password)}`);
+});
+
+/* ==========================================================================
+   Certificate file upload — image or PDF
+   ========================================================================== */
+
+/* Stored in its own table rather than MediaAsset, whose `kind` is
+   ENUM('image','video'). That table is already live and a bare sequelize.sync()
+   cannot extend an enum, so 'document' has nowhere to go. */
+router.post('/certificates/:id/file', (req, res, next) => {
+  uploadDoc.single('file')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error',
+      { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+}, async (req, res) => {
+  const cert = await Certificate.findByPk(req.params.id);
+  if (!cert) return res.status(404).send('No such certificate');
+  if (!req.file) return res.redirect(`/portal/admin/certificates/${cert.id}?error=nofile`);
+
+  const existing = await CertificateFile.findOne({ where: { certificateId: cert.id } });
+  if (existing) {
+    // Replace: drop the old row first, then unlink. A dangling file is harmless;
+    // a row pointing at a missing file shows a broken preview.
+    const old = existing.filename;
+    await existing.destroy();
+    require('fs').promises.unlink(require('path').join(UPLOAD_DIR, old)).catch(() => {});
+  }
+  await CertificateFile.create({
+    certificateId: cert.id,
+    url: '/uploads/' + req.file.filename,
+    filename: req.file.filename,
+    original: req.file.originalname,
+    mimetype: req.file.mimetype,
+    bytes: req.file.size,
+    uploadedBy: req.session.userId
+  });
+  res.redirect(`/portal/admin/certificates/${cert.id}?saved=1`);
+});
+
+router.post('/certificates/:id/file/delete', async (req, res) => {
+  const row = await CertificateFile.findOne({ where: { certificateId: req.params.id } });
+  if (row) {
+    const name = row.filename;
+    await row.destroy();
+    require('fs').promises.unlink(require('path').join(UPLOAD_DIR, name)).catch(() => {});
+  }
+  res.redirect(`/portal/admin/certificates/${req.params.id}`);
+});
+
 module.exports = router;

@@ -81,4 +81,21 @@ slots.push({
   });
 });
 
+/* Homepage slider. Five declared slides; only the ones with a photograph
+   appear, and with none set the whole section stays hidden — so the page is
+   never short of content while the client fills it in. */
+[1, 2, 3, 4, 5].forEach(n => {
+  slots.push({
+    id: `index.slide.${n}.image`,
+    page: 'index',
+    label: `Homepage slider — slide ${n} photograph`,
+    help: n === 1
+      ? 'Landscape, ideally 1600x900 or wider. Leave every slide empty to hide the slider entirely.'
+      : 'Landscape. Leave empty to use fewer slides.',
+    container: `.slide[data-slide="${n}"] .slide-media`,
+    fit: 'cover',
+    preset: true            // container already carries the slot classes
+  });
+});
+
 module.exports = slots;

@@ -110,6 +110,58 @@ const Enquiry = sequelize.define('Enquiry', {
   status: { type: DataTypes.ENUM('new', 'replied', 'closed'), defaultValue: 'new' }
 });
 
+/* ---------------------------------------------------------------------------
+   The three tables below are all NEW, and that is a deliberate constraint, not
+   a preference. The app runs a bare `sequelize.sync()` with no migration tool:
+   it creates missing tables, but it never adds a column to an existing one and
+   never extends an ENUM. Anything added to a current model would exist in the
+   model and be absent from the live Postgres, failing at query time.
+
+   So specifically:
+     - blocking a user does NOT reuse User.status. That column is a MEMBERSHIP
+       state — routes/payment.js sets it to 'active' when someone pays — so a
+       blocked user would be indistinguishable from an unpaid guest, and paying
+       again would silently unblock them.
+     - certificate files do NOT go in MediaAsset. Its `kind` is ENUM('image',
+       'video') and that table is already live, so 'document' cannot be added.
+   --------------------------------------------------------------------------- */
+
+/* Access control, separate from membership. One row per user, created lazily. */
+const UserAccess = sequelize.define('UserAccess', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  userId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  blocked:   { type: DataTypes.BOOLEAN, defaultValue: false },
+  blockedAt: DataTypes.DATE,
+  blockedBy: DataTypes.INTEGER,     // admin user id, for the audit trail
+  note:      DataTypes.STRING,
+  // Set when an admin issues a temporary password. The holder must change it at
+  // next sign-in; until then they can reach nothing but the change-password page.
+  mustChangePassword: { type: DataTypes.BOOLEAN, defaultValue: false },
+  passwordIssuedAt:   DataTypes.DATE
+});
+
+/* Links a public volunteer registration to a real login account. Volunteers
+   arrive as form submissions with no credentials; an admin turns one into an
+   account explicitly. */
+const VolunteerLogin = sequelize.define('VolunteerLogin', {
+  _id:         { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  volunteerId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  userId:      { type: DataTypes.INTEGER, allowNull: false },
+  issuedAt:    { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+});
+
+/* An uploaded certificate template or scan — image or PDF. */
+const CertificateFile = sequelize.define('CertificateFile', {
+  _id:           { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  certificateId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  url:           { type: DataTypes.STRING, allowNull: false },
+  filename:      { type: DataTypes.STRING, allowNull: false },
+  original:      DataTypes.STRING,
+  mimetype:      DataTypes.STRING,
+  bytes:         DataTypes.INTEGER,
+  uploadedBy:    DataTypes.INTEGER
+});
+
 // Associations
 Donation.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(Donation, { as: 'donations', foreignKey: 'userId' });
@@ -118,4 +170,7 @@ CertificateIssue.belongsTo(Certificate, { as: 'certificate', foreignKey: 'certif
 CertificateIssue.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 CertificateIssue.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' });
 
-module.exports = { sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry, MediaAsset };
+module.exports = {
+  sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig,
+  Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile
+};

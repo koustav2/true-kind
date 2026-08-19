@@ -5,16 +5,36 @@
   <a href="/portal/admin/members" class="<%= status==='active'?'on':'' %>">Active</a>
   <a href="/portal/admin/members?status=guest" class="<%= status==='guest'?'on':'' %>">Guest</a>
 </div>
+<p class="muted">
+  <strong>Active / Guest</strong> is the membership state — whether they have paid.
+  <strong>Access</strong> is separate: deactivating an account blocks sign-in
+  immediately, even if the person is already logged in, and paying again does not
+  undo it.
+</p>
 <div class="card" style="padding:0;overflow-x:auto">
 <table>
-<tr><th>Name</th><th>Email</th><th>Phone</th><th>Member ID</th><th>Plan / valid till</th><th>Joined</th></tr>
-<% if (!members.length) { %><tr><td colspan="6" class="muted">Nobody here yet.</td></tr><% } %>
+<tr><th>Name</th><th>Email</th><th>Phone</th><th>Member ID</th><th>Plan / valid till</th><th>Joined</th><th>Access</th><th></th></tr>
+<% if (!members.length) { %><tr><td colspan="8" class="muted">Nobody here yet.</td></tr><% } %>
 <% members.forEach(u => { %>
+<% var blocked = blockedIds.indexOf(u.id) !== -1; %>
 <tr>
   <td><%= u.name %></td><td><%= u.email %></td><td><%= u.phone %></td>
   <td class="serial"><%= u.memberId || '—' %></td>
   <td><%= u.membership && u.membership.plan ? `${u.membership.plan} · ${u.membership.validTill.toDateString()}` : '—' %></td>
   <td><%= u.createdAt.toDateString() %></td>
+  <td><% if (blocked) { %><span class="pill warn">Deactivated</span><% } else { %><span class="pill ok">Active</span><% } %></td>
+  <td>
+    <% if (u.id === session.userId) { %>
+      <span class="muted">you</span>
+    <% } else { %>
+      <form method="post" action="/portal/admin/members/<%= u.id %>/access" style="display:inline"
+            onsubmit="return confirm('<%= blocked ? "Reactivate" : "Deactivate" %> <%= u.name %>?<%= blocked ? "" : " They will be signed out immediately." %>')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="action" value="<%= blocked ? 'unblock' : 'block' %>">
+        <button class="btn btn-ghost btn-sm" type="submit"><%= blocked ? 'Reactivate' : 'Deactivate' %></button>
+      </form>
+    <% } %>
+  </td>
 </tr>
 <% }) %>
 </table>

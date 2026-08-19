@@ -32,6 +32,7 @@ const path = require('path');
 const cheerio = require('cheerio');
 const VIDEO_SLOTS = require('./video-slots');
 const IMAGE_SLOTS = require('./image-slots');
+const TEXT_SLOTS  = require('./text-slots');
 
 const ROOT = path.join(__dirname, '..', '..');
 const PAGES = [
@@ -215,6 +216,14 @@ function processPage(page, entries) {
         if (SKIP_TAGS.has(tag)) continue;
         const $node = $(node);
 
+        // Slot-managed elements belong to image-slots.js / video-slots.js, which
+        // register their own registry entries. Without this guard the generator
+        // was NOT idempotent: the first run appended the photo <img> AFTER this
+        // walk, so the walk never saw it — but every run after that found it and
+        // stamped a second data-cms id on the same element, producing a duplicate
+        // "— image" field per slot (21 image fields became 40 on the second run).
+        if ($node.attr('data-cms-image') !== undefined || $node.attr('data-cms-video') !== undefined) continue;
+
         // images
         if (tag === 'img') {
           const id = $node.attr('data-cms') || regionNext(region.scope, 'img');
@@ -283,6 +292,23 @@ function processPage(page, entries) {
       label: slot.label, help: slot.help, role: 'photograph', type: 'image',
       target: { selector: `[data-cms-image="${slot.id}"]` },
       default: { src: '', alt: '' }
+    });
+  }
+
+  /* ---- text slots -------------------------------------------------------
+     Elements that start EMPTY. The walker finds text by reading it, so an empty
+     element is invisible to it — these are declared instead. */
+  for (const slot of TEXT_SLOTS.filter(s => s.page === page.name)) {
+    const $t = $(slot.selector).first();
+    if (!$t.length) {
+      console.warn(`  ! text slot ${slot.id}: selector "${slot.selector}" not found — skipped`);
+      continue;
+    }
+    entries.push({
+      id: slot.id, page: page.name, scope: page.name, group: slot.group || 'Page',
+      label: slot.label, help: slot.help, role: 'optional text', type: 'text',
+      target: { selector: slot.selector },
+      default: ''
     });
   }
 

@@ -144,7 +144,12 @@
           if (!t) return;
           if (f.t === "image") applyPhoto(t, f.v);
           else if (f.a) t.setAttribute(f.a, f.v);
-          else t.textContent = f.v;
+          else {
+            // Declared text slots start empty AND hidden, so that an unfilled
+            // one leaves no blank gap. Setting a value has to reveal it.
+            t.textContent = f.v;
+            if (t.hasAttribute("hidden")) t.hidden = !String(f.v).trim();
+          }
           n++;
           return;
         }

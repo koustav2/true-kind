@@ -13,6 +13,10 @@ module.exports = {
     monthly: { label: 'Monthly', amount: 100 * 100, months: 1 },
     annual:  { label: 'Annual (recommended)', amount: 1000 * 100, months: 12 }
   },
+  // Preset amounts offered as one-tap chips on the donation form. These mirror
+  // the three cost tiers published on donate.html, plus a low entry point.
+  donationPresets: [500, 1500, 3000, 6000, 25000],
+
   donationCategories: [
     'Skill Development', "Women's Empowerment", 'Digital Education',
     'Health & Safety', 'Environment', 'Where it is needed most'

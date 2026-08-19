@@ -99,6 +99,13 @@ img{max-width:100%;height:auto}
   .grid.g4{grid-template-columns:1fr}
 }
 
+/* Donation amount chips */
+.amt-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.amt{padding:10px 16px;border-radius:100px;border:1px solid var(--rule-strong);background:var(--paper);
+  font:500 .9rem 'Work Sans',sans-serif;color:var(--text);cursor:pointer;width:auto}
+.amt:hover{border-color:var(--purple);color:var(--purple)}
+.amt.on{background:var(--purple);border-color:var(--purple);color:#fff}
+
 /* ---- CMS editor ---------------------------------------------------------
    The portal stylesheet had no two-column shell, no sticky sidebar and no
    media grid, so they are added here (one shared block, every view gets them)

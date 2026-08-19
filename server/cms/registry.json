@@ -439,6 +439,32 @@
    }
   },
   {
+   "id": "index.button.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "‹"
+  },
+  {
+   "id": "index.button.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "›"
+  },
+  {
    "id": "index.b.1",
    "page": "index",
    "scope": "index",
@@ -1535,19 +1561,6 @@
    "default": "\"The digital skills course got me my first paid freelance project within two months of finishing.\""
   },
   {
-   "id": "index.div.1",
-   "page": "index",
-   "scope": "index",
-   "group": "Page",
-   "label": "Page — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "R.K."
-  },
-  {
    "id": "index.b.8",
    "page": "index",
    "scope": "index",
@@ -1585,19 +1598,6 @@
     "self": true
    },
    "default": "\"Our stitching collective now supplies three local retailers. We set our own prices for the first time.\""
-  },
-  {
-   "id": "index.div.2",
-   "page": "index",
-   "scope": "index",
-   "group": "Page",
-   "label": "Page — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "S.M."
   },
   {
    "id": "index.b.9",
@@ -1639,19 +1639,6 @@
    "default": "\"The health camp caught my father's blood pressure early. That checkup probably saved us a hospital bill.\""
   },
   {
-   "id": "index.div.3",
-   "page": "index",
-   "scope": "index",
-   "group": "Page",
-   "label": "Page — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "A.T."
-  },
-  {
    "id": "index.b.10",
    "page": "index",
    "scope": "index",
@@ -1689,19 +1676,6 @@
     "self": true
    },
    "default": "\"We planted 400 saplings on our street. A third of them are taller than me now.\""
-  },
-  {
-   "id": "index.div.4",
-   "page": "index",
-   "scope": "index",
-   "group": "Page",
-   "label": "Page — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "P.D."
   },
   {
    "id": "index.b.11",
@@ -2572,6 +2546,161 @@
    }
   },
   {
+   "id": "index.slide.1.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 1 photograph",
+   "help": "Landscape, ideally 1600x900 or wider. Leave every slide empty to hide the slider entirely.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.1.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.2.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 2 photograph",
+   "help": "Landscape. Leave empty to use fewer slides.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.2.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.3.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 3 photograph",
+   "help": "Landscape. Leave empty to use fewer slides.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.3.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.4.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 4 photograph",
+   "help": "Landscape. Leave empty to use fewer slides.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.4.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.5.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 5 photograph",
+   "help": "Landscape. Leave empty to use fewer slides.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.5.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.1.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 1 caption",
+   "help": "Optional. Leave empty for a photograph with no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"1\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.2.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 2 caption",
+   "help": "Optional. Leave empty for a photograph with no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"2\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.3.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 3 caption",
+   "help": "Optional. Leave empty for a photograph with no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"3\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.4.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 4 caption",
+   "help": "Optional. Leave empty for a photograph with no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"4\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.5.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 5 caption",
+   "help": "Optional. Leave empty for a photograph with no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"5\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.video.hero",
    "page": "index",
    "scope": "index",
@@ -3026,19 +3155,6 @@
    "default": "The board sets strategy, approves budgets and reviews every program twice a year."
   },
   {
-   "id": "about.div.1",
-   "page": "about",
-   "scope": "about",
-   "group": "Chairperson",
-   "label": "Chairperson — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "CP"
-  },
-  {
    "id": "about.h3.5",
    "page": "about",
    "scope": "about",
@@ -3063,19 +3179,6 @@
     "self": true
    },
    "default": "Sets strategic direction and represents the Foundation publicly."
-  },
-  {
-   "id": "about.div.2",
-   "page": "about",
-   "scope": "about",
-   "group": "Vice Chairperson",
-   "label": "Vice Chairperson — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "VC"
   },
   {
    "id": "about.h3.6",
@@ -3104,19 +3207,6 @@
    "default": "Supports governance and deputises for the Chairperson when needed."
   },
   {
-   "id": "about.div.3",
-   "page": "about",
-   "scope": "about",
-   "group": "Secretary",
-   "label": "Secretary — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "SE"
-  },
-  {
    "id": "about.h3.7",
    "page": "about",
    "scope": "about",
@@ -3141,19 +3231,6 @@
     "self": true
    },
    "default": "Oversees compliance, board records and day-to-day organisational matters."
-  },
-  {
-   "id": "about.div.4",
-   "page": "about",
-   "scope": "about",
-   "group": "Treasurer",
-   "label": "Treasurer — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "TR"
   },
   {
    "id": "about.h3.8",
@@ -5119,6 +5196,37 @@
    "default": "You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went."
   },
   {
+   "id": "donate.a.5.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.5\"]",
+    "attr": "href"
+   },
+   "default": "/portal/donate"
+  },
+  {
+   "id": "donate.a.5",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Donate online",
+   "href": {
+    "id": "donate.a.5.href",
+    "default": "/portal/donate"
+   }
+  },
+  {
    "id": "donate.a.1.href",
    "page": "donate",
    "scope": "donate",
@@ -5259,6 +5367,37 @@
    "default": "Covers a month of trade or digital-skills training for one participant, including materials and the trainer's time."
   },
   {
+   "id": "donate.a.6.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.6\"]",
+    "attr": "href"
+   },
+   "default": "/portal/donate?amount=1500&category=Skill%20Development"
+  },
+  {
+   "id": "donate.a.6",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Give ₹1,500",
+   "href": {
+    "id": "donate.a.6.href",
+    "default": "/portal/donate?amount=1500&category=Skill%20Development"
+   }
+  },
+  {
    "id": "donate.span.2",
    "page": "donate",
    "scope": "donate",
@@ -5298,6 +5437,37 @@
    "default": "Funds a single-day preventive-care camp — screening, basic medicines and a follow-up list for the cases that need one."
   },
   {
+   "id": "donate.a.7.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.7\"]",
+    "attr": "href"
+   },
+   "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety"
+  },
+  {
+   "id": "donate.a.7",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Give ₹6,000",
+   "href": {
+    "id": "donate.a.7.href",
+    "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety"
+   }
+  },
+  {
    "id": "donate.span.3",
    "page": "donate",
    "scope": "donate",
@@ -5335,6 +5505,37 @@
     "self": true
    },
    "default": "Seed support for one savings-and-enterprise collective: training, initial materials and the market introductions that make it stick."
+  },
+  {
+   "id": "donate.a.8.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.8\"]",
+    "attr": "href"
+   },
+   "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment"
+  },
+  {
+   "id": "donate.a.8",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Give ₹25,000",
+   "href": {
+    "id": "donate.a.8.href",
+    "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment"
+   }
   },
   {
    "id": "donate.p.9",

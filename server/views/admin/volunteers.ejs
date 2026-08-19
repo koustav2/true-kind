@@ -1,6 +1,20 @@
 <%- include('../partials/head') %><%- include('../partials/nav', {active:'vols'}) %>
 <div class="wrap">
 <p class="eyebrow">Volunteers</p><h1>Volunteer registrations</h1>
+
+<% if (issuedPassword) { %>
+  <div class="alert ok">
+    <strong>Login created for <%= issuedFor %>.</strong><br>
+    Sign-in ID: <span class="serial"><%= issuedEmail %></span><br>
+    Temporary password: <span class="serial" style="font-size:1.05rem"><%= issuedPassword %></span>
+    <p class="muted" style="margin:8px 0 0">
+      <strong>Copy this now — it is shown once and cannot be retrieved.</strong>
+      Passwords are stored one-way (hashed), so nobody, including us, can look one
+      up later. If it is lost, just issue a new one. The volunteer must set their
+      own password the first time they sign in.
+    </p>
+  </div>
+<% } %>
 <div class="tabs">
   <a href="/portal/admin/volunteers" class="<%= status==='all'?'on':'' %>">All</a>
   <% statuses.forEach(s => { %>
@@ -10,8 +24,8 @@
 </div>
 <div class="card" style="padding:0;overflow-x:auto">
 <table>
-<tr><th>Date</th><th>Name</th><th>Contact</th><th>Type / Availability</th><th>Areas</th><th>Message</th><th>Status</th></tr>
-<% if (!volunteers.length) { %><tr><td colspan="7" class="muted">No volunteer registrations<%= status!=='all' ? ' with this status' : ' yet' %>.</td></tr><% } %>
+<tr><th>Date</th><th>Name</th><th>Contact</th><th>Type / Availability</th><th>Areas</th><th>Message</th><th>Status</th><th>Login</th></tr>
+<% if (!volunteers.length) { %><tr><td colspan="8" class="muted">No volunteer registrations<%= status!=='all' ? ' with this status' : ' yet' %>.</td></tr><% } %>
 <% volunteers.forEach(v => { %>
 <tr>
   <td><%= v.createdAt.toDateString() %></td>
@@ -21,12 +35,27 @@
   <td style="max-width:220px;white-space:normal"><%= v.interests || '—' %></td>
   <td style="max-width:280px;white-space:normal"><%= v.message || '—' %></td>
   <td>
-    <form method="post" action="/portal/admin/volunteers/<%= v.id %><input type="hidden" name="_csrf" value="<%= csrfToken %>">/status">
+    <form method="post" action="/portal/admin/volunteers/<%= v.id %>/status"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <input type="hidden" name="back" value="<%= status==='all' ? '' : status %>">
       <select name="status" onchange="this.form.submit()">
         <% statuses.forEach(s => { %><option value="<%= s %>" <%= v.status===s?'selected':'' %>><%= s.charAt(0).toUpperCase()+s.slice(1) %></option><% }) %>
       </select>
     </form>
+  </td>
+  <td>
+    <% if (loginIds.indexOf(v.id) !== -1) { %>
+      <span class="pill ok">Has login</span><br>
+      <form method="post" action="/portal/admin/volunteers/<%= v.id %>/login?status=<%= status %>" style="display:inline"
+            onsubmit="return confirm('Issue a new temporary password for <%= v.name %>? Their current password stops working immediately.')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" style="margin-top:6px" type="submit">New password</button>
+      </form>
+    <% } else { %>
+      <form method="post" action="/portal/admin/volunteers/<%= v.id %>/login?status=<%= status %>" style="display:inline">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-purple btn-sm" type="submit">Create login</button>
+      </form>
+    <% } %>
   </td>
 </tr>
 <% }) %>

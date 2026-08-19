@@ -89,6 +89,110 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
   })();
 
   /* ----------------------------------------------------------------------
+     Homepage slider
+
+     Reveals itself ONLY if the CMS has put a photograph in at least one slide;
+     otherwise the section stays hidden and the page is exactly as it was. That
+     is why this waits for cms:hydrated rather than running at load — at load
+     every slide is still empty.
+
+     Movement is scroll-snap, not a transform: swipe, arrow buttons, dots and
+     the keyboard all end up calling the same scrollTo, so there is one source of
+     truth for "which slide are we on" and no state to drift.
+
+     Auto-advance runs only when the user has not asked for reduced motion, and
+     pauses on hover, on focus, and whenever the tab is in the background.
+     ---------------------------------------------------------------------- */
+  (function slider() {
+    var root = document.querySelector("[data-slider]");
+    if (!root) return;
+
+    var track = root.querySelector("[data-slider-track]");
+    var dotsBox = root.querySelector("[data-slider-dots]");
+    var prev = root.querySelector("[data-slider-prev]");
+    var next = root.querySelector("[data-slider-next]");
+    var timer = null, index = 0, slides = [];
+
+    function build() {
+      var all = [].slice.call(track.querySelectorAll(".slide"));
+      // A slide counts only once its photograph has arrived.
+      slides = all.filter(function (li) {
+        var img = li.querySelector("img.cms-photo");
+        return img && img.getAttribute("src") && !img.hidden;
+      });
+      all.forEach(function (li) { li.hidden = slides.indexOf(li) === -1; });
+
+      if (!slides.length) { root.hidden = true; stop(); return; }
+      root.hidden = false;
+
+      var many = slides.length > 1;
+      prev.hidden = next.hidden = !many;
+      dotsBox.innerHTML = "";
+      if (many) {
+        slides.forEach(function (li, i) {
+          var d = document.createElement("button");
+          d.type = "button";
+          d.setAttribute("role", "tab");
+          d.setAttribute("aria-label", "Photograph " + (i + 1) + " of " + slides.length);
+          d.addEventListener("click", function () { go(i); restart(); });
+          dotsBox.appendChild(d);
+        });
+      }
+      index = Math.min(index, slides.length - 1);
+      mark();
+      if (many) start();
+    }
+
+    function go(i) {
+      if (!slides.length) return;
+      index = (i + slides.length) % slides.length;
+      var li = slides[index];
+      track.scrollTo({ left: li.offsetLeft - track.offsetLeft, behavior: reduceMotion ? "auto" : "smooth" });
+      mark();
+    }
+    function mark() {
+      [].slice.call(dotsBox.children).forEach(function (d, i) {
+        d.setAttribute("aria-selected", i === index ? "true" : "false");
+      });
+      slides.forEach(function (li, i) {
+        // Hide the off-screen slides from assistive tech, so a screen reader is
+        // not read four captions for one visible photograph.
+        li.setAttribute("aria-hidden", i === index ? "false" : "true");
+      });
+    }
+
+    function start() {
+      if (reduceMotion || timer || slides.length < 2) return;
+      timer = setInterval(function () { go(index + 1); }, 6000);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function restart() { stop(); start(); }
+
+    prev.addEventListener("click", function () { go(index - 1); restart(); });
+    next.addEventListener("click", function () { go(index + 1); restart(); });
+
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop(); else start();
+    });
+    root.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { go(index - 1); restart(); }
+      if (e.key === "ArrowRight") { go(index + 1); restart(); }
+    });
+    // A manual swipe should win over the timer.
+    track.addEventListener("touchstart", stop, { passive: true });
+    track.addEventListener("touchend", restart, { passive: true });
+
+    // Slides arrive with the CMS bundle, so build after it lands. The timeout is
+    // the case where cms.js is absent or its request never resolves.
+    document.addEventListener("cms:hydrated", build);
+    setTimeout(build, 1200);
+  })();
+
+  /* ----------------------------------------------------------------------
      Impact dials
 
      The percentage lives in the visible .ring-num text, not in a data

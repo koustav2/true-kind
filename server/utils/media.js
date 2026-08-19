@@ -85,6 +85,18 @@ const uploadVideo = multer({
   limits: { fileSize: 200 * 1024 * 1024, files: 1, fields: 60, parts: 70 }
 });
 
+/* Certificate files — an image OR a PDF. PDFs are not in the media library
+   because MediaAsset.kind is ENUM('image','video') and that table is already
+   live; a bare sequelize.sync() cannot extend an enum, so documents live in
+   their own CertificateFile table instead. */
+const DOC_TYPES = Object.assign({ '.pdf': ['application/pdf'] }, IMAGE_TYPES);
+
+const uploadDoc = multer({
+  storage: storage(),
+  fileFilter: makeFilter(DOC_TYPES, 'Certificates'),
+  limits: { fileSize: 12 * 1024 * 1024, files: 1, fields: 40, parts: 50 }
+});
+
 /* Accepts either field name, so one endpoint can take an image or a video. */
 const uploadMedia = multer({
   storage: storage(),
@@ -139,14 +151,14 @@ function parseEmbed(raw) {
 /* Turn a multer error into a message worth showing a non-technical admin. */
 function uploadErrorMessage(err) {
   if (!err) return null;
-  if (err.code === 'LIMIT_FILE_SIZE') return 'That file is too large. Images must be under 6 MB, videos under 200 MB.';
+  if (err.code === 'LIMIT_FILE_SIZE') return 'That file is too large. Images must be under 6 MB, certificates under 12 MB, videos under 200 MB.';
   if (err.code === 'BAD_EXT' || err.code === 'BAD_MIME') return err.message;
   if (err.code === 'LIMIT_UNEXPECTED_FILE') return 'Unexpected upload field.';
   return 'Upload failed: ' + (err.message || 'unknown error');
 }
 
 module.exports = {
-  UPLOAD_DIR, IMAGE_TYPES, VIDEO_TYPES,
-  uploadImage, uploadVideo, uploadMedia,
+  UPLOAD_DIR, IMAGE_TYPES, VIDEO_TYPES, DOC_TYPES,
+  uploadImage, uploadVideo, uploadMedia, uploadDoc,
   parseEmbed, uploadErrorMessage
 };

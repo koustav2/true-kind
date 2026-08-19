@@ -9,7 +9,8 @@
     "seed": "node server/scripts/seed.js",
     "cms:build": "node server/cms/build-registry.js",
     "smoke": "node server/scripts/smoke.js",
-    "cms:smoke": "node server/scripts/cms-smoke.js"
+    "cms:smoke": "node server/scripts/cms-smoke.js",
+    "ui:smoke": "node server/scripts/admin-ui-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",

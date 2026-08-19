@@ -843,6 +843,70 @@ header.site::after{
 }
 
 /* --------------------------------------------------------------------------
+   Homepage slider.
+
+   Five declared slides, and the section is `hidden` in the HTML: main.js only
+   reveals it if at least one slide actually has a photograph. So an empty
+   slider costs the page nothing — no blank band, no layout shift, nothing for
+   the client to feel bad about while they gather photos.
+   -------------------------------------------------------------------------- */
+.hero-slider{ padding-block:0 var(--section-y-s); background:var(--paper); }
+.hero-slider[hidden]{ display:none; }
+
+.slider-frame{ position:relative; border-radius:var(--radius-lg); overflow:hidden; background:var(--paper-3); }
+.slider-track{
+  list-style:none; margin:0; padding:0;
+  display:flex;
+  /* Scroll-snap carries the swipe on touch; the buttons scroll to a slide, so
+     pointer, keyboard and finger all drive the same one mechanism. */
+  overflow-x:auto; scroll-snap-type:x mandatory;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+.slider-track::-webkit-scrollbar{ display:none; }
+.slide{ flex:0 0 100%; scroll-snap-align:center; position:relative; }
+.slide[hidden]{ display:none; }
+.slide-media{ aspect-ratio:16/7; width:100%; background:var(--paper-3); }
+@media (max-width:700px){ .slide-media{ aspect-ratio:4/3; } }
+.slide-caption{
+  position:absolute; left:0; right:0; bottom:0; margin:0;
+  padding:var(--sp-6) var(--sp-5) var(--sp-4);
+  color:var(--paper); font-size:var(--fs-sm);
+  background:linear-gradient(to top, rgba(17,24,39,0.72), rgba(17,24,39,0));
+}
+.slide-caption[hidden]{ display:none; }
+
+.slider-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:44px; height:44px; border-radius:50%;
+  border:0; cursor:pointer;
+  background:rgba(255,255,255,0.92); color:var(--ink);
+  font-size:1.5rem; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 10px rgba(17,24,39,0.18);
+  transition:background var(--dur) var(--ease);
+}
+.slider-nav:hover{ background:#fff; }
+.slider-nav.prev{ left:var(--sp-4); }
+.slider-nav.next{ right:var(--sp-4); }
+.slider-nav[hidden]{ display:none; }
+
+.slider-dots{
+  position:absolute; left:0; right:0; bottom:var(--sp-3);
+  display:flex; gap:7px; justify-content:center;
+}
+.slider-dots button{
+  width:8px; height:8px; padding:0; border-radius:50%; border:0; cursor:pointer;
+  background:rgba(255,255,255,0.55);
+  transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slider-dots button[aria-selected="true"]{ background:#fff; transform:scale(1.4); }
+
+/* Keyboard focus has to be visible on top of a photograph. */
+.slider-nav:focus-visible, .slider-dots button:focus-visible{
+  outline:2px solid var(--brand-blue); outline-offset:3px;
+}
+
+/* --------------------------------------------------------------------------
    Photo slots.
 
    The site ships 68 inline <svg> illustrations and only 2 real images, so none
@@ -926,6 +990,12 @@ header.site::after{
 .work-body .textlink{ align-self:flex-start; margin-top:var(--sp-2); }
 @media (max-width:1000px){ .work-grid{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:680px){  .work-grid{ grid-template-columns:1fr; } }
+
+/* The give-this-amount button on each cost tier. Pushed to the bottom of the
+   card so the three cards stay aligned however long their descriptions run. */
+.tier-card{ display:flex; flex-direction:column; }
+.tier-card p{ flex:1; }
+.btn-tier{ align-self:flex-start; margin-top:var(--sp-4); }
 
 /* Board */
 .board-grid{

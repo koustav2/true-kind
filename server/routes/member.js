@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const config = require('../config');
 const { requireLogin } = require('../middleware/auth');
-const { User, Donation, Certificate, CertificateIssue, FormConfig } = require('../models');
+const { User, Donation, Certificate, CertificateIssue, FormConfig, UserAccess } = require('../models');
 const { qrDataUrl, barcodeDataUrl } = require('../utils/codes');
 const { receiptPdf, certificatePdf, cardPdf } = require('../utils/pdf');
 
@@ -103,4 +103,45 @@ router.post('/profile', async (req, res) => {
   await req.user.save();
   res.render('member/profile', { title: 'Edit profile', saved: true, error: null });
 });
+
+/* ==========================================================================
+   Change password
+
+   Reachable — and, while a temporary password is outstanding, the ONLY thing
+   reachable (see middleware/auth.js). An admin-issued password is meant to be
+   used once and replaced, not to become the account's standing credential.
+   ========================================================================== */
+router.get('/password', async (req, res) => {
+  const access = await UserAccess.findOne({ where: { userId: req.session.userId } });
+  res.render('member/password', {
+    title: 'Change password',
+    forced: !!(access && access.mustChangePassword),
+    error: null, saved: false
+  });
+});
+
+router.post('/password', async (req, res) => {
+  const access = await UserAccess.findOne({ where: { userId: req.session.userId } });
+  const forced = !!(access && access.mustChangePassword);
+  const view = (error, saved) => res.render('member/password',
+    { title: 'Change password', forced, error, saved });
+
+  const user = await User.findByPk(req.session.userId);
+  const current = String(req.body.current || '');
+  const next = String(req.body.next || '');
+
+  if (!(await bcrypt.compare(current, user.passwordHash)))
+    return view('That current password is not right.', false);
+  if (next.length < 8)
+    return view('Choose a new password of at least 8 characters.', false);
+  if (next === current)
+    return view('The new password has to be different from the current one.', false);
+
+  user.passwordHash = await bcrypt.hash(next, 10);
+  await user.save();
+
+  if (access) { access.mustChangePassword = false; await access.save(); }
+  view(null, true);
+});
+
 module.exports = router;

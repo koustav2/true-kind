@@ -80,7 +80,19 @@ const { receiptPdf } = require('./utils/pdf');
 app.get('/portal/donate', async (req, res) => {
   let extraFields = [];
   try { const f = await FormConfig.findOne({ where: { formKey: 'donation' } }); extraFields = f ? f.fields : []; } catch (e) {}
-  res.render('guest-donate', { title: 'Donate', categories: config.donationCategories, extraFields });
+  // The public Donate page links here with ?amount= and ?category= from its cost
+  // tiers, so "₹6,000 — a community health camp" arrives pre-filled instead of
+  // asking the donor to retype it. Both are validated: an out-of-range amount or
+  // an unknown category is simply ignored rather than trusted into the form.
+  const amt = parseInt(req.query.amount, 10);
+  const preset = {
+    amount: Number.isFinite(amt) && amt > 0 && amt <= 10000000 ? amt : '',
+    category: config.donationCategories.includes(req.query.category) ? req.query.category : ''
+  };
+  res.render('guest-donate', {
+    title: 'Donate', categories: config.donationCategories, extraFields, preset,
+    presets: config.donationPresets
+  });
 });
 app.get('/portal/receipt/:txnId', async (req, res) => {
   const d = await Donation.findOne({ where: { txnId: req.params.txnId, status: 'paid' } });

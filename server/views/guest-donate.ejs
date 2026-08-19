@@ -12,8 +12,19 @@
   </div>
   <label>Address</label><input name="address">
   <label>Program</label>
-  <select name="category"><% categories.forEach(c => { %><option><%= c %></option><% }) %></select>
-  <label>Amount (₹) *</label><input type="number" name="amount" min="1" required>
+  <select name="category"><% categories.forEach(c => { %><option <%= c === preset.category ? 'selected' : '' %>><%= c %></option><% }) %></select>
+
+  <label>Amount (₹) *</label>
+  <%# Preset chips, so the common amounts are one tap on a phone rather than a
+      typed number. The custom box stays — it is the field that actually submits,
+      and the chips only write into it. %>
+  <div class="amt-row">
+    <% presets.forEach(a => { %>
+      <button type="button" class="amt<%= String(a) === String(preset.amount) ? ' on' : '' %>" data-amt="<%= a %>">₹<%= a.toLocaleString('en-IN') %></button>
+    <% }) %>
+  </div>
+  <input type="number" name="amount" id="amount" min="1" required
+         value="<%= preset.amount || '' %>" placeholder="Or enter any amount">
   <h3 style="margin-top:26px;font-size:1rem">For tax deduction (optional)</h3>
   <div class="grid g3">
     <div><label>PAN</label><input name="pan"></div>
@@ -33,4 +44,27 @@
   <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue to payment</button></div>
 </form>
 </div>
-</div></body></html>
+<p class="muted">Donations to True Kind Foundation are eligible for tax deduction where our 80G registration applies. Enter your PAN above and the receipt will carry the details.</p>
+</div>
+<script>
+/* Amount chips write into the number field. The field is what submits, so if
+   this script never runs the form is still fully usable — the chips are an
+   accelerator, not the input. */
+(function () {
+  var box = document.getElementById('amount');
+  var chips = [].slice.call(document.querySelectorAll('.amt'));
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      box.value = c.getAttribute('data-amt');
+      chips.forEach(function (o) { o.classList.toggle('on', o === c); });
+      box.focus();
+    });
+  });
+  /* Typing a custom amount clears the chip selection, so the highlight never
+     contradicts the value in the box. */
+  box.addEventListener('input', function () {
+    chips.forEach(function (o) { o.classList.toggle('on', o.getAttribute('data-amt') === box.value); });
+  });
+})();
+</script>
+</body></html>
