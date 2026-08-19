@@ -19,17 +19,23 @@
   --brand-blue:   #0392D4;
   --brand-purple: #7D4AB1;
   --brand-red:    #DE3548;
+  /* Fifth accent. The logo only carries four colours but the site has five
+     programmes, so the fifth is blended from the logo's blue and green rather
+     than invented — it sits inside the mark's own range. */
+  --brand-teal:   #0C9E8F;
 
   /* Text-safe (>=4.5:1 on both cream surfaces) */
   --green:       #3E7D04;
   --blue:        #0275AA;
   --purple:      #7D4AB1;
   --red:         #CC3142;
+  --teal:        #067A6E;
 
   /* Solid fills carrying white text (>=4.5:1) */
   --green-btn:   #408104;
   --blue-btn:    #0278AE;
   --purple-btn:  #7D4AB1;
+  --teal-btn:    #05796D;
   --clay:        #D53345;
   --clay-deep:   #A8243A;
 
@@ -37,6 +43,31 @@
   --blue-deep:   #01587F;
   --purple-deep: #5B3480;
   --green-deep:  #2E5C03;
+  --teal-deep:   #044F48;
+
+  /* ---- SINGLE SWITCH FOR THE PRIMARY ACTION -----------------------------
+     The client keeps revisiting this one. Change these two values and every
+     primary button on every page follows — nothing else needs touching.
+     Green (--green-btn / --green-deep) is the wordmark colour if they'd
+     rather lead with that than the red. */
+  --action:      var(--clay);
+  --action-hover:var(--clay-deep);
+
+  /* ---- PROGRAMME TINTS --------------------------------------------------
+     0.16 is the ceiling here: past it the uppercase tag sitting on the tint
+     drops under 4.5:1 (red is the first to fail). Verified, do not raise. */
+  --tint-blue:   rgba(3,146,212,0.16);
+  --tint-purple: rgba(125,74,177,0.16);
+  --tint-green:  rgba(89,179,6,0.16);
+  --tint-red:    rgba(222,53,72,0.16);
+  --tint-teal:   rgba(12,158,143,0.16);
+
+  /* Tag colours — text ON the tint, a step darker than the on-cream tier */
+  --tag-blue:   #026C9D;
+  --tag-purple: #5B3480;
+  --tag-green:  #397304;
+  --tag-red:    #BA2D3C;
+  --tag-teal:   #055F56;
 
   /* All four logo colours as one rule — the brand signature */
   --brand-bar: linear-gradient(90deg,
@@ -425,8 +456,8 @@ header.site::after{
 }
 .btn svg{ width:16px; height:16px; flex:none; }
 
-.btn-primary{ background:var(--clay); color:var(--paper); }
-.btn-primary:hover{ background:var(--clay-deep); }
+.btn-primary{ background:var(--action); color:var(--paper); }
+.btn-primary:hover{ background:var(--action-hover); }
 .btn-secondary{ background:var(--purple-btn); color:var(--paper); }
 .btn-secondary:hover{ background:var(--purple-deep); }
 .btn-ink{ background:var(--ink); color:var(--paper); }
@@ -456,10 +487,10 @@ header.site::after{
   position:relative; overflow:hidden;
   padding-block:clamp(64px, 6vw + 30px, 128px) clamp(56px, 5vw + 26px, 104px);
   background:
-    radial-gradient(ellipse 55% 52% at 88% 4%,  rgba(3,146,212,0.16),  transparent 62%),
-    radial-gradient(ellipse 46% 46% at 4% 96%,  rgba(125,74,177,0.12), transparent 60%),
-    radial-gradient(ellipse 42% 40% at 60% 112%, rgba(89,179,6,0.10),  transparent 60%),
-    radial-gradient(ellipse 30% 30% at 30% -6%,  rgba(222,53,72,0.07), transparent 60%),
+    radial-gradient(ellipse 55% 52% at 88% 4%,  rgba(3,146,212,0.24),  transparent 62%),
+    radial-gradient(ellipse 46% 46% at 4% 96%,  rgba(125,74,177,0.18), transparent 60%),
+    radial-gradient(ellipse 42% 40% at 60% 112%, rgba(89,179,6,0.16),  transparent 60%),
+    radial-gradient(ellipse 30% 30% at 30% -6%,  rgba(222,53,72,0.11), transparent 60%),
     var(--paper);
 }
 .hero-grid{
@@ -483,31 +514,41 @@ header.site::after{
   color:var(--ink); display:block; line-height:1;
   letter-spacing:-0.03em;
 }
+/* The four headline figures carry the four logo colours in logo order. These
+   use the text-safe tier, not --brand-*: the vivid green is only 2.56:1 on
+   cream and would fail even at display size. */
+.hstat:nth-child(1) b{ color:var(--blue); }
+.hstat:nth-child(2) b{ color:var(--purple); }
+.hstat:nth-child(3) b{ color:var(--green); }
+.hstat:nth-child(4) b{ color:var(--red); }
 .hstat span{
   font-size:var(--fs-xs); color:var(--text-soft);
   display:block; margin-top:var(--sp-3);
 }
 
-/* Ripple mark — monochrome hairlines */
+/* Ripple mark — each ring carries one logo colour, so the hero's focal
+   graphic reads as the logo instead of as a grey hairline diagram. */
 .ripple-wrap{
   position:relative; aspect-ratio:1/1;
   display:flex; align-items:center; justify-content:center;
 }
 .ripple-wrap svg{ width:100%; height:100%; overflow:visible; }
 .ripple-ring{
-  fill:none; stroke:var(--ink); stroke-opacity:.16; stroke-width:1;
+  fill:none; stroke:var(--brand-blue); stroke-opacity:.55; stroke-width:1.5;
   transform-origin:center; transform-box:fill-box;
   animation:rippleOut 5.5s var(--ease) infinite;
 }
-.ripple-ring.r2{ animation-delay:1.4s; }
-.ripple-ring.r3{ animation-delay:2.8s; }
-.ripple-ring.r4{ animation-delay:4.2s; }
+.ripple-ring.r2{ animation-delay:1.4s; stroke:var(--brand-purple); }
+.ripple-ring.r3{ animation-delay:2.8s; stroke:var(--brand-green); }
+.ripple-ring.r4{ animation-delay:4.2s; stroke:var(--brand-red); }
 @keyframes rippleOut{
   0%{ transform:scale(.3); opacity:0; }
   14%{ opacity:.85; }
   100%{ transform:scale(1); opacity:0; }
 }
-.ripple-core{ fill:var(--ink); }
+/* Core takes the wordmark's green. --green-btn, not --brand-green, because the
+   cream drop sits inside it and needs 4.5:1 (the vivid green gives 2.56). */
+.ripple-core{ fill:var(--green-btn); }
 .ripple-core-mark{ fill:var(--paper); }
 
 @media (max-width:920px){
@@ -670,23 +711,33 @@ header.site::after{
   transition:border-color var(--dur) var(--ease);
 }
 .work-card:hover{ border-color:var(--rule-strong); }
+/* Each card is capped by its own colour at full logo strength. Borders carry
+   no contrast requirement, so this is where the palette can actually be
+   vivid — the tint underneath has to stay legible, the cap does not. */
+.work-card{ border-top:3px solid var(--card-accent, var(--rule)); }
 .work-media{
   aspect-ratio:16/9; position:relative;
   display:flex; align-items:center; justify-content:center;
   border-bottom:1px solid var(--rule);
 }
-.work-media svg{ width:52%; height:52%; stroke-width:1.1; }
-.work-card:nth-child(1) .work-media{ background:rgba(3,146,212,0.10);  color:var(--brand-blue); }
-.work-card:nth-child(2) .work-media{ background:rgba(125,74,177,0.10); color:var(--brand-purple); }
-.work-card:nth-child(3) .work-media{ background:rgba(89,179,6,0.12);   color:var(--brand-green); }
-.work-card:nth-child(4) .work-media{ background:rgba(222,53,72,0.10);  color:var(--brand-red); }
-.work-card:nth-child(5) .work-media{ background:rgba(16,31,41,0.06);   color:var(--ink); }
+.work-media svg{ width:52%; height:52%; stroke-width:1.5; }
+.work-card:nth-child(1){ --card-accent:var(--brand-blue);   }
+.work-card:nth-child(2){ --card-accent:var(--brand-purple); }
+.work-card:nth-child(3){ --card-accent:var(--brand-green);  }
+.work-card:nth-child(4){ --card-accent:var(--brand-red);    }
+.work-card:nth-child(5){ --card-accent:var(--brand-teal);   }
+.work-card:nth-child(1) .work-media{ background:var(--tint-blue);   color:var(--brand-blue); }
+.work-card:nth-child(2) .work-media{ background:var(--tint-purple); color:var(--brand-purple); }
+.work-card:nth-child(3) .work-media{ background:var(--tint-green);  color:var(--brand-green); }
+.work-card:nth-child(4) .work-media{ background:var(--tint-red);    color:var(--brand-red); }
+.work-card:nth-child(5) .work-media{ background:var(--tint-teal);   color:var(--brand-teal); }
 /* The tag is text sitting ON the tint, so it needs a step darker again than
    the on-cream text colour — the tint drops each pairing about 0.8:1. */
-.work-card:nth-child(1) .work-media-tag{ color:#026C9D; }
-.work-card:nth-child(2) .work-media-tag{ color:#7D4AB1; }
-.work-card:nth-child(3) .work-media-tag{ color:#397304; }
-.work-card:nth-child(4) .work-media-tag{ color:#BA2D3C; }
+.work-card:nth-child(1) .work-media-tag{ color:var(--tag-blue); }
+.work-card:nth-child(2) .work-media-tag{ color:var(--tag-purple); }
+.work-card:nth-child(3) .work-media-tag{ color:var(--tag-green); }
+.work-card:nth-child(4) .work-media-tag{ color:var(--tag-red); }
+.work-card:nth-child(5) .work-media-tag{ color:var(--tag-teal); }
 .work-media-tag{
   position:absolute; top:14px; left:16px;
   font-family:var(--font-mono); font-size:var(--fs-label);
