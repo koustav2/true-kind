@@ -1,6 +1,16 @@
 /* ==========================================================================
    True Kind — click-to-edit on the live site.
 
+   *** NOT CURRENTLY LOADED. ***
+   The <script> tag was removed from all 9 pages by request — editing happens in
+   the dashboard at /portal/admin/cms instead, so the toolbar no longer appears
+   over the live site while an admin is signed in.
+
+   The file and its server routes (/portal/admin/cms/session, /schema/:page,
+   /inline/:page) are kept intact, so re-enabling is one line per page:
+       <script src="assets/js/cms-edit.js" defer=""></script>
+   placed after the cms.js tag. Nothing else needs changing.
+
    For a signed-in admin only. Probes /portal/admin/cms/session; if that says
    "admin", a small toolbar appears and every editable block on the page becomes
    clickable. The admin edits the real page, sees the real typography and the
@@ -67,6 +77,12 @@
   /* ---- UI ---------------------------------------------------------------- */
 
   function injectUi(session) {
+    // Idempotence guard. If this file is ever included twice on a page — a
+    // duplicated script tag, a partial that gets rendered twice — the second
+    // pass would stack a second toolbar and bind a second set of delegated
+    // click handlers, so one click would open two panels.
+    if (document.querySelector(".tkedit-bar")) return;
+
     var css = document.createElement("style");
     css.textContent = [
       ".tkedit-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:99999;",
