@@ -8,15 +8,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+/* Kept in step with assets/css/style.css by hand — the portal does not load the
+   public stylesheet, so the same token names are declared twice. If you change a
+   colour there, change it here too or the admin drifts off-brand. */
 :root{
-  --brand-green:#59B306; --brand-blue:#0392D4; --brand-purple:#7D4AB1; --brand-red:#DE3548;
-  --green:#3E7D04; --blue:#0275AA; --purple:#7D4AB1; --red:#CC3142;
-  --clay:#D53345; --clay-deep:#A8243A; --purple-deep:#5B3480; --blue-deep:#01587F;
-  --ink:#101F29; --paper:#FCFAF6; --paper-2:#F5F2EA;
-  --text:#29373F; --text-soft:#5B6870; --rule:rgba(16,31,41,.10); --rule-strong:rgba(16,31,41,.18);
+  --brand-green:#59B306; --brand-blue:#0392D4; --brand-purple:#7D4AB1; --brand-red:#DF3548;
+  --green:#3F7F04; --blue:#0276AC; --purple:#7D4AB1; --red:#C92135;
+  --clay:#CE2438; --clay-deep:#A81B2B; --purple-deep:#5B3480; --blue-deep:#015A85;
+  --green-deep:#2F5D03;
+  --ink:#111827; --ink-2:#1F2937; --paper:#FFFFFF; --paper-2:#F5F7FA; --paper-3:#EAEEF3;
+  --text:#1F2937; --text-soft:#4B5563; --text-mute:#5B6472;
+  --rule:rgba(17,24,39,.11); --rule-strong:rgba(17,24,39,.20);
+  --border-flat:#E5E7EB;
   --radius:14px; --radius-sm:9px;
 }
-*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--text);font:400 15px/1.65 'Work Sans',system-ui,sans-serif}
+*{box-sizing:border-box} body{margin:0;background:var(--paper-2);color:var(--text);font:400 15px/1.65 'Work Sans',system-ui,sans-serif}
 h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:var(--ink);font-weight:500;letter-spacing:-.02em;margin:0 0 .5em;text-wrap:balance}
 a{color:inherit}
 .topnav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:10}
@@ -26,7 +32,7 @@ a{color:inherit}
 .topnav .links a{padding:8px 13px;border-radius:100px;font-size:.85rem;text-decoration:none;color:var(--text-soft)}
 .topnav .links a.on,.topnav .links a:hover{background:rgba(125,74,177,.1);color:var(--purple)}
 .wrap{max-width:1060px;margin:0 auto;padding:34px 24px 80px}
-.card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px;overflow-x:auto}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px;overflow-x:auto}
 .grid{display:grid;gap:18px}
 @media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:100px;font:500 .9rem 'Work Sans',sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer}
@@ -35,7 +41,7 @@ a{color:inherit}
 .btn-ghost{background:none;border-color:var(--rule-strong);color:var(--ink)}.btn-ghost:hover{border-color:var(--purple);color:var(--purple)}
 .btn-sm{padding:8px 15px;font-size:.82rem}
 label{display:block;font-size:.82rem;font-weight:500;color:var(--ink);margin:14px 0 6px}
-input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--rule-strong);border-radius:var(--radius-sm);background:#fff;font:inherit;color:var(--text)}
+input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--rule-strong);border-radius:var(--radius-sm);background:var(--paper);font:inherit;color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(125,74,177,.14)}
 table{width:100%;border-collapse:collapse;font-size:.88rem}
 th{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-soft);text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule-strong)}
@@ -43,10 +49,10 @@ td{padding:12px;border-bottom:1px solid var(--rule);vertical-align:top}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin:0 0 8px}
 .pill{display:inline-block;padding:3px 11px;border-radius:100px;font-size:.72rem;font-weight:500}
 .pill.ok{background:rgba(89,179,6,.14);color:var(--green)}
-.pill.warn{background:rgba(222,53,72,.12);color:var(--red)}
+.pill.warn{background:rgba(223,53,72,.12);color:var(--red)}
 .pill.info{background:rgba(3,146,212,.12);color:var(--blue)}
 .alert{padding:13px 17px;border-radius:var(--radius-sm);border:1px solid;font-size:.88rem;margin:0 0 16px}
-.alert.err{background:rgba(222,53,72,.07);border-color:rgba(222,53,72,.3);color:var(--clay-deep)}
+.alert.err{background:rgba(223,53,72,.07);border-color:rgba(223,53,72,.3);color:var(--clay-deep)}
 .alert.ok{background:rgba(89,179,6,.08);border-color:rgba(89,179,6,.3);color:var(--green)}
 .stat b{display:block;font:500 2rem 'Fraunces',serif;color:var(--ink)}
 .stat span{font-size:.8rem;color:var(--text-soft)}
