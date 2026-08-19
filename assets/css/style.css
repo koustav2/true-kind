@@ -842,6 +842,38 @@ header.site::after{
   .ring-num{ font-size:1.8rem; }
 }
 
+/* --------------------------------------------------------------------------
+   Photo slots.
+
+   The site ships 68 inline <svg> illustrations and only 2 real images, so none
+   of the artwork used to be replaceable from the CMS. Each slot below is an
+   <img> injected into an illustration container by server/cms/build-registry.js
+   and revealed by assets/js/cms.js once an admin picks a file.
+
+   Until then the <img> is hidden and the illustration shows as before — an
+   unfilled slot is invisible, not a gap. `.has-photo` is set on the container
+   when a photograph arrives, and that is what stands the placeholder down.
+   -------------------------------------------------------------------------- */
+.cms-photo-slot{ position:relative; overflow:hidden; }
+.cms-photo{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  display:block;
+}
+/* Hide whatever the container was showing before — a line drawing, or the
+   initials in an avatar circle. The tag label on a programme card stays: it
+   still needs to sit over the photograph. */
+.cms-photo-slot.has-photo > svg{ display:none; }
+.cms-photo-slot.has-photo{ color:transparent; }
+.cms-photo-slot.has-photo > .work-media-tag{
+  color:var(--paper); position:relative; z-index:2;
+  text-shadow:0 1px 6px rgba(17,24,39,0.55);
+}
+/* Circular slots (board and participant avatars) keep their ring. */
+.cms-photo-round{ border-radius:50%; }
+.cms-photo-round .cms-photo{ border-radius:50%; }
+
 /* Program cards — quiet tinted panels, brand colour in the linework only */
 .work-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-5); }
 .work-card{

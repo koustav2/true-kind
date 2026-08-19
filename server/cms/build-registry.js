@@ -31,6 +31,7 @@ const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
 const VIDEO_SLOTS = require('./video-slots');
+const IMAGE_SLOTS = require('./image-slots');
 
 const ROOT = path.join(__dirname, '..', '..');
 const PAGES = [
@@ -260,6 +261,29 @@ function processPage(page, entries) {
         walk(node);   // block-level container: descend
       }
     }
+  }
+
+  /* ---- photo slots ------------------------------------------------------
+     Turn an illustration container into a replaceable photograph. The <img> is
+     injected hidden; assets/js/cms.js reveals it and flags the container once a
+     file is chosen, and the CSS then stands the line drawing down. */
+  for (const slot of IMAGE_SLOTS.filter(s => s.page === page.name)) {
+    if (!$(`[data-cms-image="${slot.id}"]`).length) {
+      const $c = $(slot.container).first();
+      if (!$c.length) {
+        console.warn(`  ! photo slot ${slot.id}: container "${slot.container}" not found — skipped`);
+        continue;
+      }
+      $c.addClass('cms-photo-slot');
+      if (slot.round) $c.addClass('cms-photo-round');
+      $c.append(`<img class="cms-photo" data-cms-image="${slot.id}" alt="" hidden>`);
+    }
+    entries.push({
+      id: slot.id, page: page.name, scope: page.name, group: 'Photographs',
+      label: slot.label, help: slot.help, role: 'photograph', type: 'image',
+      target: { selector: `[data-cms-image="${slot.id}"]` },
+      default: { src: '', alt: '' }
+    });
   }
 
   /* ---- video slots ------------------------------------------------------ */

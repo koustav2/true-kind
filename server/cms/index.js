@@ -56,9 +56,11 @@ function groupsForPage(pageName) {
     if (companion) item.hrefField = companion;
     groups.get(g).push(item);
   }
-  // Video slots last: they are additive, not corrections to existing copy.
-  const idx = order.indexOf('Video');
-  if (idx > -1) { order.splice(idx, 1); order.push('Video'); }
+  // Photographs and video last: they are additive, not corrections to copy.
+  for (const tail of ['Photographs', 'Video']) {
+    const idx = order.indexOf(tail);
+    if (idx > -1) { order.splice(idx, 1); order.push(tail); }
+  }
   return order.map(name => ({
     name,
     // Headings make honest group names but some run long in a sidebar.

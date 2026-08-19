@@ -63,6 +63,26 @@
     if (typeof value.alt === "string") el.setAttribute("alt", value.alt);
   }
 
+  /* A photo slot is an <img> injected into a container that currently shows a
+     line illustration or a set of initials. Reveal the photograph and flag the
+     container so the CSS can stand the placeholder down. With no src the <img>
+     stays hidden and the illustration is what the visitor sees — so an unfilled
+     slot never leaves a gap. */
+  function applyPhoto(el, value) {
+    var src = value && value.src;
+    var holder = el.parentElement;
+    if (!src) {
+      el.hidden = true;
+      el.removeAttribute("src");
+      if (holder) holder.classList.remove("has-photo");
+      return;
+    }
+    el.setAttribute("src", src);
+    el.setAttribute("alt", (value && value.alt) || "");
+    el.hidden = false;
+    if (holder) holder.classList.add("has-photo");
+  }
+
   function applyVideo(container, value) {
     if (!container) return;
     var mode = value && value.mode;
@@ -117,11 +137,13 @@
           return;
         }
         // A field with an explicit selector edits something outside the body
-        // (a <title>, a <meta content>) or an attribute on another element.
+        // (a <title>, a <meta content>), an attribute on another element, or a
+        // photo slot.
         if (f.s) {
           var t = document.querySelector(f.s);
           if (!t) return;
-          if (f.a) t.setAttribute(f.a, f.v);
+          if (f.t === "image") applyPhoto(t, f.v);
+          else if (f.a) t.setAttribute(f.a, f.v);
           else t.textContent = f.v;
           n++;
           return;

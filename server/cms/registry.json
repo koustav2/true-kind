@@ -2419,6 +2419,159 @@
    "default": "© <span data-year=\"\">2026</span> True Kind Foundation. All rights reserved."
   },
   {
+   "id": "index.photo.skilling",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Skill Development & Employment — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.skilling\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.livelihoods",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Women's Empowerment — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.livelihoods\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.education",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Digital Education Access — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.education\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.health",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Health & Safety Camps — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.health\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.environment",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Environmental Sustainability — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.environment\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.voice1",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Voices quote 1 — participant photograph",
+   "help": "Only add this where you have the person's written consent. Leave empty to keep initials.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.voice1\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.voice2",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Voices quote 2 — participant photograph",
+   "help": "Only add this where you have the person's written consent. Leave empty to keep initials.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.voice2\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.voice3",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Voices quote 3 — participant photograph",
+   "help": "Only add this where you have the person's written consent. Leave empty to keep initials.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.voice3\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.photo.voice4",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Voices quote 4 — participant photograph",
+   "help": "Only add this where you have the person's written consent. Leave empty to keep initials.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.photo.voice4\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
    "id": "index.video.hero",
    "page": "index",
    "scope": "index",
@@ -3096,6 +3249,74 @@
    "href": {
     "id": "about.a.1.href",
     "default": "chairperson-message.html"
+   }
+  },
+  {
+   "id": "about.photo.board1",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "Chairperson — photograph",
+   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"about.photo.board1\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "about.photo.board2",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "Vice Chairperson — photograph",
+   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"about.photo.board2\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "about.photo.board3",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "Secretary — photograph",
+   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"about.photo.board3\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "about.photo.board4",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "Treasurer — photograph",
+   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"about.photo.board4\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
    }
   },
   {
@@ -3793,6 +4014,91 @@
    "href": {
     "id": "work.a.7.href",
     "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.photo.skilling",
+   "page": "work",
+   "scope": "work",
+   "group": "Photographs",
+   "label": "Skill Development & Employment — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"work.photo.skilling\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "work.photo.livelihoods",
+   "page": "work",
+   "scope": "work",
+   "group": "Photographs",
+   "label": "Women's Empowerment — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"work.photo.livelihoods\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "work.photo.education",
+   "page": "work",
+   "scope": "work",
+   "group": "Photographs",
+   "label": "Digital Education Access — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"work.photo.education\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "work.photo.health",
+   "page": "work",
+   "scope": "work",
+   "group": "Photographs",
+   "label": "Health & Safety Camps — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"work.photo.health\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "work.photo.environment",
+   "page": "work",
+   "scope": "work",
+   "group": "Photographs",
+   "label": "Environmental Sustainability — photograph",
+   "help": "Replaces the line illustration on this card. Landscape crops work best.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"work.photo.environment\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
    }
   },
   {
@@ -7229,6 +7535,23 @@
    "href": {
     "id": "chairperson-message.a.2.href",
     "default": "donate.html"
+   }
+  },
+  {
+   "id": "chairperson.photo.portrait",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Photographs",
+   "label": "Chairperson — portrait photograph",
+   "help": "Portrait orientation. Appears beside the message.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"chairperson.photo.portrait\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
    }
   },
   {
