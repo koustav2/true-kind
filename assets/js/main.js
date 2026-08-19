@@ -89,27 +89,153 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
   })();
 
   /* ----------------------------------------------------------------------
-     Impact rings — animate to their percentage when scrolled into view
-     ---------------------------------------------------------------------- */
-  (function rings() {
-    var els = document.querySelectorAll(".ring-progress");
-    if (!els.length) return;
-    var CIRC = 339; // 2πr, r = 54
+     Impact dials
 
-    function fill(el) {
-      var pct = parseFloat(el.dataset.pct) || 0;
-      el.style.strokeDashoffset = CIRC - (CIRC * pct) / 100;
+     The percentage lives in the visible .ring-num text, not in a data
+     attribute, so it is the single source of truth: the CMS can edit it and the
+     arc follows. Nothing to keep in sync, nothing to get out of step.
+
+     On scroll into view each dial sweeps its arc, travels its head dot to the
+     value, and counts the number up — all on one shared clock so the number
+     and the arc land together. Cards stagger by 110ms so the row reads left to
+     right instead of flashing at once.
+
+     Respects prefers-reduced-motion: final value, drawn instantly.
+     ---------------------------------------------------------------------- */
+  (function dials() {
+    var cards = [].slice.call(document.querySelectorAll(".ring-card"));
+    if (!cards.length) return;
+
+    var R = 56;                          // must match the r in the markup
+    var CIRC = 2 * Math.PI * R;          // 351.86
+
+    /* Read the authored percentage out of the visible text — "82", "82%", " 82 ".
+       Called ONCE per card, at snapshot time, never again while animating. */
+    function readPct(card) {
+      var el = card.querySelector(".ring-num");
+      if (!el) return 0;
+      var v = parseFloat(String(el.textContent).replace(/[^\d.\-]/g, ""));
+      if (!isFinite(v)) return 0;
+      return Math.max(0, Math.min(100, v));
     }
-    if (!("IntersectionObserver" in window) || reduceMotion) {
-      els.forEach(fill);
-      return;
+
+    /* The value every draw uses. It is snapshotted into data-pct rather than
+       re-read from the DOM, because the count-up OWNS that text while it runs —
+       it starts at "0" and climbs. Re-reading mid-count made the first dial draw
+       itself at 0%: the arc froze empty while the number finished at 82. */
+    function pctOf(card) {
+      var v = parseFloat(card.dataset.pct);
+      return isFinite(v) ? v : 0;
     }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) { fill(entry.target); io.unobserve(entry.target); }
+
+    function prepare(card) {
+      card.dataset.pct = readPct(card);
+      var arc = card.querySelector(".ring-progress");
+      var halo = card.querySelector(".ring-halo");
+      [arc, halo].forEach(function (el) {
+        if (!el) return;
+        el.style.setProperty("--circ", CIRC);
+        el.style.strokeDasharray = CIRC;
+        el.style.strokeDashoffset = CIRC;
       });
-    }, { threshold: 0.4 });
-    els.forEach(function (el) { io.observe(el); });
+    }
+
+    /* Land on the final state with no animation. */
+    function settle(card) {
+      var pct = pctOf(card);
+      var arc = card.querySelector(".ring-progress");
+      var halo = card.querySelector(".ring-halo");
+      var head = card.querySelector(".ring-head");
+      var num = card.querySelector(".ring-num");
+      var off = CIRC - (CIRC * pct) / 100;
+      if (arc) arc.style.strokeDashoffset = off;
+      if (halo) halo.style.strokeDashoffset = off;
+      if (head) head.style.transform = "rotate(" + pct * 3.6 + "deg)";
+      if (num) num.textContent = String(Math.round(pct));
+      card.classList.add("is-filled");
+    }
+
+    /* Animate. The CSS transition drives the arc, the halo and the head; this
+       only has to drive the number, on the same duration and the same easing so
+       the digits arrive with the stroke. */
+    function run(card, delay) {
+      var pct = pctOf(card);
+      var num = card.querySelector(".ring-num");
+
+      setTimeout(function () {
+        var arc = card.querySelector(".ring-progress");
+        var halo = card.querySelector(".ring-halo");
+        var head = card.querySelector(".ring-head");
+        var off = CIRC - (CIRC * pct) / 100;
+        if (arc) arc.style.strokeDashoffset = off;
+        if (halo) halo.style.strokeDashoffset = off;
+        if (head) head.style.transform = "rotate(" + pct * 3.6 + "deg)";
+        card.classList.add("is-filled");
+
+        if (!num) return;
+        var DUR = 1250;
+        var t0 = null;
+        // ease-out-cubic. The analytic twin of --ease-dial's
+        // cubic-bezier(0.33, 1, 0.68, 1), so the number and the arc land together.
+        function ease(t) { return 1 - Math.pow(1 - t, 3); }
+        function tick(ts) {
+          if (t0 === null) t0 = ts;
+          var t = Math.min(1, (ts - t0) / DUR);
+          num.textContent = String(Math.round(pct * ease(t)));
+          if (t < 1) requestAnimationFrame(tick);
+          else num.textContent = String(Math.round(pct));
+        }
+        num.textContent = "0";
+        requestAnimationFrame(tick);
+      }, delay);
+    }
+
+    /* An aria-label on the card carries the value for screen readers, since the
+       number animates and the svg is aria-hidden. */
+    function label(card) {
+      var h = card.querySelector("h3");
+      card.setAttribute("role", "img");
+      card.setAttribute("aria-label",
+        (h ? h.textContent.trim() + ": " : "") + Math.round(pctOf(card)) + " percent");
+    }
+
+    /* Nothing is snapshotted or animated until the CMS has had its say.
+       cms.js may rewrite .ring-num with an admin-edited percentage, and it does
+       so from an async fetch that can land at any point — including in the
+       middle of a count-up. Rather than trying to reconcile a value that is
+       changing underneath us, we simply wait: read the text once it is final,
+       then the count-up can own it for good.
+
+       cms.js dispatches cms:hydrated whether the request succeeded, failed or
+       returned nothing, so this fires on a broken backend too. The timeout is
+       the belt-and-braces case where cms.js is absent from the page entirely. */
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+
+      cards.forEach(prepare);
+      cards.forEach(label);
+
+      if (!("IntersectionObserver" in window) || reduceMotion) {
+        cards.forEach(settle);
+        return;
+      }
+      var seen = [];
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var card = entry.target;
+          io.unobserve(card);
+          // Stagger by position among the dials that have fired this pass.
+          run(card, seen.length * 110);
+          seen.push(card);
+        });
+      }, { threshold: 0.35 });
+      cards.forEach(function (c) { io.observe(c); });
+    }
+    document.addEventListener("cms:hydrated", start);
+    setTimeout(start, 1200);
   })();
 
   /* ----------------------------------------------------------------------

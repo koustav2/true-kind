@@ -154,6 +154,13 @@
   --section-y-s: clamp(56px, 3.5vw + 32px, 92px);
 
   /* Shape */
+  /* Dial easing: fast out, long settle — the arc arrives rather than stops.
+     This is ease-out-cubic expressed as a bezier, and it is deliberately the
+     exact analytic equivalent of the 1-(1-t)^3 used by the count-up in main.js.
+     Any other curve here and the digits would drift ahead of or behind the
+     stroke; matched, they land on the same frame. */
+  --ease-dial: cubic-bezier(0.33, 1, 0.68, 1);
+
   --radius:    14px;
   --radius-sm: 9px;
   --radius-lg: 20px;
@@ -699,7 +706,34 @@ header.site::after{
   .mvv-grid:has(> :nth-child(4)){ grid-template-columns:1fr; gap:0; }
 }
 
-/* Impact rings */
+/* --------------------------------------------------------------------------
+   Impact dials — four "single ratio against a limit" meters.
+
+   Three decisions here are measured, not stylistic:
+
+   1. NO RED. The fourth meter used to be red, and red is a status colour: it
+      reads as bad/critical. It was sitting on "Would recommend us — 91%", the
+      BEST number in the row, which actively misreports the data. It is now the
+      brand teal. Red still leads the donate CTA, where "act now" is the point.
+
+   2. THE TRACK IS A LIGHT STEP OF ITS OWN HUE, not grey. A meter's state has to
+      read across the whole ring, so track and fill share a ramp — blue-on-blue,
+      green-on-green. The old flat grey track made the four dials look like four
+      unrelated widgets.
+
+   3. THE VIVID LOGO HUES ARE CORRECT HERE. Checked with a CVD validator: the
+      vivid set (#0392D4 / #7D4AB1 / #59B306 / #0C9E8F) passes lightness,
+      chroma, colour-blind separation and normal-vision separation. Substituting
+      the darker text-tier values FAILS deutan separation (purple vs blue ΔE
+      3.6). The one warning — vivid green at 2.6:1 against the surface — is
+      discharged because every dial is directly labelled with its number.
+
+   The number is plain HTML, not SVG <text>, for two reasons: it can carry a
+   data-cms id so the client can edit it, and it is the SINGLE SOURCE OF TRUTH —
+   main.js reads the percentage off this text and draws the arc from it. Edit
+   "82" to "85" in the CMS and the ring follows. There is no second value to
+   keep in sync.
+   -------------------------------------------------------------------------- */
 .rings{
   display:grid; grid-template-columns:repeat(4,1fr);
   gap:0;
@@ -710,25 +744,91 @@ header.site::after{
   border-right:1px solid var(--rule);
   display:flex; flex-direction:column; align-items:center;
   text-align:center; gap:var(--sp-4);
+  position:relative;
+  transition:background var(--dur) var(--ease);
 }
 .ring-card:last-child{ border-right:none; }
-.ring-card svg{ width:108px; height:108px; }
-.ring-track{ fill:none; stroke:var(--rule); stroke-width:3; }
+
+/* Per-card hue. One property drives track, fill, halo and head. */
+.ring-card[data-accent="blue"]  { --dial:var(--brand-blue);   --dial-deep:var(--blue);   --dial-rgb:3,146,212; }
+.ring-card[data-accent="purple"]{ --dial:var(--brand-purple); --dial-deep:var(--purple); --dial-rgb:125,74,177; }
+.ring-card[data-accent="green"] { --dial:var(--brand-green);  --dial-deep:var(--green);  --dial-rgb:89,179,6; }
+.ring-card[data-accent="teal"]  { --dial:var(--brand-teal);   --dial-deep:var(--teal);   --dial-rgb:12,158,143; }
+
+/* A whisper of the hue washes in behind the card on hover — the only thing
+   that moves on a pointer, so the row stays calm while browsing. */
+.ring-card:hover{ background:rgba(var(--dial-rgb),0.045); }
+
+.ring-dial{
+  position:relative;
+  width:132px; height:132px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ring-dial svg{
+  width:100%; height:100%;
+  transform:rotate(-90deg);        /* 0% starts at 12 o'clock */
+  overflow:visible;
+}
+
+/* The halo is what makes this read as lit rather than drawn: a wide, very faint
+   stroke under the arc, revealed with it. Cheaper and crisper than a blur
+   filter, which softens the arc's rounded cap on a HiDPI screen. */
+.ring-halo{
+  fill:none; stroke:rgba(var(--dial-rgb),0.30); stroke-width:11;
+  stroke-linecap:round;
+  stroke-dasharray:var(--circ, 352); stroke-dashoffset:var(--circ, 352);
+  opacity:0;
+  transition:stroke-dashoffset 1.25s var(--ease-dial), opacity .8s ease;
+}
+.ring-track{
+  fill:none; stroke:rgba(var(--dial-rgb),0.16); stroke-width:5;
+}
 .ring-progress{
-  fill:none; stroke:var(--brand-blue); stroke-width:4; stroke-linecap:round;
-  transform:rotate(-90deg); transform-origin:50% 50%;
-  stroke-dasharray:339; stroke-dashoffset:339;
-  transition:stroke-dashoffset 1.6s var(--ease);
+  fill:none; stroke:var(--dial); stroke-width:5; stroke-linecap:round;
+  stroke-dasharray:var(--circ, 352); stroke-dashoffset:var(--circ, 352);
+  transition:stroke-dashoffset 1.25s var(--ease-dial);
 }
-.ring-card:nth-child(2) .ring-progress{ stroke:var(--brand-purple); }
-.ring-card:nth-child(3) .ring-progress{ stroke:var(--brand-green); }
-.ring-card:nth-child(4) .ring-progress{ stroke:var(--brand-red); }
-.ring-num{
-  font-family:var(--font-display); font-size:1.4rem; font-weight:400;
-  fill:var(--ink); letter-spacing:-0.02em;
+/* The travelling head. A solid dot at the arc's leading edge, rotated to the
+   value — it gives the sweep somewhere to arrive and reads as a dial rather
+   than a progress bar.
+
+   The dot is authored at cx=122,cy=66 — local 3 o'clock, NOT 12. The <svg> is
+   itself rotated -90deg so that 0% starts at the top, and that rotation applies
+   to the dot too: a dot authored at 12 lands at 9 and trails the arc by a
+   quarter turn. Authoring it at 3 puts it exactly on the arc's start. */
+.ring-head{
+  fill:var(--dial);
+  stroke:var(--paper); stroke-width:3;
+  transform:rotate(0deg); transform-origin:66px 66px; transform-box:view-box;
+  transition:transform 1.25s var(--ease-dial), opacity .4s ease;
+  opacity:0;
 }
-.ring-card h3{ font-size:1rem; }
+.ring-card.is-filled .ring-halo{ opacity:1; }
+.ring-card.is-filled .ring-head{ opacity:1; }
+
+/* Value. Sans, not the display serif: at this size a serif numeral reads as
+   decoration rather than data. Proportional figures, not tabular — tabular
+   gives every digit the width of a zero, which makes "82" look gappy. */
+.ring-value{
+  position:absolute; margin:0;
+  display:flex; align-items:baseline; gap:1px;
+  font-family:var(--font-body);
+  letter-spacing:-0.035em;
+  color:var(--text);
+  font-variant-numeric:proportional-nums;
+}
+.ring-num{ font-size:2.05rem; font-weight:600; line-height:1; }
+.ring-unit{ font-size:1rem; font-weight:500; color:var(--text-soft); }
+
+.ring-card h3{ font-size:1rem; margin:0; }
 .ring-card p{ margin:0; font-size:var(--fs-xs); color:var(--text-soft); }
+
+/* Reduced motion: land on the final value with no sweep, no count-up, no
+   travelling dot. The data still reads; nothing animates. */
+@media (prefers-reduced-motion:reduce){
+  .ring-halo, .ring-progress, .ring-head{ transition:none; }
+}
+
 @media (max-width:900px){
   .rings{ grid-template-columns:repeat(2,1fr); }
   .ring-card:nth-child(2){ border-right:none; }
@@ -738,6 +838,8 @@ header.site::after{
   .rings{ grid-template-columns:1fr; }
   .ring-card{ border-right:none; border-bottom:1px solid var(--rule); }
   .ring-card:last-child{ border-bottom:none; }
+  .ring-dial{ width:112px; height:112px; }
+  .ring-num{ font-size:1.8rem; }
 }
 
 /* Program cards — quiet tinted panels, brand colour in the linework only */
@@ -1211,6 +1313,18 @@ fieldset.field{ border:none; padding:0; margin:0; }
   text-align:center; padding:var(--sp-7) var(--sp-5);
   border:1px solid var(--rule); border-radius:var(--radius);
   color:var(--text-soft); font-size:var(--fs-sm);
+}
+
+/* Empty state for a list that is genuinely empty. The three press cards that
+   used to sit here were invented examples whose body copy was instructions to
+   the client ("Replace with a short summary…"), published to the public. An
+   honest blank beats fabricated coverage on a non-profit that solicits
+   donations. assets/js/content.js rebuilds .press-list from the CMS as soon as
+   real items exist, so this is only ever the fallback. */
+.press-empty{
+  margin:0; padding:var(--sp-6) 0;
+  color:var(--text-soft); font-size:var(--fs-lede);
+  border-top:1px solid var(--rule);
 }
 
 /* --------------------------------------------------------------------------

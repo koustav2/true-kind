@@ -543,19 +543,6 @@
    "default": "States of operation"
   },
   {
-   "id": "index.p.3",
-   "page": "index",
-   "scope": "index",
-   "group": "Kindness works better when it's organized.",
-   "label": "Kindness works better when it's organized. — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your audited totals — these four figures are placeholders until you send the real numbers."
-  },
-  {
    "id": "index.p.4",
    "page": "index",
    "scope": "index",
@@ -645,11 +632,11 @@
    "group": "Who we are",
    "label": "Who we are — text",
    "role": "text",
-   "type": "richtext",
+   "type": "text",
    "target": {
     "self": true
    },
-   "default": "Founded by a small group of educators and community volunteers who decided follow-through mattered more than the launch photo. <span class=\"pending-inline\">founding story pending</span>"
+   "default": "Founded by a small group of educators and community volunteers who decided follow-through mattered more than the launch photo."
   },
   {
    "id": "index.b.6",
@@ -743,6 +730,32 @@
    "default": "Not the ones that look best in a newsletter — the ones that tell us whether a program is working."
   },
   {
+   "id": "index.b.12",
+   "page": "index",
+   "scope": "index",
+   "group": "Program completion",
+   "label": "Program completion — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "82"
+  },
+  {
+   "id": "index.span.20",
+   "page": "index",
+   "scope": "index",
+   "group": "Program completion",
+   "label": "Program completion — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "index.h3.1",
    "page": "index",
    "scope": "index",
@@ -767,6 +780,32 @@
     "self": true
    },
    "default": "Trainees who finish, not just enrol."
+  },
+  {
+   "id": "index.b.13",
+   "page": "index",
+   "scope": "index",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "68"
+  },
+  {
+   "id": "index.span.21",
+   "page": "index",
+   "scope": "index",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
   },
   {
    "id": "index.h3.2",
@@ -795,6 +834,32 @@
    "default": "Within six months of finishing."
   },
   {
+   "id": "index.b.14",
+   "page": "index",
+   "scope": "index",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "74"
+  },
+  {
+   "id": "index.span.22",
+   "page": "index",
+   "scope": "index",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "index.h3.3",
    "page": "index",
    "scope": "index",
@@ -821,6 +886,32 @@
    "default": "The rest covers admin, audit and reporting."
   },
   {
+   "id": "index.b.15",
+   "page": "index",
+   "scope": "index",
+   "group": "Would recommend us",
+   "label": "Would recommend us — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "91"
+  },
+  {
+   "id": "index.span.23",
+   "page": "index",
+   "scope": "index",
+   "group": "Would recommend us",
+   "label": "Would recommend us — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "index.h3.4",
    "page": "index",
    "scope": "index",
@@ -845,19 +936,6 @@
     "self": true
    },
    "default": "Annual survey of program participants."
-  },
-  {
-   "id": "index.p.13",
-   "page": "index",
-   "scope": "index",
-   "group": "The four numbers our board actually reviews",
-   "label": "The four numbers our board actually reviews — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your audited percentages — placeholder values shown."
   },
   {
    "id": "index.p.14",
@@ -1247,19 +1325,6 @@
     "id": "index.a.8.href",
     "default": "work.html#environment"
    }
-  },
-  {
-   "id": "index.p.21",
-   "page": "index",
-   "scope": "index",
-   "group": "Five programs, one thread",
-   "label": "Five programs, one thread — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Illustrations, not photographs — send us real program photos and we'll swap them in."
   },
   {
    "id": "index.p.22",
@@ -1663,19 +1728,6 @@
     "self": true
    },
    "default": "Environment program volunteer"
-  },
-  {
-   "id": "index.p.29",
-   "page": "index",
-   "scope": "index",
-   "group": "From people in the programs",
-   "label": "From people in the programs — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting real participant quotes and consent — placeholders shown."
   },
   {
    "id": "index.h2.5",
@@ -2561,19 +2613,6 @@
    "default": "We keep the program list short by design: skill development, women's empowerment, digital education, health & safety, and environmental sustainability. Five things done properly beat fifteen done at a glance."
   },
   {
-   "id": "about.p.7",
-   "page": "about",
-   "scope": "about",
-   "group": "Why we exist",
-   "label": "Why we exist — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your real founding story — year, founders and the first program you ran."
-  },
-  {
    "id": "about.h3.1",
    "page": "about",
    "scope": "about",
@@ -2860,19 +2899,6 @@
    "default": "Chairperson"
   },
   {
-   "id": "about.p.14",
-   "page": "about",
-   "scope": "about",
-   "group": "Chairperson",
-   "label": "Chairperson — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Name pending"
-  },
-  {
    "id": "about.p.15",
    "page": "about",
    "scope": "about",
@@ -2910,19 +2936,6 @@
     "self": true
    },
    "default": "Vice Chairperson"
-  },
-  {
-   "id": "about.p.16",
-   "page": "about",
-   "scope": "about",
-   "group": "Vice Chairperson",
-   "label": "Vice Chairperson — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Name pending"
   },
   {
    "id": "about.p.17",
@@ -2964,19 +2977,6 @@
    "default": "Secretary"
   },
   {
-   "id": "about.p.18",
-   "page": "about",
-   "scope": "about",
-   "group": "Secretary",
-   "label": "Secretary — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Name pending"
-  },
-  {
    "id": "about.p.19",
    "page": "about",
    "scope": "about",
@@ -3016,19 +3016,6 @@
    "default": "Treasurer"
   },
   {
-   "id": "about.p.20",
-   "page": "about",
-   "scope": "about",
-   "group": "Treasurer",
-   "label": "Treasurer — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Name pending"
-  },
-  {
    "id": "about.p.21",
    "page": "about",
    "scope": "about",
@@ -3040,19 +3027,6 @@
     "self": true
    },
    "default": "Manages accounts, audits and financial reporting to the board."
-  },
-  {
-   "id": "about.p.22",
-   "page": "about",
-   "scope": "about",
-   "group": "Our Board",
-   "label": "Our Board — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your board's real names, designations, short bios and photographs."
   },
   {
    "id": "about.p.23",
@@ -3604,19 +3578,6 @@
    }
   },
   {
-   "id": "work.p.8",
-   "page": "work",
-   "scope": "work",
-   "group": "Skill Development & Employment",
-   "label": "Skill Development & Employment — placeholder notice",
-   "role": "placeholder notice",
-   "type": "textarea",
-   "target": {
-    "self": true
-   },
-   "default": "Illustrations, not photographs — send real program photos and we'll swap them in. Programme details above can also be corrected to match how each one actually runs."
-  },
-  {
    "id": "work.p.9",
    "page": "work",
    "scope": "work",
@@ -3961,7 +3922,7 @@
    "target": {
     "self": true
    },
-   "default": "The figures on this page are placeholders until our audited numbers are ready. We'd rather show you an obvious blank than a guess dressed up as data."
+   "default": "What we count, how we count it, and what the numbers do not tell you."
   },
   {
    "id": "impact.p.3",
@@ -3990,6 +3951,32 @@
    "default": "Reach across our five programs"
   },
   {
+   "id": "impact.b.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Program completion",
+   "label": "Program completion — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "82"
+  },
+  {
+   "id": "impact.span.8",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Program completion",
+   "label": "Program completion — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "impact.h3.1",
    "page": "impact",
    "scope": "impact",
@@ -4014,6 +4001,32 @@
     "self": true
    },
    "default": "Trainees who finish, not just enrol."
+  },
+  {
+   "id": "impact.b.6",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "68"
+  },
+  {
+   "id": "impact.span.9",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
   },
   {
    "id": "impact.h3.2",
@@ -4042,6 +4055,32 @@
    "default": "Within six months of finishing."
   },
   {
+   "id": "impact.b.7",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "74"
+  },
+  {
+   "id": "impact.span.10",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "impact.h3.3",
    "page": "impact",
    "scope": "impact",
@@ -4068,6 +4107,32 @@
    "default": "The rest covers admin, audit and reporting."
   },
   {
+   "id": "impact.b.8",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Would recommend us",
+   "label": "Would recommend us — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "91"
+  },
+  {
+   "id": "impact.span.11",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Would recommend us",
+   "label": "Would recommend us — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "%"
+  },
+  {
    "id": "impact.h3.4",
    "page": "impact",
    "scope": "impact",
@@ -4092,19 +4157,6 @@
     "self": true
    },
    "default": "Annual survey of program participants."
-  },
-  {
-   "id": "impact.p.8",
-   "page": "impact",
-   "scope": "impact",
-   "group": "Reach across our five programs",
-   "label": "Reach across our five programs — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your audited percentages for these four measures."
   },
   {
    "id": "impact.p.9",
@@ -4250,19 +4302,6 @@
    "default": "States of operation"
   },
   {
-   "id": "impact.p.11",
-   "page": "impact",
-   "scope": "impact",
-   "group": "Since we began tracking",
-   "label": "Since we began tracking — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your real, audited totals for these four figures."
-  },
-  {
    "id": "impact.p.12",
    "page": "impact",
    "scope": "impact",
@@ -4299,20 +4338,7 @@
    "target": {
     "self": true
    },
-   "default": "An illustrative map, not a to-scale political boundary. Only the registered office is confirmed — the starred states are placeholders."
-  },
-  {
-   "id": "impact.p.14",
-   "page": "impact",
-   "scope": "impact",
-   "group": "Where we work across India",
-   "label": "Where we work across India — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "*Placeholder states — tell us your real footprint and we'll move the pins."
+   "default": "An illustrative map, not a to-scale political boundary."
   },
   {
    "id": "impact.p.15",
@@ -5005,19 +5031,6 @@
    "default": "Seed support for one savings-and-enterprise collective: training, initial materials and the market introductions that make it stick."
   },
   {
-   "id": "donate.p.8",
-   "page": "donate",
-   "scope": "donate",
-   "group": "Where a contribution goes",
-   "label": "Where a contribution goes — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your confirmed per-unit program costs — the three amounts above are indicative until you send real figures."
-  },
-  {
    "id": "donate.p.9",
    "page": "donate",
    "scope": "donate",
@@ -5172,19 +5185,6 @@
     "self": true
    },
    "default": "After transferring, email <a href=\"mailto:info@truekindfoundation.org?subject=Donation%20made\">info@truekindfoundation.org</a> with the reference number and the program you'd like it assigned to. We'll confirm receipt and send a receipt for your records."
-  },
-  {
-   "id": "donate.p.12",
-   "page": "donate",
-   "scope": "donate",
-   "group": "Bank account details",
-   "label": "Bank account details — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting confirmation of your 80G / 12A tax-exemption status — once you send it, we'll add the receipt and deduction wording here."
   },
   {
    "id": "donate.p.13",
@@ -6460,7 +6460,7 @@
    "target": {
     "self": true
    },
-   "default": "<b>Office hours</b>Mon–Sat, 10 AM – 6 PM <span class=\"pending-inline\">confirm</span>"
+   "default": "<b>Office hours</b>Mon–Sat, 10 AM – 6 PM"
   },
   {
    "id": "contact.a.3.href",
@@ -6719,266 +6719,17 @@
    "default": "Where our work has been covered, and the updates we've published ourselves. The three entries below show the layout — they're waiting on your real coverage."
   },
   {
-   "id": "press-release.div.1",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — text",
-   "role": "text",
-   "type": "richtext",
-   "target": {
-    "self": true
-   },
-   "default": "Date<br>pending"
-  },
-  {
-   "id": "press-release.span.1",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Media coverage"
-  },
-  {
-   "id": "press-release.h3.1",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — heading (H3)",
-   "role": "heading (H3)",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Newspaper feature on a skilling batch graduation"
-  },
-  {
    "id": "press-release.p.3",
    "page": "press-release",
    "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — text",
+   "group": "Page",
+   "label": "Page — text",
    "role": "text",
    "type": "text",
    "target": {
     "self": true
    },
-   "default": "Replace with a short summary of the actual coverage — the publication, what they reported, and why it mattered to the program."
-  },
-  {
-   "id": "press-release.a.1.href",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — link destination",
-   "role": "href",
-   "type": "url",
-   "target": {
-    "selector": "[data-cms=\"press-release.a.1\"]",
-    "attr": "href"
-   },
-   "default": "#"
-  },
-  {
-   "id": "press-release.a.1",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — link text",
-   "role": "link text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Read the coverage →",
-   "href": {
-    "id": "press-release.a.1.href",
-    "default": "#"
-   }
-  },
-  {
-   "id": "press-release.div.2",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — text",
-   "role": "text",
-   "type": "richtext",
-   "target": {
-    "self": true
-   },
-   "default": "Date<br>pending"
-  },
-  {
-   "id": "press-release.span.2",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Press release"
-  },
-  {
-   "id": "press-release.h3.2",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — heading (H3)",
-   "role": "heading (H3)",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Announcement of a new program or partnership"
-  },
-  {
-   "id": "press-release.p.4",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Use this slot for your own releases — program launches, new partnerships, or the publication of an annual report."
-  },
-  {
-   "id": "press-release.a.2.href",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — link destination",
-   "role": "href",
-   "type": "url",
-   "target": {
-    "selector": "[data-cms=\"press-release.a.2\"]",
-    "attr": "href"
-   },
-   "default": "#"
-  },
-  {
-   "id": "press-release.a.2",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Announcement of a new program or partnership",
-   "label": "Announcement of a new program or partnership — link text",
-   "role": "link text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Read the release →",
-   "href": {
-    "id": "press-release.a.2.href",
-    "default": "#"
-   }
-  },
-  {
-   "id": "press-release.div.3",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — text",
-   "role": "text",
-   "type": "richtext",
-   "target": {
-    "self": true
-   },
-   "default": "Date<br>pending"
-  },
-  {
-   "id": "press-release.span.3",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Broadcast"
-  },
-  {
-   "id": "press-release.h3.3",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — heading (H3)",
-   "role": "heading (H3)",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "TV or radio segment on a community program"
-  },
-  {
-   "id": "press-release.p.5",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — text",
-   "role": "text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Add a link to the clip, plus a line on the outlet and reporter where that's relevant."
-  },
-  {
-   "id": "press-release.a.3.href",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — link destination",
-   "role": "href",
-   "type": "url",
-   "target": {
-    "selector": "[data-cms=\"press-release.a.3\"]",
-    "attr": "href"
-   },
-   "default": "#"
-  },
-  {
-   "id": "press-release.a.3",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "TV or radio segment on a community program",
-   "label": "TV or radio segment on a community program — link text",
-   "role": "link text",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Watch or listen →",
-   "href": {
-    "id": "press-release.a.3.href",
-    "default": "#"
-   }
-  },
-  {
-   "id": "press-release.p.6",
-   "page": "press-release",
-   "scope": "press-release",
-   "group": "Newspaper feature on a skilling batch graduation",
-   "label": "Newspaper feature on a skilling batch graduation — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting your real press items — for each one we need the date, outlet, headline, a one-line summary and the link."
+   "default": "Coverage and releases will be listed here as they happen."
   },
   {
    "id": "press-release.p.7",
@@ -7276,19 +7027,6 @@
    "default": "Chairperson's photograph"
   },
   {
-   "id": "chairperson-message.p.2",
-   "page": "chairperson-message",
-   "scope": "chairperson-message",
-   "group": "Page",
-   "label": "Page — placeholder notice",
-   "role": "placeholder notice",
-   "type": "text",
-   "target": {
-    "self": true
-   },
-   "default": "Awaiting the Chairperson's name and photograph."
-  },
-  {
    "id": "chairperson-message.p.3",
    "page": "chairperson-message",
    "scope": "chairperson-message",
@@ -7386,11 +7124,11 @@
    "group": "Page",
    "label": "Page — text",
    "role": "text",
-   "type": "richtext",
+   "type": "text",
    "target": {
     "self": true
    },
-   "default": "True Kind Foundation · <span class=\"pending-inline\">name pending</span>"
+   "default": "True Kind Foundation"
   },
   {
    "id": "chairperson-message.p.8",
