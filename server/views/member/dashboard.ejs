@@ -5,7 +5,7 @@
   <div class="card" style="border-color:var(--brand-red)">
     <h3>Please verify your membership</h3>
     <p class="muted">Pick a plan and pay to become an active member. You'll get a member ID and a card with a unique QR + barcode.</p>
-    <form method="post" action="/portal/pay/membership" class="grid g2" style="align-items:end">
+    <form method="post" action="/portal/pay/membership" class="grid g2" style="align-items:end"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div>
         <label>Plan</label>
         <select name="plan">

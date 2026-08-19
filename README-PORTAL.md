@@ -53,11 +53,101 @@ donation-form field builder (for Debasish's fields).
 **Guest** — `/portal/donate`: full details + tax section (PAN/bank/branch),
 pays, gets a receipt at `/portal/receipt/<txnId>`.
 
-## Next steps
-- Wire the static pages to `/api/content/*` so admin edits show on the site
-- Forgot-password flow (needs an email provider)
-- Real PhonePe merchant onboarding + the three policy pages
+## The CMS — every word, image and video on all 9 pages
+
+Admin → **Website**. Two ways to edit, same data underneath:
+
+1. **`/portal/admin/cms`** — the full editor. A page picker down the left, fields
+   grouped by the section they belong to. "Header & footer" is one entry because
+   those are shared: edit the phone number once, it changes on all nine pages.
+2. **Click-to-edit** — open any public page while signed in as admin and a small
+   toolbar appears bottom-centre. Hit *Edit this page*, click any heading,
+   paragraph or link, change it, save. Visitors never see any of this: the
+   toolbar only renders after `/portal/admin/cms/session` confirms an admin.
+
+### How it works
+
+`server/cms/registry.json` is the single source of truth — **545 fields**, each
+with an id, a type and a label. It is GENERATED, not hand-written:
+
+```bash
+npm run cms:build      # re-run after ANY edit to the 9 HTML files
+```
+
+That script parses each page, stamps every editable element with a stable
+`data-cms="<id>"` attribute, injects the declared video containers, and writes
+the registry. It is idempotent — an element that already has an id keeps it, so
+re-running only assigns ids to genuinely new elements and saved content never
+detaches from its field.
+
+**If you edit the HTML and forget to re-run it**, the new block simply is not
+editable yet; nothing breaks. Click-to-edit will say so when you click it.
+
+Storage: one `SiteContent` row per page (`cms:index`, `cms:global`, …) holding
+only the fields an admin has actually **changed**. Defaults stay in the HTML, so
+`GET /api/cms/<page>` is small and the site renders correctly with the backend
+down, mid-deploy, or on a cold database. `assets/js/cms.js` applies the overrides
+after load; there is no layout shift and no loading state.
+
+Field types: `text`, `textarea`, `richtext` (inline markup preserved and
+sanitised on save), `url` (relative / https / mailto / tel only), `image`,
+`video`.
+
+### Video
+
+Eight slots, declared in `server/cms/video-slots.js` — homepage, about, work,
+impact, donate, volunteer, chairperson, press. Each takes **either**:
+
+- **an uploaded file** — mp4/webm/mov/m4v up to 200 MB, served from this box.
+  Your bandwidth, every play.
+- **a YouTube or Vimeo link** — pasted, parsed server-side into a canonical
+  `youtube-nocookie.com/embed/<id>` or `player.vimeo.com/video/<id>` URL. Costs
+  nothing to serve. The raw string never reaches an iframe.
+
+A slot with no video set stays `hidden` — nothing shifts on the public page.
+
+Video upload needs the nginx limit in `deploy/nginx-truekind.conf`
+(`client_max_body_size 210m`). At the old 5m, nginx rejected uploads with its own
+413 before Node saw a byte.
+
+### Media library
+
+`/portal/admin/cms/media`. Upload, preview, delete. Extension **and** mimetype
+must agree, filenames become UUIDs, and `.svg` is refused on purpose — SVG is an
+XML document that can carry `<script>`, and `/uploads` is the same origin as the
+admin session cookie.
+
+## Security work done alongside the CMS
+
+Fixed because write endpoints could not safely be added without it:
+
+- **`express.static` was serving the repo root.** `GET /server/routes/admin.js`
+  returned the source of every route; `/server/config.js`, `/package.json` and
+  `/docker-compose.yml` too. Now denied, including encoded and traversal forms.
+- **No CSRF anywhere.** Added `server/middleware/csrf.js` — a session-bound
+  token, `timingSafeEqual` comparison, on all 18 existing forms plus the new
+  ones. Multipart forms carry it in the action URL, because the global guard runs
+  before multer and cannot see a multipart body.
+- **Uploads were stored XSS.** No fileFilter, no mimetype check, served from the
+  session origin. Now allowlisted, with `nosniff` and a locked CSP on `/uploads`.
+- **`POST /content/:key` replaced instead of merging** — editing the banner
+  headline silently deleted the banner image. Now merges.
+- Session cookie gained `secure` + `sameSite`; production refuses to boot on the
+  fallback `dev-only-secret`; body limits raised for CMS-sized saves.
+
+## Deployment
+
+**Own server only.** The Vercel path is gone — `assets/js/main.js` no longer
+falls back to an `api.truehr.co.in` gateway, and CORS defaults to an empty
+allowlist. Everything is same-origin, which is what makes click-to-edit possible
+at all (a cross-origin fetch never receives the session cookie).
+`.vercelignore` is now dead and can be deleted.
 
 ## Test
-`node server/scripts/smoke.js` — boots in-memory SQLite and runs the whole
-journey (signup → membership pay → donations → certificate → PDFs → admin CMS).
+```bash
+npm run smoke        # 30 assertions — signup → pay → donations → certificate → PDFs
+npm run cms:smoke    # 40 assertions — CMS save → bundle, sanitising, CSRF, uploads, video
+```
+Both boot the real app in-process on in-memory SQLite. `cms:smoke` deliberately
+asserts the negative cases too: hostile richtext, `javascript:` links,
+cross-page writes, missing tokens, `.html`/`.svg` uploads, anonymous access.

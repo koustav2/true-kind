@@ -2,7 +2,7 @@
 <div class="wrap" style="max-width:640px">
 <p class="eyebrow">Add donation</p><h1>Support a program</h1>
 <div class="card">
-<form method="post" action="/portal/pay/donation">
+<form method="post" action="/portal/pay/donation"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <label>Program</label>
   <select name="category"><% categories.forEach(c => { %><option><%= c %></option><% }) %></select>
   <label>Amount (₹)</label><input type="number" name="amount" min="1" step="1" required placeholder="e.g. 500">

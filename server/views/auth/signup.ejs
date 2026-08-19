@@ -2,7 +2,7 @@
 <div class="auth-wrap"><div class="card">
 <p class="eyebrow">Member & admin portal</p><h2>Create your account</h2>
 <% if (error) { %><div class="alert err"><%= error %></div><% } %>
-<form method="post" action="/portal/signup">
+<form method="post" action="/portal/signup"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label>Full name</label><input name="name" required>
 <label>Email</label><input type="email" name="email" required>
 <label>Mobile number</label><input type="tel" name="phone" required>

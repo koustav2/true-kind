@@ -9,7 +9,8 @@
         <a href="/portal/admin/donations" class="<%= (typeof active!=='undefined'&&active==='don')?'on':'' %>">Donations</a>
         <a href="/portal/admin/volunteers" class="<%= (typeof active!=='undefined'&&active==='vols')?'on':'' %>">Volunteers</a>
         <a href="/portal/admin/enquiries" class="<%= (typeof active!=='undefined'&&active==='enq')?'on':'' %>">Enquiries</a>
-        <a href="/portal/admin/content" class="<%= (typeof active!=='undefined'&&active==='content')?'on':'' %>">Website</a>
+        <a href="/portal/admin/cms" class="<%= (typeof active!=='undefined'&&active==='cms')?'on':'' %>">Website</a>
+        <a href="/portal/admin/cms/media" class="<%= (typeof active!=='undefined'&&active==='media')?'on':'' %>">Media</a>
         <a href="/portal/admin/form" class="<%= (typeof active!=='undefined'&&active==='form')?'on':'' %>">Form fields</a>
       <% } else { %>
         <a href="/portal/member">Profile</a>
@@ -17,7 +18,7 @@
         <a href="/portal/member/donations">Your donations</a>
         <a href="/portal/member/profile">Edit profile</a>
       <% } %>
-      <form method="post" action="/portal/signout" style="display:inline"><button class="btn btn-ghost btn-sm" type="submit">Sign out</button></form>
+      <form method="post" action="/portal/signout" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Sign out</button></form>
     <% } else { %>
       <a href="/portal/signin">Sign in</a>
       <a href="/portal/signup">Create account</a>

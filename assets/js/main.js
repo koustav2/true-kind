@@ -3,8 +3,15 @@
    ==========================================================================
    Forms post to the True Kind portal API — volunteer registrations and
    contact enquiries land in the portal database and show up in the admin
-   (Volunteers / Enquiries tabs). Same-origin when the portal server itself
-   serves these pages; the public API host when served from Vercel.
+   (Volunteers / Enquiries tabs).
+
+   The site is served by our own Express server, so the API is ALWAYS
+   same-origin. The previous build also shipped to Vercel and fell back to a
+   separate api.truehr.co.in gateway whenever the hostname was unrecognised.
+   That path is gone: it failed silently on any host not in the allowlist (a
+   staging domain, a bare IP, a preview URL) by posting to a gateway that was
+   never configured, and it made cookie-authenticated requests impossible,
+   which is what blocked click-to-edit.
 
    FORM_ENDPOINT is an optional override — set it to a Formspree-style URL
    and ALL forms post there instead. Leave it "" to use the portal API.
@@ -13,10 +20,7 @@
 var FORM_ENDPOINT = "";
 var FALLBACK_EMAIL = "info@truekindfoundation.org";
 
-var SAME_ORIGIN_HOSTS = ["truekind.truehr.co.in", "localhost", "127.0.0.1"];
-var API_BASE = SAME_ORIGIN_HOSTS.indexOf(location.hostname) !== -1
-  ? "/api"
-  : "https://api.truehr.co.in/truekind/v1";
+var API_BASE = "/api";
 
 // Which public form posts to which portal endpoint
 var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };

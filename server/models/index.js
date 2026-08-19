@@ -69,6 +69,22 @@ const FormConfig = sequelize.define('FormConfig', {
   fields:  { type: DataTypes.JSON, defaultValue: [] }
 });
 
+// CMS media library. Deliberately a NEW table: the app runs a bare
+// sequelize.sync(), which creates tables but never adds a column to an existing
+// one — extending a current model would define a column the live database does
+// not have and then fail at query time. A new table is safe on every deployment.
+const MediaAsset = sequelize.define('MediaAsset', {
+  _id:      { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  kind:     { type: DataTypes.ENUM('image', 'video'), allowNull: false },
+  filename: { type: DataTypes.STRING, allowNull: false, unique: true },  // on-disk name (uuid.ext)
+  original: { type: DataTypes.STRING },                                  // what the admin called it
+  url:      { type: DataTypes.STRING, allowNull: false },                // /uploads/<filename>
+  mimetype: { type: DataTypes.STRING },
+  bytes:    { type: DataTypes.INTEGER },
+  alt:      { type: DataTypes.STRING },
+  uploadedBy: { type: DataTypes.INTEGER }
+});
+
 // Public-site volunteer registrations (no login — an application the admin
 // follows up on by phone/email, then tracks with a status).
 const Volunteer = sequelize.define('Volunteer', {
@@ -102,4 +118,4 @@ CertificateIssue.belongsTo(Certificate, { as: 'certificate', foreignKey: 'certif
 CertificateIssue.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 CertificateIssue.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' });
 
-module.exports = { sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry };
+module.exports = { sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry, MediaAsset };

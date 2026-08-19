@@ -21,7 +21,7 @@
   <td style="max-width:220px;white-space:normal"><%= v.interests || '—' %></td>
   <td style="max-width:280px;white-space:normal"><%= v.message || '—' %></td>
   <td>
-    <form method="post" action="/portal/admin/volunteers/<%= v.id %>/status">
+    <form method="post" action="/portal/admin/volunteers/<%= v.id %><input type="hidden" name="_csrf" value="<%= csrfToken %>">/status">
       <input type="hidden" name="back" value="<%= status==='all' ? '' : status %>">
       <select name="status" onchange="this.form.submit()">
         <% statuses.forEach(s => { %><option value="<%= s %>" <%= v.status===s?'selected':'' %>><%= s.charAt(0).toUpperCase()+s.slice(1) %></option><% }) %>

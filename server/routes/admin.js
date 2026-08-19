@@ -1,18 +1,13 @@
 const router = require('express').Router();
-const multer = require('multer');
-const path = require('path');
 const { fn, col } = require('sequelize');
 const { requireAdmin } = require('../middleware/auth');
 const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry } = require('../models');
 const { serial } = require('../utils/codes');
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: path.join(__dirname, '..', '..', 'uploads'),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/[^\w.\-]/g, '_'))
-  }),
-  limits: { fileSize: 4 * 1024 * 1024 }
-});
+// Uploads moved to utils/media.js, which adds the extension+mimetype allowlist
+// this instance never had (an uploaded .html or .svg executed as first-party
+// script on the portal origin) and splits image/video size limits.
+const { uploadImage, uploadErrorMessage } = require('../utils/media');
 
 router.use(requireAdmin);
 router.use(async (req, res, next) => {
@@ -107,12 +102,25 @@ router.get('/content', async (req, res) => {
   const byKey = Object.fromEntries(docs.map(d => [d.key, d.data]));
   res.render('admin/content', { title: 'Website content', byKey, keys: CONTENT_KEYS, saved: req.query.saved });
 });
-router.post('/content/:key', upload.single('image'), async (req, res) => {
+router.post('/content/:key', (req, res, next) => {
+  uploadImage.single('image')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error', { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+}, async (req, res) => {
   if (!CONTENT_KEYS.includes(req.params.key)) return res.status(400).send('Unknown key');
-  const data = { ...req.body };
-  if (req.file) data.image = '/uploads/' + req.file.filename;
-  const [row] = await SiteContent.findOrCreate({ where: { key: req.params.key }, defaults: { data } });
-  row.data = data; await row.save();
+  const patch = { ...req.body };
+  delete patch._csrf;
+  if (req.file) patch.image = '/uploads/' + req.file.filename;
+
+  const [row] = await SiteContent.findOrCreate({ where: { key: req.params.key }, defaults: { data: {} } });
+  // MERGE, not replace. This used to be `row.data = data`, which meant editing
+  // the banner headline without re-picking a file silently deleted the stored
+  // banner image — even though the form displayed it as "Current:" right above.
+  // Note the whole-object reassignment: Sequelize does not detect in-place
+  // mutation of a JSON column as dirty, so `row.data.x = y` would not persist.
+  row.data = { ...(row.data || {}), ...patch };
+  await row.save();
   res.redirect('/portal/admin/content?saved=1');
 });
 

@@ -5,7 +5,7 @@
 <div class="grid g2">
 <div class="card">
   <h3>About Us</h3>
-  <form method="post" action="/portal/admin/content/about">
+  <form method="post" action="/portal/admin/content/about"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <label>Heading</label><input name="heading" value="<%= (byKey.about||{}).heading || '' %>">
     <label>Body</label><textarea name="body" rows="6"><%= (byKey.about||{}).body || '' %></textarea>
     <button class="btn btn-purple btn-sm" style="margin-top:14px" type="submit">Save</button>
@@ -13,7 +13,7 @@
 </div>
 <div class="card">
   <h3>Homepage banner</h3>
-  <form method="post" action="/portal/admin/content/banner" enctype="multipart/form-data">
+  <form method="post" action="/portal/admin/content/banner?_csrf=<%= csrfToken %>" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <label>Headline</label><input name="headline" value="<%= (byKey.banner||{}).headline || '' %>">
     <label>Sub-text</label><input name="subtext" value="<%= (byKey.banner||{}).subtext || '' %>">
     <label>Banner image (max 4 MB)</label><input type="file" name="image" accept="image/*">
@@ -23,7 +23,7 @@
 </div>
 <div class="card">
   <h3>Our Team (add / edit)</h3>
-  <form method="post" action="/portal/admin/content/team" enctype="multipart/form-data">
+  <form method="post" action="/portal/admin/content/team?_csrf=<%= csrfToken %>" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <label>Members (one per line: Name | Role | short bio)</label>
     <textarea name="rows" rows="6" placeholder="Asha Mohanty | Chairperson | Sets strategy..."><%= (byKey.team||{}).rows || '' %></textarea>
     <label>Photo (optional)</label><input type="file" name="image" accept="image/*">
@@ -32,7 +32,7 @@
 </div>
 <div class="card">
   <h3>Our Works</h3>
-  <form method="post" action="/portal/admin/content/works">
+  <form method="post" action="/portal/admin/content/works"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <label>Entries (one per line: Title | description)</label>
     <textarea name="rows" rows="6"><%= (byKey.works||{}).rows || '' %></textarea>
     <button class="btn btn-purple btn-sm" style="margin-top:14px" type="submit">Save</button>
@@ -40,7 +40,7 @@
 </div>
 <div class="card">
   <h3>Press releases</h3>
-  <form method="post" action="/portal/admin/content/press">
+  <form method="post" action="/portal/admin/content/press"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <label>Entries (one per line: Date | Outlet | Headline | Link)</label>
     <textarea name="rows" rows="6"><%= (byKey.press||{}).rows || '' %></textarea>
     <button class="btn btn-purple btn-sm" style="margin-top:14px" type="submit">Save</button>

@@ -26,12 +26,31 @@ process.env.ADMIN_PASSWORD = 'admin123';
 
   const base = 'http://127.0.0.1:3999';
   let jar = {};
+  let tok = {};   // CSRF token per identity, keyed the same way as `jar`
+
+  /* Every unsafe request now needs a CSRF token (middleware/csrf.js). The token
+     is the session's own secret, so it is stable for the life of a session and
+     can be fetched once per identity: GET any page with this jar, scrape the
+     hidden field, reuse it. The GET also establishes the session whose cookie
+     the follow-up POST will carry. */
+  async function ensureToken(useJar) {
+    if (tok[useJar]) return tok[useJar];
+    const res = await fetch(base + '/portal/signin', { headers: { cookie: jar[useJar] || '' }, redirect: 'manual' });
+    const setc = res.headers.get('set-cookie');
+    if (setc) jar[useJar] = setc.split(';')[0];
+    const m = (await res.text()).match(/name="_csrf" value="([^"]+)"/);
+    tok[useJar] = m ? m[1] : '';
+    return tok[useJar];
+  }
+
   async function call(method, path, body, useJar = 'member') {
     const headers = { cookie: jar[useJar] || '' };
     let opts = { method, headers, redirect: 'manual' };
     if (body) {
+      const t = await ensureToken(useJar);
+      headers.cookie = jar[useJar] || '';        // ensureToken may have set it
       headers['content-type'] = 'application/x-www-form-urlencoded';
-      opts.body = new URLSearchParams(body).toString();
+      opts.body = new URLSearchParams({ ...body, _csrf: t }).toString();
     }
     const res = await fetch(base + path, opts);
     const setc = res.headers.get('set-cookie');

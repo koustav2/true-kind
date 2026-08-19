@@ -10,13 +10,13 @@
 <% if (!fields.length) { %><tr><td colspan="5" class="muted">No extra fields yet.</td></tr><% } %>
 <% fields.forEach(f => { %>
 <tr><td><%= f.label %></td><td class="serial"><%= f.name %></td><td><%= f.type %></td><td><%= f.required ? 'yes':'no' %></td>
-<td><form method="post" action="/portal/admin/form/remove" style="display:inline"><input type="hidden" name="name" value="<%= f.name %>"><button class="btn btn-ghost btn-sm">remove</button></form></td></tr>
+<td><form method="post" action="/portal/admin/form/remove" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="name" value="<%= f.name %>"><button class="btn btn-ghost btn-sm">remove</button></form></td></tr>
 <% }) %>
 </table>
 </div>
 <div class="card">
 <h3>Add a field</h3>
-<form method="post" action="/portal/admin/form/add">
+<form method="post" action="/portal/admin/form/add"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label>Label *</label><input name="label" required placeholder="Occupation">
 <label>Type</label>
 <select name="type"><option>text</option><option>email</option><option>tel</option><option>number</option><option>select</option><option>textarea</option></select>

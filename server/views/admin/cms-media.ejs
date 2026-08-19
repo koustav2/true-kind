@@ -1,0 +1,59 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'media'}) %>
+<div class="wrap">
+<p class="eyebrow">Website</p><h1>Media library</h1>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'nofile') { %><div class="alert err">No file was selected.</div><% } %>
+
+<div class="card">
+  <h3 style="margin-top:0">Upload</h3>
+  <form method="post" action="/portal/admin/cms/media?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>File</label>
+    <input type="file" name="file" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.mp4,.webm,.mov,.m4v" required>
+    <p class="cms-hint">
+      Images: JPG, PNG, WebP, GIF, AVIF — up to 6 MB.
+      Videos: MP4, WebM, MOV, M4V — up to 200 MB.
+      SVG is not accepted on purpose: it can carry scripts.
+    </p>
+    <label>Alt text (images — describe the picture for screen readers)</label>
+    <input type="text" name="alt" maxlength="300" placeholder="Trainees at the Bhadrak skilling centre">
+    <button class="btn btn-purple btn-sm" style="margin-top:14px" type="submit">Upload</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0"><%= media.length %> file<%= media.length === 1 ? '' : 's' %></h3>
+  <% if (!media.length) { %>
+    <p class="muted">Nothing uploaded yet.</p>
+  <% } else { %>
+    <div class="media-grid">
+      <% media.forEach(function (m) { %>
+        <div class="media-tile">
+          <div class="thumb">
+            <% if (m.kind === 'image') { %>
+              <img src="<%= m.url %>" alt="<%= m.alt || '' %>">
+            <% } else { %>
+              <span class="vid">VIDEO<br><%= (m.mimetype || '').replace('video/','') %></span>
+            <% } %>
+          </div>
+          <div class="cap">
+            <%= m.original || m.filename %><br>
+            <span style="opacity:.7"><%= Math.max(1, Math.round((m.bytes || 0) / 1024)) %> KB</span>
+          </div>
+          <div class="media-act">
+            <a class="btn btn-ghost btn-sm" href="<%= m.url %>" target="_blank" rel="noopener">Open</a>
+            <form method="post" action="/portal/admin/cms/media/<%= m.id %>/delete" style="display:inline"
+                  onsubmit="return confirm('Delete this file? Any page still using it will show a gap.')">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button class="btn btn-ghost btn-sm" type="submit">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<p class="muted"><a class="textlink" href="/portal/admin/cms">← Back to page editing</a></p>
+</div></body></html>

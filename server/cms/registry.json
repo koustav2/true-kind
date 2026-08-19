@@ -1,0 +1,7518 @@
+{
+ "generatedBy": "server/cms/build-registry.js",
+ "pages": [
+  {
+   "name": "index",
+   "file": "index.html",
+   "label": "Homepage"
+  },
+  {
+   "name": "about",
+   "file": "about.html",
+   "label": "About Us"
+  },
+  {
+   "name": "work",
+   "file": "work.html",
+   "label": "Our Work"
+  },
+  {
+   "name": "impact",
+   "file": "impact.html",
+   "label": "Our Impact"
+  },
+  {
+   "name": "donate",
+   "file": "donate.html",
+   "label": "Donate"
+  },
+  {
+   "name": "volunteer",
+   "file": "volunteer.html",
+   "label": "Volunteer"
+  },
+  {
+   "name": "contact",
+   "file": "contact.html",
+   "label": "Contact"
+  },
+  {
+   "name": "press-release",
+   "file": "press-release.html",
+   "label": "Press"
+  },
+  {
+   "name": "chairperson-message",
+   "file": "chairperson-message.html",
+   "label": "Chairperson's Message"
+  }
+ ],
+ "fields": [
+  {
+   "id": "index.meta.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Skill Development & Women's Empowerment | True Kind Foundation"
+  },
+  {
+   "id": "index.meta.description",
+   "page": "index",
+   "scope": "index",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "True Kind Foundation runs skilling, women's empowerment, digital education, health and environment programs across India — measured, reported and followed through."
+  },
+  {
+   "id": "index.meta.ogTitle",
+   "page": "index",
+   "scope": "index",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Skill Development & Women's Empowerment | True Kind Foundation"
+  },
+  {
+   "id": "index.meta.ogDesc",
+   "page": "index",
+   "scope": "index",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "True Kind Foundation runs skilling, women's empowerment, digital education, health and environment programs across India — measured, reported and followed through."
+  },
+  {
+   "id": "global.header.img.1",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — image",
+   "role": "image",
+   "type": "image",
+   "target": {
+    "self": true
+   },
+   "default": {
+    "src": "assets/img/logo.png",
+    "alt": "True Kind Foundation"
+   }
+  },
+  {
+   "id": "global.header.a.1.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.1\"]",
+    "attr": "href"
+   },
+   "default": "index.html"
+  },
+  {
+   "id": "global.header.a.1",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Home",
+   "href": {
+    "id": "global.header.a.1.href",
+    "default": "index.html"
+   }
+  },
+  {
+   "id": "global.header.a.2.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.2\"]",
+    "attr": "href"
+   },
+   "default": "about.html"
+  },
+  {
+   "id": "global.header.a.2",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "About Us",
+   "href": {
+    "id": "global.header.a.2.href",
+    "default": "about.html"
+   }
+  },
+  {
+   "id": "global.header.a.3.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.3\"]",
+    "attr": "href"
+   },
+   "default": "work.html"
+  },
+  {
+   "id": "global.header.a.3",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Work",
+   "href": {
+    "id": "global.header.a.3.href",
+    "default": "work.html"
+   }
+  },
+  {
+   "id": "global.header.a.4.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.4\"]",
+    "attr": "href"
+   },
+   "default": "impact.html"
+  },
+  {
+   "id": "global.header.a.4",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Impact",
+   "href": {
+    "id": "global.header.a.4.href",
+    "default": "impact.html"
+   }
+  },
+  {
+   "id": "global.header.a.5.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.5\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "global.header.a.5",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Get Involved",
+   "href": {
+    "id": "global.header.a.5.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "global.header.a.6.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.6\"]",
+    "attr": "href"
+   },
+   "default": "press-release.html"
+  },
+  {
+   "id": "global.header.a.6",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press",
+   "href": {
+    "id": "global.header.a.6.href",
+    "default": "press-release.html"
+   }
+  },
+  {
+   "id": "global.header.a.7.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.7\"]",
+    "attr": "href"
+   },
+   "default": "contact.html"
+  },
+  {
+   "id": "global.header.a.7",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Contact",
+   "href": {
+    "id": "global.header.a.7.href",
+    "default": "contact.html"
+   }
+  },
+  {
+   "id": "index.p.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Registered non-profit · Bhadrak, Odisha"
+  },
+  {
+   "id": "index.h1.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Kindness works better when it's <em>organized</em>."
+  },
+  {
+   "id": "index.p.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Goodwill is easy to find. What's rare is an organisation that turns it into skilling, livelihoods, education, health and environment programs — and then stays long enough to find out whether they worked."
+  },
+  {
+   "id": "index.a.1.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.1\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "index.a.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Support the work",
+   "href": {
+    "id": "index.a.1.href",
+    "default": "donate.html"
+   }
+  },
+  {
+   "id": "index.a.2.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.2\"]",
+    "attr": "href"
+   },
+   "default": "work.html"
+  },
+  {
+   "id": "index.a.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "See our programs",
+   "href": {
+    "id": "index.a.2.href",
+    "default": "work.html"
+   }
+  },
+  {
+   "id": "index.b.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "11,400+"
+  },
+  {
+   "id": "index.span.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "People trained or placed"
+  },
+  {
+   "id": "index.b.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "3,600+"
+  },
+  {
+   "id": "index.span.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women in livelihood programs"
+  },
+  {
+   "id": "index.b.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "62"
+  },
+  {
+   "id": "index.span.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Partner communities"
+  },
+  {
+   "id": "index.b.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "9"
+  },
+  {
+   "id": "index.span.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "States of operation"
+  },
+  {
+   "id": "index.p.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Kindness works better when it's organized.",
+   "label": "Kindness works better when it's organized. — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your audited totals — these four figures are placeholders until you send the real numbers."
+  },
+  {
+   "id": "index.p.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Who we are"
+  },
+  {
+   "id": "index.p.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We don't treat kindness as a feeling. We treat it as infrastructure — something you can plan, staff, budget and measure."
+  },
+  {
+   "id": "index.p.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation works with underserved communities on the things that most reliably change a household's trajectory: a usable skill, an income a woman controls, a daughter who stays in school, a neighbourhood with clean air and shade. We keep the program list short on purpose — five things done properly beat fifteen done at a glance."
+  },
+  {
+   "id": "index.a.3.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.3\"]",
+    "attr": "href"
+   },
+   "default": "about.html"
+  },
+  {
+   "id": "index.a.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Read our full story",
+   "href": {
+    "id": "index.a.3.href",
+    "default": "about.html"
+   }
+  },
+  {
+   "id": "index.b.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Origin"
+  },
+  {
+   "id": "index.span.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Founded by a small group of educators and community volunteers who decided follow-through mattered more than the launch photo. <span class=\"pending-inline\">founding story pending</span>"
+  },
+  {
+   "id": "index.b.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Today"
+  },
+  {
+   "id": "index.span.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Year-round skilling centres, women's savings and enterprise collectives, school-linked digital literacy labs, community health camps, and a tree-planting and waste-reduction programme."
+  },
+  {
+   "id": "index.b.7",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Method"
+  },
+  {
+   "id": "index.span.7",
+   "page": "index",
+   "scope": "index",
+   "group": "Who we are",
+   "label": "Who we are — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every program has a named local partner, a public budget line and a review every six months. When something isn't working, we say so and change it."
+  },
+  {
+   "id": "index.p.7",
+   "page": "index",
+   "scope": "index",
+   "group": "The four numbers our board actually reviews",
+   "label": "The four numbers our board actually reviews — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Where the effort goes"
+  },
+  {
+   "id": "index.h2.1",
+   "page": "index",
+   "scope": "index",
+   "group": "The four numbers our board actually reviews",
+   "label": "The four numbers our board actually reviews — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The four numbers our board actually reviews"
+  },
+  {
+   "id": "index.p.8",
+   "page": "index",
+   "scope": "index",
+   "group": "The four numbers our board actually reviews",
+   "label": "The four numbers our board actually reviews — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Not the ones that look best in a newsletter — the ones that tell us whether a program is working."
+  },
+  {
+   "id": "index.h3.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Program completion",
+   "label": "Program completion — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Program completion"
+  },
+  {
+   "id": "index.p.9",
+   "page": "index",
+   "scope": "index",
+   "group": "Program completion",
+   "label": "Program completion — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Trainees who finish, not just enrol."
+  },
+  {
+   "id": "index.h3.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Placed or self-employed"
+  },
+  {
+   "id": "index.p.10",
+   "page": "index",
+   "scope": "index",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Within six months of finishing."
+  },
+  {
+   "id": "index.h3.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Funds reaching programs"
+  },
+  {
+   "id": "index.p.11",
+   "page": "index",
+   "scope": "index",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The rest covers admin, audit and reporting."
+  },
+  {
+   "id": "index.h3.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Would recommend us",
+   "label": "Would recommend us — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Would recommend us"
+  },
+  {
+   "id": "index.p.12",
+   "page": "index",
+   "scope": "index",
+   "group": "Would recommend us",
+   "label": "Would recommend us — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Annual survey of program participants."
+  },
+  {
+   "id": "index.p.13",
+   "page": "index",
+   "scope": "index",
+   "group": "The four numbers our board actually reviews",
+   "label": "The four numbers our board actually reviews — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your audited percentages — placeholder values shown."
+  },
+  {
+   "id": "index.p.14",
+   "page": "index",
+   "scope": "index",
+   "group": "Five programs, one thread",
+   "label": "Five programs, one thread — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our work"
+  },
+  {
+   "id": "index.h2.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Five programs, one thread",
+   "label": "Five programs, one thread — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Five programs, one thread"
+  },
+  {
+   "id": "index.p.15",
+   "page": "index",
+   "scope": "index",
+   "group": "Five programs, one thread",
+   "label": "Five programs, one thread — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Each one is built to make the others work better — a trained young person, a mother earning her own income, a healthier street."
+  },
+  {
+   "id": "index.span.8",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skilling"
+  },
+  {
+   "id": "index.h3.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skill Development & Employment"
+  },
+  {
+   "id": "index.p.16",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Trade and digital-service training built around what local employers are actually hiring for — with placement support that doesn't stop at the certificate."
+  },
+  {
+   "id": "index.a.4.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.4\"]",
+    "attr": "href"
+   },
+   "default": "work.html#skilling"
+  },
+  {
+   "id": "index.a.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How it works →",
+   "href": {
+    "id": "index.a.4.href",
+    "default": "work.html#skilling"
+   }
+  },
+  {
+   "id": "index.span.9",
+   "page": "index",
+   "scope": "index",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Livelihoods"
+  },
+  {
+   "id": "index.h3.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women's Empowerment"
+  },
+  {
+   "id": "index.p.17",
+   "page": "index",
+   "scope": "index",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Savings collectives, micro-enterprise training and market linkages, so the income stays with the women who earned it."
+  },
+  {
+   "id": "index.a.5.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.5\"]",
+    "attr": "href"
+   },
+   "default": "work.html#women"
+  },
+  {
+   "id": "index.a.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How it works →",
+   "href": {
+    "id": "index.a.5.href",
+    "default": "work.html#women"
+   }
+  },
+  {
+   "id": "index.span.10",
+   "page": "index",
+   "scope": "index",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Education"
+  },
+  {
+   "id": "index.h3.7",
+   "page": "index",
+   "scope": "index",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Digital Education Access"
+  },
+  {
+   "id": "index.p.18",
+   "page": "index",
+   "scope": "index",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Device-light computer and internet literacy labs run alongside government schools, aimed squarely at the rural–urban skills gap."
+  },
+  {
+   "id": "index.a.6.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.6\"]",
+    "attr": "href"
+   },
+   "default": "work.html#education"
+  },
+  {
+   "id": "index.a.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How it works →",
+   "href": {
+    "id": "index.a.6.href",
+    "default": "work.html#education"
+   }
+  },
+  {
+   "id": "index.span.11",
+   "page": "index",
+   "scope": "index",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health"
+  },
+  {
+   "id": "index.h3.8",
+   "page": "index",
+   "scope": "index",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health & Safety Camps"
+  },
+  {
+   "id": "index.p.19",
+   "page": "index",
+   "scope": "index",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Preventive-care camps, workplace safety training and first-aid literacy for communities a long way from the nearest clinic."
+  },
+  {
+   "id": "index.a.7.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.7\"]",
+    "attr": "href"
+   },
+   "default": "work.html#health"
+  },
+  {
+   "id": "index.a.7",
+   "page": "index",
+   "scope": "index",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How it works →",
+   "href": {
+    "id": "index.a.7.href",
+    "default": "work.html#health"
+   }
+  },
+  {
+   "id": "index.span.12",
+   "page": "index",
+   "scope": "index",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environment"
+  },
+  {
+   "id": "index.h3.9",
+   "page": "index",
+   "scope": "index",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environmental Sustainability"
+  },
+  {
+   "id": "index.p.20",
+   "page": "index",
+   "scope": "index",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Neighbourhood tree-planting, plastic-reduction drives and environment education, co-run with the people who live there."
+  },
+  {
+   "id": "index.a.8.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.8\"]",
+    "attr": "href"
+   },
+   "default": "work.html#environment"
+  },
+  {
+   "id": "index.a.8",
+   "page": "index",
+   "scope": "index",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How it works →",
+   "href": {
+    "id": "index.a.8.href",
+    "default": "work.html#environment"
+   }
+  },
+  {
+   "id": "index.p.21",
+   "page": "index",
+   "scope": "index",
+   "group": "Five programs, one thread",
+   "label": "Five programs, one thread — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Illustrations, not photographs — send us real program photos and we'll swap them in."
+  },
+  {
+   "id": "index.p.22",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How we work"
+  },
+  {
+   "id": "index.h2.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Three commitments we don't compromise on"
+  },
+  {
+   "id": "index.p.23",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "They decide which programs we take on, and they're the first thing we're held to when one underperforms."
+  },
+  {
+   "id": "index.span.13",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Commitment one"
+  },
+  {
+   "id": "index.h3.10",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Local first"
+  },
+  {
+   "id": "index.p.24",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every program is co-designed with a local partner or community leader before it launches — never parachuted in from a head-office plan."
+  },
+  {
+   "id": "index.span.14",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Commitment two"
+  },
+  {
+   "id": "index.h3.11",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Follow-through over launch events"
+  },
+  {
+   "id": "index.p.25",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We track people for months after a program ends, not just at the graduation photo. That's where the real signal is."
+  },
+  {
+   "id": "index.span.15",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Commitment three"
+  },
+  {
+   "id": "index.h3.12",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Say the number, good or bad"
+  },
+  {
+   "id": "index.p.26",
+   "page": "index",
+   "scope": "index",
+   "group": "Three commitments we don't compromise on",
+   "label": "Three commitments we don't compromise on — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our reports include what didn't work. A donor who trusts the bad news will trust the good news too."
+  },
+  {
+   "id": "index.p.27",
+   "page": "index",
+   "scope": "index",
+   "group": "From people in the programs",
+   "label": "From people in the programs — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Voices"
+  },
+  {
+   "id": "index.h2.4",
+   "page": "index",
+   "scope": "index",
+   "group": "From people in the programs",
+   "label": "From people in the programs — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "From people in the programs"
+  },
+  {
+   "id": "index.p.28",
+   "page": "index",
+   "scope": "index",
+   "group": "From people in the programs",
+   "label": "From people in the programs — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Notes shared with our team — names shortened at each person's request."
+  },
+  {
+   "id": "index.blockquote.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — quote",
+   "role": "quote",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "\"The digital skills course got me my first paid freelance project within two months of finishing.\""
+  },
+  {
+   "id": "index.div.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "R.K."
+  },
+  {
+   "id": "index.b.8",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "R.K."
+  },
+  {
+   "id": "index.span.16",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skilling program graduate"
+  },
+  {
+   "id": "index.blockquote.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — quote",
+   "role": "quote",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "\"Our stitching collective now supplies three local retailers. We set our own prices for the first time.\""
+  },
+  {
+   "id": "index.div.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "S.M."
+  },
+  {
+   "id": "index.b.9",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "S.M."
+  },
+  {
+   "id": "index.span.17",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women's collective member"
+  },
+  {
+   "id": "index.blockquote.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — quote",
+   "role": "quote",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "\"The health camp caught my father's blood pressure early. That checkup probably saved us a hospital bill.\""
+  },
+  {
+   "id": "index.div.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A.T."
+  },
+  {
+   "id": "index.b.10",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A.T."
+  },
+  {
+   "id": "index.span.18",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health camp attendee"
+  },
+  {
+   "id": "index.blockquote.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — quote",
+   "role": "quote",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "\"We planted 400 saplings on our street. A third of them are taller than me now.\""
+  },
+  {
+   "id": "index.div.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "P.D."
+  },
+  {
+   "id": "index.b.11",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "P.D."
+  },
+  {
+   "id": "index.span.19",
+   "page": "index",
+   "scope": "index",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environment program volunteer"
+  },
+  {
+   "id": "index.p.29",
+   "page": "index",
+   "scope": "index",
+   "group": "From people in the programs",
+   "label": "From people in the programs — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting real participant quotes and consent — placeholders shown."
+  },
+  {
+   "id": "index.h2.5",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every rupee is tracked to a program, not a fundraiser."
+  },
+  {
+   "id": "index.a.9.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.9\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "index.a.9",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Donate now",
+   "href": {
+    "id": "index.a.9.href",
+    "default": "donate.html"
+   }
+  },
+  {
+   "id": "index.a.10.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.10\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "index.a.10",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Volunteer instead",
+   "href": {
+    "id": "index.a.10.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "index.dt.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account name"
+  },
+  {
+   "id": "index.dd.1",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation"
+  },
+  {
+   "id": "index.dt.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account number"
+  },
+  {
+   "id": "index.dd.2",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "096402000000775"
+  },
+  {
+   "id": "index.dt.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IFSC code"
+  },
+  {
+   "id": "index.dd.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IOBA0000964"
+  },
+  {
+   "id": "index.dt.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bank & branch"
+  },
+  {
+   "id": "index.dd.4",
+   "page": "index",
+   "scope": "index",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Indian Overseas Bank, Nalanga (0964)"
+  },
+  {
+   "id": "global.footer.img.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — image",
+   "role": "image",
+   "type": "image",
+   "target": {
+    "self": true
+   },
+   "default": {
+    "src": "assets/img/logo.png",
+    "alt": "True Kind Foundation"
+   }
+  },
+  {
+   "id": "global.footer.p.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "An India-based non-profit working on skilling, women's empowerment, digital education, health and environment programs."
+  },
+  {
+   "id": "global.footer.p.2",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Reg. No <b>40232603192</b><br>NGO Darpan ID <b>OR/2026/1126881</b><br>PAN <b>AAFTT5651D</b>"
+  },
+  {
+   "id": "global.footer.h4.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — heading (H4)",
+   "role": "heading (H4)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Organisation"
+  },
+  {
+   "id": "global.footer.a.1.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.1\"]",
+    "attr": "href"
+   },
+   "default": "about.html"
+  },
+  {
+   "id": "global.footer.a.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "About Us",
+   "href": {
+    "id": "global.footer.a.1.href",
+    "default": "about.html"
+   }
+  },
+  {
+   "id": "global.footer.a.2.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.2\"]",
+    "attr": "href"
+   },
+   "default": "chairperson-message.html"
+  },
+  {
+   "id": "global.footer.a.2",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Chairperson's Message",
+   "href": {
+    "id": "global.footer.a.2.href",
+    "default": "chairperson-message.html"
+   }
+  },
+  {
+   "id": "global.footer.a.3.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.3\"]",
+    "attr": "href"
+   },
+   "default": "impact.html"
+  },
+  {
+   "id": "global.footer.a.3",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Impact",
+   "href": {
+    "id": "global.footer.a.3.href",
+    "default": "impact.html"
+   }
+  },
+  {
+   "id": "global.footer.a.4.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.4\"]",
+    "attr": "href"
+   },
+   "default": "press-release.html"
+  },
+  {
+   "id": "global.footer.a.4",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press & Media",
+   "href": {
+    "id": "global.footer.a.4.href",
+    "default": "press-release.html"
+   }
+  },
+  {
+   "id": "global.footer.h4.2",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — heading (H4)",
+   "role": "heading (H4)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Programs"
+  },
+  {
+   "id": "global.footer.a.5.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.5\"]",
+    "attr": "href"
+   },
+   "default": "work.html#skilling"
+  },
+  {
+   "id": "global.footer.a.5",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skill Development",
+   "href": {
+    "id": "global.footer.a.5.href",
+    "default": "work.html#skilling"
+   }
+  },
+  {
+   "id": "global.footer.a.6.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.6\"]",
+    "attr": "href"
+   },
+   "default": "work.html#women"
+  },
+  {
+   "id": "global.footer.a.6",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women's Empowerment",
+   "href": {
+    "id": "global.footer.a.6.href",
+    "default": "work.html#women"
+   }
+  },
+  {
+   "id": "global.footer.a.7.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.7\"]",
+    "attr": "href"
+   },
+   "default": "work.html#education"
+  },
+  {
+   "id": "global.footer.a.7",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Digital Education",
+   "href": {
+    "id": "global.footer.a.7.href",
+    "default": "work.html#education"
+   }
+  },
+  {
+   "id": "global.footer.a.8.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.8\"]",
+    "attr": "href"
+   },
+   "default": "work.html#health"
+  },
+  {
+   "id": "global.footer.a.8",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health & Safety",
+   "href": {
+    "id": "global.footer.a.8.href",
+    "default": "work.html#health"
+   }
+  },
+  {
+   "id": "global.footer.a.9.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.9\"]",
+    "attr": "href"
+   },
+   "default": "work.html#environment"
+  },
+  {
+   "id": "global.footer.a.9",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environment",
+   "href": {
+    "id": "global.footer.a.9.href",
+    "default": "work.html#environment"
+   }
+  },
+  {
+   "id": "global.footer.h4.3",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — heading (H4)",
+   "role": "heading (H4)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Get in touch"
+  },
+  {
+   "id": "global.footer.a.10.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.10\"]",
+    "attr": "href"
+   },
+   "default": "mailto:info@truekindfoundation.org"
+  },
+  {
+   "id": "global.footer.a.10",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "info@truekindfoundation.org",
+   "href": {
+    "id": "global.footer.a.10.href",
+    "default": "mailto:info@truekindfoundation.org"
+   }
+  },
+  {
+   "id": "global.footer.a.11.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.11\"]",
+    "attr": "href"
+   },
+   "default": "tel:+917370067005"
+  },
+  {
+   "id": "global.footer.a.11",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "+91 73700 67005",
+   "href": {
+    "id": "global.footer.a.11.href",
+    "default": "tel:+917370067005"
+   }
+  },
+  {
+   "id": "global.footer.li.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — list item",
+   "role": "list item",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Plot No 221–245, NH-16, Gelpur,<br>Gopabandhupur, Bhadrak,<br>Odisha – 756181"
+  },
+  {
+   "id": "global.footer.a.12.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.12\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "global.footer.a.12",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Volunteer with us",
+   "href": {
+    "id": "global.footer.a.12.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "global.footer.a.13.href",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.footer.a.13\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "global.footer.a.13",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Make a donation",
+   "href": {
+    "id": "global.footer.a.13.href",
+    "default": "donate.html"
+   }
+  },
+  {
+   "id": "global.footer.span.1",
+   "page": "global",
+   "scope": "global.footer",
+   "group": "Footer",
+   "label": "Footer — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "© <span data-year=\"\">2026</span> True Kind Foundation. All rights reserved."
+  },
+  {
+   "id": "index.video.hero",
+   "page": "index",
+   "scope": "index",
+   "group": "Video",
+   "label": "Homepage — main video",
+   "help": "Sits under the opening headline. The best place for a 60–90 second \"who we are\" film.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"index.video.hero\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "about.meta.title",
+   "page": "about",
+   "scope": "about",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "About Us | True Kind Foundation"
+  },
+  {
+   "id": "about.meta.description",
+   "page": "about",
+   "scope": "about",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Our story, mission, vision, governance and registration details — True Kind Foundation, a registered non-profit based in Bhadrak, Odisha."
+  },
+  {
+   "id": "about.meta.ogTitle",
+   "page": "about",
+   "scope": "about",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "About Us | True Kind Foundation"
+  },
+  {
+   "id": "about.meta.ogDesc",
+   "page": "about",
+   "scope": "about",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Our story, mission, vision, governance and registration details — True Kind Foundation, a registered non-profit based in Bhadrak, Odisha."
+  },
+  {
+   "id": "about.nav.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Kindness, run like an institution.",
+   "label": "Kindness, run like an institution. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / About Us"
+  },
+  {
+   "id": "about.p.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Kindness, run like an institution.",
+   "label": "Kindness, run like an institution. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "About Us"
+  },
+  {
+   "id": "about.h1.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Kindness, run like an institution.",
+   "label": "Kindness, run like an institution. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Kindness, run like an institution."
+  },
+  {
+   "id": "about.p.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Kindness, run like an institution.",
+   "label": "Kindness, run like an institution. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Good intentions don't help anyone until somebody follows through on them. Here's who we are, why we started, and what we hold ourselves accountable for."
+  },
+  {
+   "id": "about.p.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our story"
+  },
+  {
+   "id": "about.h2.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Why we exist"
+  },
+  {
+   "id": "about.p.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation began with a plain observation: most communities aren't short on people willing to help. They're short on organisations that convert that willingness into something still standing after the first visit."
+  },
+  {
+   "id": "about.p.5",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "So we built ours around follow-through. A skilling batch isn't finished when the certificates are handed out — it's finished when we know whether the graduate found work. A health camp isn't a one-day event — it's the doorway into a community we intend to keep showing up for."
+  },
+  {
+   "id": "about.p.6",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "We keep the program list short by design: skill development, women's empowerment, digital education, health & safety, and environmental sustainability. Five things done properly beat fifteen done at a glance."
+  },
+  {
+   "id": "about.p.7",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your real founding story — year, founders and the first program you ran."
+  },
+  {
+   "id": "about.h3.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Registered & accountable"
+  },
+  {
+   "id": "about.dt.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Registration Number"
+  },
+  {
+   "id": "about.dd.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "40232603192"
+  },
+  {
+   "id": "about.dt.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "NGO Darpan ID"
+  },
+  {
+   "id": "about.dd.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "OR/2026/1126881"
+  },
+  {
+   "id": "about.dt.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "PAN"
+  },
+  {
+   "id": "about.dd.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "AAFTT5651D"
+  },
+  {
+   "id": "about.dt.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Registered Office"
+  },
+  {
+   "id": "about.dd.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Why we exist",
+   "label": "Why we exist — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181"
+  },
+  {
+   "id": "about.p.8",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What guides us"
+  },
+  {
+   "id": "about.h2.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Mission, vision & how we earn trust"
+  },
+  {
+   "id": "about.h3.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Mission"
+  },
+  {
+   "id": "about.p.9",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "To turn everyday goodwill into structured, measurable programs that give underserved communities real access to skills, income, education, health and a cleaner environment — and to stay with each community long enough to see the results."
+  },
+  {
+   "id": "about.h3.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Vision"
+  },
+  {
+   "id": "about.p.10",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "A country where a postal code no longer decides whether someone gets a fair shot — where every young person has a usable skill, every woman has an income of her own, and every neighbourhood breathes cleaner air."
+  },
+  {
+   "id": "about.h3.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How We Earn Trust"
+  },
+  {
+   "id": "about.p.11",
+   "page": "about",
+   "scope": "about",
+   "group": "Mission, vision & how we earn trust",
+   "label": "Mission, vision & how we earn trust — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Every program has a named local partner, a public budget line and a review every six months. We publish what worked and what didn't — a funder who trusts our bad news will trust our good news too."
+  },
+  {
+   "id": "about.p.12",
+   "page": "about",
+   "scope": "about",
+   "group": "Our Board",
+   "label": "Our Board — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Governance"
+  },
+  {
+   "id": "about.h2.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Our Board",
+   "label": "Our Board — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Board"
+  },
+  {
+   "id": "about.p.13",
+   "page": "about",
+   "scope": "about",
+   "group": "Our Board",
+   "label": "Our Board — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The board sets strategy, approves budgets and reviews every program twice a year."
+  },
+  {
+   "id": "about.div.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Chairperson",
+   "label": "Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "CP"
+  },
+  {
+   "id": "about.h3.5",
+   "page": "about",
+   "scope": "about",
+   "group": "Chairperson",
+   "label": "Chairperson — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Chairperson"
+  },
+  {
+   "id": "about.p.14",
+   "page": "about",
+   "scope": "about",
+   "group": "Chairperson",
+   "label": "Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Name pending"
+  },
+  {
+   "id": "about.p.15",
+   "page": "about",
+   "scope": "about",
+   "group": "Chairperson",
+   "label": "Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Sets strategic direction and represents the Foundation publicly."
+  },
+  {
+   "id": "about.div.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Vice Chairperson",
+   "label": "Vice Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "VC"
+  },
+  {
+   "id": "about.h3.6",
+   "page": "about",
+   "scope": "about",
+   "group": "Vice Chairperson",
+   "label": "Vice Chairperson — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Vice Chairperson"
+  },
+  {
+   "id": "about.p.16",
+   "page": "about",
+   "scope": "about",
+   "group": "Vice Chairperson",
+   "label": "Vice Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Name pending"
+  },
+  {
+   "id": "about.p.17",
+   "page": "about",
+   "scope": "about",
+   "group": "Vice Chairperson",
+   "label": "Vice Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Supports governance and deputises for the Chairperson when needed."
+  },
+  {
+   "id": "about.div.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Secretary",
+   "label": "Secretary — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "SE"
+  },
+  {
+   "id": "about.h3.7",
+   "page": "about",
+   "scope": "about",
+   "group": "Secretary",
+   "label": "Secretary — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Secretary"
+  },
+  {
+   "id": "about.p.18",
+   "page": "about",
+   "scope": "about",
+   "group": "Secretary",
+   "label": "Secretary — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Name pending"
+  },
+  {
+   "id": "about.p.19",
+   "page": "about",
+   "scope": "about",
+   "group": "Secretary",
+   "label": "Secretary — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Oversees compliance, board records and day-to-day organisational matters."
+  },
+  {
+   "id": "about.div.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Treasurer",
+   "label": "Treasurer — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "TR"
+  },
+  {
+   "id": "about.h3.8",
+   "page": "about",
+   "scope": "about",
+   "group": "Treasurer",
+   "label": "Treasurer — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Treasurer"
+  },
+  {
+   "id": "about.p.20",
+   "page": "about",
+   "scope": "about",
+   "group": "Treasurer",
+   "label": "Treasurer — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Name pending"
+  },
+  {
+   "id": "about.p.21",
+   "page": "about",
+   "scope": "about",
+   "group": "Treasurer",
+   "label": "Treasurer — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Manages accounts, audits and financial reporting to the board."
+  },
+  {
+   "id": "about.p.22",
+   "page": "about",
+   "scope": "about",
+   "group": "Our Board",
+   "label": "Our Board — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your board's real names, designations, short bios and photographs."
+  },
+  {
+   "id": "about.p.23",
+   "page": "about",
+   "scope": "about",
+   "group": "Hear from our Chairperson",
+   "label": "Hear from our Chairperson — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Leadership"
+  },
+  {
+   "id": "about.h2.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Hear from our Chairperson",
+   "label": "Hear from our Chairperson — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Hear from our Chairperson"
+  },
+  {
+   "id": "about.p.24",
+   "page": "about",
+   "scope": "about",
+   "group": "Hear from our Chairperson",
+   "label": "Hear from our Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A short note on why this organisation exists, and what we ask of the people who join us."
+  },
+  {
+   "id": "about.a.1.href",
+   "page": "about",
+   "scope": "about",
+   "group": "Hear from our Chairperson",
+   "label": "Hear from our Chairperson — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"about.a.1\"]",
+    "attr": "href"
+   },
+   "default": "chairperson-message.html"
+  },
+  {
+   "id": "about.a.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Hear from our Chairperson",
+   "label": "Hear from our Chairperson — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Read the Chairperson's Message",
+   "href": {
+    "id": "about.a.1.href",
+    "default": "chairperson-message.html"
+   }
+  },
+  {
+   "id": "about.video.story",
+   "page": "about",
+   "scope": "about",
+   "group": "Video",
+   "label": "About — our story video",
+   "help": "Appears after the \"Who we are\" text.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"about.video.story\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "work.meta.title",
+   "page": "work",
+   "scope": "work",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Our Work | True Kind Foundation"
+  },
+  {
+   "id": "work.meta.description",
+   "page": "work",
+   "scope": "work",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Five programs run by True Kind Foundation: skill development, women's empowerment, digital education, health and safety, and environmental sustainability."
+  },
+  {
+   "id": "work.meta.ogTitle",
+   "page": "work",
+   "scope": "work",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Our Work | True Kind Foundation"
+  },
+  {
+   "id": "work.meta.ogDesc",
+   "page": "work",
+   "scope": "work",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Five programs run by True Kind Foundation: skill development, women's empowerment, digital education, health and safety, and environmental sustainability."
+  },
+  {
+   "id": "work.nav.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Five programs, chosen for how they compound.",
+   "label": "Five programs, chosen for how they compound. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Our Work"
+  },
+  {
+   "id": "work.p.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Five programs, chosen for how they compound.",
+   "label": "Five programs, chosen for how they compound. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Work"
+  },
+  {
+   "id": "work.h1.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Five programs, chosen for how they compound.",
+   "label": "Five programs, chosen for how they compound. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Five programs, chosen for how they compound."
+  },
+  {
+   "id": "work.p.2",
+   "page": "work",
+   "scope": "work",
+   "group": "Five programs, chosen for how they compound.",
+   "label": "Five programs, chosen for how they compound. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "A trained young person earns. An earning mother keeps her daughter in school. A school with a working computer lab produces the next trainee. We picked these five because each one makes the other four go further."
+  },
+  {
+   "id": "work.span.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skilling"
+  },
+  {
+   "id": "work.h3.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skill Development & Employment"
+  },
+  {
+   "id": "work.p.3",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Trade and digital-service training designed around what employers within travelling distance are actually hiring for. Batches run year-round; placement support continues for six months after the certificate, because that's when most people quietly fall out of the system."
+  },
+  {
+   "id": "work.a.1.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.1\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.1",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Help run a batch →",
+   "href": {
+    "id": "work.a.1.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.span.2",
+   "page": "work",
+   "scope": "work",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Livelihoods"
+  },
+  {
+   "id": "work.h3.2",
+   "page": "work",
+   "scope": "work",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women's Empowerment"
+  },
+  {
+   "id": "work.p.4",
+   "page": "work",
+   "scope": "work",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Savings collectives, micro-enterprise training and the unglamorous part nobody funds — market linkages. Products only pay if there's a buyer, so we work on pricing, bulk supply and retailer introductions alongside the skills themselves."
+  },
+  {
+   "id": "work.a.2.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.2\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.2",
+   "page": "work",
+   "scope": "work",
+   "group": "Women's Empowerment",
+   "label": "Women's Empowerment — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Support a collective →",
+   "href": {
+    "id": "work.a.2.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.span.3",
+   "page": "work",
+   "scope": "work",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Education"
+  },
+  {
+   "id": "work.h3.3",
+   "page": "work",
+   "scope": "work",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Digital Education Access"
+  },
+  {
+   "id": "work.p.5",
+   "page": "work",
+   "scope": "work",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Device-light computer and internet literacy labs run alongside government schools. Low hardware requirements on purpose — a lab that needs constant power and new machines is a lab that stops running by year two."
+  },
+  {
+   "id": "work.a.3.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.3\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.3",
+   "page": "work",
+   "scope": "work",
+   "group": "Digital Education Access",
+   "label": "Digital Education Access — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Teach a session →",
+   "href": {
+    "id": "work.a.3.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.span.4",
+   "page": "work",
+   "scope": "work",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health"
+  },
+  {
+   "id": "work.h3.4",
+   "page": "work",
+   "scope": "work",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Health & Safety Camps"
+  },
+  {
+   "id": "work.p.6",
+   "page": "work",
+   "scope": "work",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Preventive-care camps, workplace safety training and first-aid literacy for communities a long way from the nearest clinic. Screening catches the conditions that are cheap to manage early and ruinous to treat late."
+  },
+  {
+   "id": "work.a.4.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.4\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.4",
+   "page": "work",
+   "scope": "work",
+   "group": "Health & Safety Camps",
+   "label": "Health & Safety Camps — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Join a camp →",
+   "href": {
+    "id": "work.a.4.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.span.5",
+   "page": "work",
+   "scope": "work",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environment"
+  },
+  {
+   "id": "work.h3.5",
+   "page": "work",
+   "scope": "work",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environmental Sustainability"
+  },
+  {
+   "id": "work.p.7",
+   "page": "work",
+   "scope": "work",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Neighbourhood tree-planting, plastic-reduction drives and environment education, co-run with residents. Saplings are counted at planting and again a year later — survival rate is the number that matters, not the number in the ground."
+  },
+  {
+   "id": "work.a.5.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.5\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.5",
+   "page": "work",
+   "scope": "work",
+   "group": "Environmental Sustainability",
+   "label": "Environmental Sustainability — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Plant with us →",
+   "href": {
+    "id": "work.a.5.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.p.8",
+   "page": "work",
+   "scope": "work",
+   "group": "Skill Development & Employment",
+   "label": "Skill Development & Employment — placeholder notice",
+   "role": "placeholder notice",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Illustrations, not photographs — send real program photos and we'll swap them in. Programme details above can also be corrected to match how each one actually runs."
+  },
+  {
+   "id": "work.p.9",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every program, same rules"
+  },
+  {
+   "id": "work.h2.1",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What a True Kind program has to have"
+  },
+  {
+   "id": "work.p.10",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "If a proposal can't meet these four, we don't run it — however good the idea sounds."
+  },
+  {
+   "id": "work.h3.6",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A named local partner"
+  },
+  {
+   "id": "work.p.11",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Someone who lives there, is accountable for delivery, and can tell us when we're wrong."
+  },
+  {
+   "id": "work.h3.7",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A follow-up window"
+  },
+  {
+   "id": "work.p.12",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A defined point months later when we go back and check what actually held."
+  },
+  {
+   "id": "work.h3.8",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A number we can be wrong about"
+  },
+  {
+   "id": "work.p.13",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "One measure, agreed at the start, that can come back worse than we hoped."
+  },
+  {
+   "id": "work.h3.9",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A public budget line"
+  },
+  {
+   "id": "work.p.14",
+   "page": "work",
+   "scope": "work",
+   "group": "What a True Kind program has to have",
+   "label": "What a True Kind program has to have — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What it costs, and what share of that reaches the community rather than the office."
+  },
+  {
+   "id": "work.h2.2",
+   "page": "work",
+   "scope": "work",
+   "group": "Pick the program you want to back.",
+   "label": "Pick the program you want to back. — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Pick the program you want to back."
+  },
+  {
+   "id": "work.a.6.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Pick the program you want to back.",
+   "label": "Pick the program you want to back. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.6\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "work.a.6",
+   "page": "work",
+   "scope": "work",
+   "group": "Pick the program you want to back.",
+   "label": "Pick the program you want to back. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Fund a program",
+   "href": {
+    "id": "work.a.6.href",
+    "default": "donate.html"
+   }
+  },
+  {
+   "id": "work.a.7.href",
+   "page": "work",
+   "scope": "work",
+   "group": "Pick the program you want to back.",
+   "label": "Pick the program you want to back. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"work.a.7\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "work.a.7",
+   "page": "work",
+   "scope": "work",
+   "group": "Pick the program you want to back.",
+   "label": "Pick the program you want to back. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Volunteer with one",
+   "href": {
+    "id": "work.a.7.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "work.video.programmes",
+   "page": "work",
+   "scope": "work",
+   "group": "Video",
+   "label": "Our Work — programmes video",
+   "help": "Sits above the five programme cards.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"work.video.programmes\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "impact.meta.title",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Our Impact | True Kind Foundation"
+  },
+  {
+   "id": "impact.meta.description",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "How True Kind Foundation tracks and reports program impact across skilling, education, health and environment work."
+  },
+  {
+   "id": "impact.meta.ogTitle",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Our Impact | True Kind Foundation"
+  },
+  {
+   "id": "impact.meta.ogDesc",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "How True Kind Foundation tracks and reports program impact across skilling, education, health and environment work."
+  },
+  {
+   "id": "impact.nav.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "What the work has actually moved.",
+   "label": "What the work has actually moved. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Our Impact"
+  },
+  {
+   "id": "impact.p.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "What the work has actually moved.",
+   "label": "What the work has actually moved. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our Impact"
+  },
+  {
+   "id": "impact.h1.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "What the work has actually moved.",
+   "label": "What the work has actually moved. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What the work has actually moved."
+  },
+  {
+   "id": "impact.p.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "What the work has actually moved.",
+   "label": "What the work has actually moved. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The figures on this page are placeholders until our audited numbers are ready. We'd rather show you an obvious blank than a guess dressed up as data."
+  },
+  {
+   "id": "impact.p.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Reach across our five programs",
+   "label": "Reach across our five programs — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "By program"
+  },
+  {
+   "id": "impact.h2.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Reach across our five programs",
+   "label": "Reach across our five programs — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Reach across our five programs"
+  },
+  {
+   "id": "impact.h3.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Program completion",
+   "label": "Program completion — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Program completion"
+  },
+  {
+   "id": "impact.p.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Program completion",
+   "label": "Program completion — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Trainees who finish, not just enrol."
+  },
+  {
+   "id": "impact.h3.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Placed or self-employed"
+  },
+  {
+   "id": "impact.p.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Placed or self-employed",
+   "label": "Placed or self-employed — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Within six months of finishing."
+  },
+  {
+   "id": "impact.h3.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Funds reaching programs"
+  },
+  {
+   "id": "impact.p.6",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Funds reaching programs",
+   "label": "Funds reaching programs — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The rest covers admin, audit and reporting."
+  },
+  {
+   "id": "impact.h3.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Would recommend us",
+   "label": "Would recommend us — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Would recommend us"
+  },
+  {
+   "id": "impact.p.7",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Would recommend us",
+   "label": "Would recommend us — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Annual survey of program participants."
+  },
+  {
+   "id": "impact.p.8",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Reach across our five programs",
+   "label": "Reach across our five programs — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your audited percentages for these four measures."
+  },
+  {
+   "id": "impact.p.9",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Headline numbers"
+  },
+  {
+   "id": "impact.h2.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Since we began tracking"
+  },
+  {
+   "id": "impact.p.10",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Cumulative totals across all five programs, reviewed by the board every six months."
+  },
+  {
+   "id": "impact.b.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "11,400+"
+  },
+  {
+   "id": "impact.span.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "People trained or placed"
+  },
+  {
+   "id": "impact.b.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "3,600+"
+  },
+  {
+   "id": "impact.span.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women in livelihood programs"
+  },
+  {
+   "id": "impact.b.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "62"
+  },
+  {
+   "id": "impact.span.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Partner communities"
+  },
+  {
+   "id": "impact.b.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "9"
+  },
+  {
+   "id": "impact.span.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "States of operation"
+  },
+  {
+   "id": "impact.p.11",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Since we began tracking",
+   "label": "Since we began tracking — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your real, audited totals for these four figures."
+  },
+  {
+   "id": "impact.p.12",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our footprint"
+  },
+  {
+   "id": "impact.h2.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Where we work across India"
+  },
+  {
+   "id": "impact.p.13",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "An illustrative map, not a to-scale political boundary. Only the registered office is confirmed — the starred states are placeholders."
+  },
+  {
+   "id": "impact.p.14",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "*Placeholder states — tell us your real footprint and we'll move the pins."
+  },
+  {
+   "id": "impact.p.15",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Registered & operating from"
+  },
+  {
+   "id": "impact.h3.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bhadrak, Odisha"
+  },
+  {
+   "id": "impact.p.16",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181. Programs expand outward from here as partnerships grow."
+  },
+  {
+   "id": "impact.div.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> Odisha <span class=\"muted\">(registered office)</span>"
+  },
+  {
+   "id": "impact.div.2",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> West Bengal*"
+  },
+  {
+   "id": "impact.div.3",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> Jharkhand*"
+  },
+  {
+   "id": "impact.div.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> Chhattisgarh*"
+  },
+  {
+   "id": "impact.div.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> Andhra Pradesh*"
+  },
+  {
+   "id": "impact.div.6",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Where we work across India",
+   "label": "Where we work across India — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"fp-dot\"></span> Maharashtra*"
+  },
+  {
+   "id": "impact.p.17",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Methodology"
+  },
+  {
+   "id": "impact.h2.4",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "How we measure this"
+  },
+  {
+   "id": "impact.p.18",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A number is only useful if you can see how it was built."
+  },
+  {
+   "id": "impact.span.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Step one"
+  },
+  {
+   "id": "impact.h3.6",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Tracked at intake and exit"
+  },
+  {
+   "id": "impact.p.19",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every participant is recorded when they join and followed up at defined milestones afterward — not counted once at the start and quietly forgotten."
+  },
+  {
+   "id": "impact.span.6",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Step two"
+  },
+  {
+   "id": "impact.h3.7",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Reviewed twice a year"
+  },
+  {
+   "id": "impact.p.20",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "The board reviews program numbers every six months, including the ones that missed target. Those get discussed first, not last."
+  },
+  {
+   "id": "impact.span.7",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Step three"
+  },
+  {
+   "id": "impact.h3.8",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Reported, not just tallied"
+  },
+  {
+   "id": "impact.p.21",
+   "page": "impact",
+   "scope": "impact",
+   "group": "How we measure this",
+   "label": "How we measure this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Our annual report publishes the methodology behind each figure, so a funder can see how a number was built rather than taking it on faith."
+  },
+  {
+   "id": "impact.p.22",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Request our latest impact report",
+   "label": "Request our latest impact report — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Want the detail"
+  },
+  {
+   "id": "impact.h2.5",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Request our latest impact report",
+   "label": "Request our latest impact report — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Request our latest impact report"
+  },
+  {
+   "id": "impact.p.23",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Request our latest impact report",
+   "label": "Request our latest impact report — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We'll send the full report with methodology notes, program-by-program breakdowns and the audited financial summary."
+  },
+  {
+   "id": "impact.a.1.href",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Request our latest impact report",
+   "label": "Request our latest impact report — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"impact.a.1\"]",
+    "attr": "href"
+   },
+   "default": "mailto:info@truekindfoundation.org?subject=Impact%20Report%20Request"
+  },
+  {
+   "id": "impact.a.1",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Request our latest impact report",
+   "label": "Request our latest impact report — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Email us for the report",
+   "href": {
+    "id": "impact.a.1.href",
+    "default": "mailto:info@truekindfoundation.org?subject=Impact%20Report%20Request"
+   }
+  },
+  {
+   "id": "impact.video.report",
+   "page": "impact",
+   "scope": "impact",
+   "group": "Video",
+   "label": "Our Impact — impact film",
+   "help": "Good spot for a field video or an annual-report walkthrough.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"impact.video.report\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "donate.meta.title",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Donate | True Kind Foundation"
+  },
+  {
+   "id": "donate.meta.description",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Support True Kind Foundation's skilling, women's empowerment, education, health and environment programs. Bank transfer details and what your donation funds."
+  },
+  {
+   "id": "donate.meta.ogTitle",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Donate | True Kind Foundation"
+  },
+  {
+   "id": "donate.meta.ogDesc",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Support True Kind Foundation's skilling, women's empowerment, education, health and environment programs. Bank transfer details and what your donation funds."
+  },
+  {
+   "id": "donate.nav.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Donate"
+  },
+  {
+   "id": "donate.p.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Donate"
+  },
+  {
+   "id": "donate.h1.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Every rupee is tracked to a program, not a fundraiser."
+  },
+  {
+   "id": "donate.p.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — intro paragraph",
+   "role": "intro paragraph",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went."
+  },
+  {
+   "id": "donate.a.1.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.1\"]",
+    "attr": "href"
+   },
+   "default": "#bank"
+  },
+  {
+   "id": "donate.a.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "See bank details",
+   "href": {
+    "id": "donate.a.1.href",
+    "default": "#bank"
+   }
+  },
+  {
+   "id": "donate.a.2.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.2\"]",
+    "attr": "href"
+   },
+   "default": "impact.html"
+  },
+  {
+   "id": "donate.a.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Every rupee is tracked to a program, not a fundr — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Read our impact reporting",
+   "href": {
+    "id": "donate.a.2.href",
+    "default": "impact.html"
+   }
+  },
+  {
+   "id": "donate.p.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What it funds"
+  },
+  {
+   "id": "donate.h2.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Where a contribution goes"
+  },
+  {
+   "id": "donate.p.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Indicative costs based on how our programs are currently budgeted."
+  },
+  {
+   "id": "donate.span.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "₹1,500"
+  },
+  {
+   "id": "donate.h3.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "One trainee, one month"
+  },
+  {
+   "id": "donate.p.5",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Covers a month of trade or digital-skills training for one participant, including materials and the trainer's time."
+  },
+  {
+   "id": "donate.span.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "₹6,000"
+  },
+  {
+   "id": "donate.h3.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A community health camp"
+  },
+  {
+   "id": "donate.p.6",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Funds a single-day preventive-care camp — screening, basic medicines and a follow-up list for the cases that need one."
+  },
+  {
+   "id": "donate.span.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "₹25,000"
+  },
+  {
+   "id": "donate.h3.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A women's collective, start to trading"
+  },
+  {
+   "id": "donate.p.7",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Seed support for one savings-and-enterprise collective: training, initial materials and the market introductions that make it stick."
+  },
+  {
+   "id": "donate.p.8",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Where a contribution goes",
+   "label": "Where a contribution goes — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your confirmed per-unit program costs — the three amounts above are indicative until you send real figures."
+  },
+  {
+   "id": "donate.p.9",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Direct transfer"
+  },
+  {
+   "id": "donate.h2.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bank account details"
+  },
+  {
+   "id": "donate.p.10",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "NEFT, IMPS, UPI-to-account or a standing instruction from your bank all work."
+  },
+  {
+   "id": "donate.dt.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account name"
+  },
+  {
+   "id": "donate.dd.1",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation"
+  },
+  {
+   "id": "donate.dt.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account number"
+  },
+  {
+   "id": "donate.dd.2",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "096402000000775"
+  },
+  {
+   "id": "donate.dt.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IFSC code"
+  },
+  {
+   "id": "donate.dd.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IOBA0000964"
+  },
+  {
+   "id": "donate.dt.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bank & branch"
+  },
+  {
+   "id": "donate.dd.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Indian Overseas Bank, Nalanga Branch (0964)"
+  },
+  {
+   "id": "donate.p.11",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "After transferring, email <a href=\"mailto:info@truekindfoundation.org?subject=Donation%20made\">info@truekindfoundation.org</a> with the reference number and the program you'd like it assigned to. We'll confirm receipt and send a receipt for your records."
+  },
+  {
+   "id": "donate.p.12",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Bank account details",
+   "label": "Bank account details — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting confirmation of your 80G / 12A tax-exemption status — once you send it, we'll add the receipt and deduction wording here."
+  },
+  {
+   "id": "donate.p.13",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Other ways to give"
+  },
+  {
+   "id": "donate.h2.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Not everything useful arrives as money"
+  },
+  {
+   "id": "donate.h3.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Corporate & CSR partnerships"
+  },
+  {
+   "id": "donate.p.14",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Fund a full program cycle, sponsor a skilling centre, or bring your team out for a field day. We'll write the proposal and report against it."
+  },
+  {
+   "id": "donate.h3.5",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Equipment & in-kind"
+  },
+  {
+   "id": "donate.p.15",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Working laptops, sewing machines, teaching materials, medical supplies. Tell us what you have and we'll tell you honestly whether we can use it."
+  },
+  {
+   "id": "donate.h3.6",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Your time"
+  },
+  {
+   "id": "donate.p.16",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Not everything useful arrives as money",
+   "label": "Not everything useful arrives as money — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "A skilled volunteer who shows up every month is worth more to a program than most one-off cheques. <a href=\"volunteer.html\" class=\"textlink\">Sign up here</a>."
+  },
+  {
+   "id": "donate.p.17",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Before you give"
+  },
+  {
+   "id": "donate.h2.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What we'll tell you, unprompted"
+  },
+  {
+   "id": "donate.p.18",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Transparency isn't a page on a website. It's what we send you afterwards."
+  },
+  {
+   "id": "donate.span.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We'll tell you"
+  },
+  {
+   "id": "donate.h3.7",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Which program it went to"
+  },
+  {
+   "id": "donate.p.19",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Contributions are assigned to a named program, not a general pool, unless you specifically ask us to allocate it where it's most needed."
+  },
+  {
+   "id": "donate.span.5",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We'll tell you"
+  },
+  {
+   "id": "donate.h3.8",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What share reached the field"
+  },
+  {
+   "id": "donate.p.20",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We publish the split between program spend and admin, audit and reporting — and we don't quietly reclassify overheads to make it look better."
+  },
+  {
+   "id": "donate.span.6",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We'll tell you"
+  },
+  {
+   "id": "donate.h3.9",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "What didn't work"
+  },
+  {
+   "id": "donate.p.21",
+   "page": "donate",
+   "scope": "donate",
+   "group": "What we'll tell you, unprompted",
+   "label": "What we'll tell you, unprompted — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "If the program you funded underperformed, that appears in the report too. You'll hear it from us before you hear it anywhere else."
+  },
+  {
+   "id": "donate.h2.5",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Questions before you give? Ask them.",
+   "label": "Questions before you give? Ask them. — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Questions before you give? Ask them."
+  },
+  {
+   "id": "donate.a.3.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Questions before you give? Ask them.",
+   "label": "Questions before you give? Ask them. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.3\"]",
+    "attr": "href"
+   },
+   "default": "contact.html"
+  },
+  {
+   "id": "donate.a.3",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Questions before you give? Ask them.",
+   "label": "Questions before you give? Ask them. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Talk to us first",
+   "href": {
+    "id": "donate.a.3.href",
+    "default": "contact.html"
+   }
+  },
+  {
+   "id": "donate.a.4.href",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Questions before you give? Ask them.",
+   "label": "Questions before you give? Ask them. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"donate.a.4\"]",
+    "attr": "href"
+   },
+   "default": "tel:+917370067005"
+  },
+  {
+   "id": "donate.a.4",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Questions before you give? Ask them.",
+   "label": "Questions before you give? Ask them. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "+91 73700 67005",
+   "href": {
+    "id": "donate.a.4.href",
+    "default": "tel:+917370067005"
+   }
+  },
+  {
+   "id": "donate.video.appeal",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Video",
+   "label": "Donate — appeal video",
+   "help": "A short appeal shown above the bank details.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"donate.video.appeal\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "volunteer.meta.title",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Be a Volunteer | True Kind Foundation"
+  },
+  {
+   "id": "volunteer.meta.description",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Volunteer with True Kind Foundation — opportunities for individuals, students and organisations across our five programs."
+  },
+  {
+   "id": "volunteer.meta.ogTitle",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Be a Volunteer | True Kind Foundation"
+  },
+  {
+   "id": "volunteer.meta.ogDesc",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Volunteer with True Kind Foundation — opportunities for individuals, students and organisations across our five programs."
+  },
+  {
+   "id": "volunteer.nav.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Get Involved"
+  },
+  {
+   "id": "volunteer.p.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Be a Volunteer"
+  },
+  {
+   "id": "volunteer.h1.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Join the people doing the work."
+  },
+  {
+   "id": "volunteer.p.2",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Two hours on a weekend or a whole batch you run yourself — there's a place for both. We take individuals, students and organisation teams. No experience required; follow-through is the only prerequisite."
+  },
+  {
+   "id": "volunteer.a.1.href",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"volunteer.a.1\"]",
+    "attr": "href"
+   },
+   "default": "#register"
+  },
+  {
+   "id": "volunteer.a.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Register as a volunteer",
+   "href": {
+    "id": "volunteer.a.1.href",
+    "default": "#register"
+   }
+  },
+  {
+   "id": "volunteer.a.2.href",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"volunteer.a.2\"]",
+    "attr": "href"
+   },
+   "default": "/portal/signin"
+  },
+  {
+   "id": "volunteer.a.2",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Join the people doing the work.",
+   "label": "Join the people doing the work. — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Member sign in",
+   "href": {
+    "id": "volunteer.a.2.href",
+    "default": "/portal/signin"
+   }
+  },
+  {
+   "id": "volunteer.h3.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "For individuals"
+  },
+  {
+   "id": "volunteer.p.3",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Help run skilling batches, health camps or tree-plantation drives — or take on admin and event support if that's more your speed. Pick what matches your time and skills."
+  },
+  {
+   "id": "volunteer.h3.2",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "For students"
+  },
+  {
+   "id": "volunteer.p.4",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Log volunteering hours, build real field experience, and receive a certificate of participation for internship and college applications."
+  },
+  {
+   "id": "volunteer.h3.3",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "For organisations"
+  },
+  {
+   "id": "volunteer.p.5",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bring a team for a CSR day, or partner with us on an ongoing program. Tell us your scale and timeline and we'll put together a proposal."
+  },
+  {
+   "id": "volunteer.p.6",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Sign up"
+  },
+  {
+   "id": "volunteer.h2.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Volunteer registration"
+  },
+  {
+   "id": "volunteer.label.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Full name <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "volunteer.label.2",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Email <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "volunteer.label.3",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Phone number <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "volunteer.label.4",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "City"
+  },
+  {
+   "id": "volunteer.label.5",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "I am a <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "volunteer.option.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Select one"
+  },
+  {
+   "id": "volunteer.option.2",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Student"
+  },
+  {
+   "id": "volunteer.option.3",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Working professional"
+  },
+  {
+   "id": "volunteer.option.4",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Retired / independent"
+  },
+  {
+   "id": "volunteer.option.5",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Representing an organisation"
+  },
+  {
+   "id": "volunteer.option.6",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Other"
+  },
+  {
+   "id": "volunteer.label.6",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Availability"
+  },
+  {
+   "id": "volunteer.option.7",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Select one"
+  },
+  {
+   "id": "volunteer.option.8",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Weekends only"
+  },
+  {
+   "id": "volunteer.option.9",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Weekdays"
+  },
+  {
+   "id": "volunteer.option.10",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Flexible / as needed"
+  },
+  {
+   "id": "volunteer.option.11",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "One-time event"
+  },
+  {
+   "id": "volunteer.legend.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Areas you'd like to help with"
+  },
+  {
+   "id": "volunteer.label.7",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Anything you'd like us to know"
+  },
+  {
+   "id": "volunteer.label.8",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Leave this empty"
+  },
+  {
+   "id": "volunteer.button.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — button label",
+   "role": "button label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"spinner\" aria-hidden=\"true\"></span>Submit application"
+  },
+  {
+   "id": "volunteer.span.1",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "For individuals",
+   "label": "For individuals — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We reply to every application, usually within a few working days."
+  },
+  {
+   "id": "volunteer.video.invite",
+   "page": "volunteer",
+   "scope": "volunteer",
+   "group": "Video",
+   "label": "Volunteer — invitation video",
+   "help": "Volunteers hearing from a current volunteer converts better than copy.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"volunteer.video.invite\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "contact.meta.title",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Contact Us | True Kind Foundation"
+  },
+  {
+   "id": "contact.meta.description",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Get in touch with True Kind Foundation — registered office address, phone, email and a contact form."
+  },
+  {
+   "id": "contact.meta.ogTitle",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Contact Us | True Kind Foundation"
+  },
+  {
+   "id": "contact.meta.ogDesc",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Get in touch with True Kind Foundation — registered office address, phone, email and a contact form."
+  },
+  {
+   "id": "contact.nav.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Talk to us.",
+   "label": "Talk to us. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Contact Us"
+  },
+  {
+   "id": "contact.p.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Talk to us.",
+   "label": "Talk to us. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Contact Us"
+  },
+  {
+   "id": "contact.h1.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Talk to us.",
+   "label": "Talk to us. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Talk to us."
+  },
+  {
+   "id": "contact.p.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "Talk to us.",
+   "label": "Talk to us. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A question about a program, a partnership proposal, or a donation you want tracked — write in, call, or use the form below."
+  },
+  {
+   "id": "contact.p.3",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Send a message"
+  },
+  {
+   "id": "contact.h2.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We usually reply within a few working days"
+  },
+  {
+   "id": "contact.label.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Full name <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "contact.label.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Email <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "contact.label.3",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Subject"
+  },
+  {
+   "id": "contact.label.4",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — form label",
+   "role": "form label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Message <span class=\"req\" aria-hidden=\"true\">*</span>"
+  },
+  {
+   "id": "contact.label.5",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — form label",
+   "role": "form label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Leave this empty"
+  },
+  {
+   "id": "contact.button.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — button label",
+   "role": "button label",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<span class=\"spinner\" aria-hidden=\"true\"></span>Send message"
+  },
+  {
+   "id": "contact.h3.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Reach us directly"
+  },
+  {
+   "id": "contact.div.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<b>Registered office</b>Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181"
+  },
+  {
+   "id": "contact.b.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Phone"
+  },
+  {
+   "id": "contact.a.1.href",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"contact.a.1\"]",
+    "attr": "href"
+   },
+   "default": "tel:+917370067005"
+  },
+  {
+   "id": "contact.a.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "+91 73700 67005",
+   "href": {
+    "id": "contact.a.1.href",
+    "default": "tel:+917370067005"
+   }
+  },
+  {
+   "id": "contact.b.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Email"
+  },
+  {
+   "id": "contact.a.2.href",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"contact.a.2\"]",
+    "attr": "href"
+   },
+   "default": "mailto:info@truekindfoundation.org"
+  },
+  {
+   "id": "contact.a.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "info@truekindfoundation.org",
+   "href": {
+    "id": "contact.a.2.href",
+    "default": "mailto:info@truekindfoundation.org"
+   }
+  },
+  {
+   "id": "contact.div.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<b>Office hours</b>Mon–Sat, 10 AM – 6 PM <span class=\"pending-inline\">confirm</span>"
+  },
+  {
+   "id": "contact.a.3.href",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"contact.a.3\"]",
+    "attr": "href"
+   },
+   "default": "https://www.google.com/maps/search/?api=1&query=Plot+No+221-245+NH-16+Gelpur+Gopabandhupur+Bhadrak+Odisha+756181"
+  },
+  {
+   "id": "contact.a.3",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "View on Google Maps",
+   "href": {
+    "id": "contact.a.3.href",
+    "default": "https://www.google.com/maps/search/?api=1&query=Plot+No+221-245+NH-16+Gelpur+Gopabandhupur+Bhadrak+Odisha+756181"
+   }
+  },
+  {
+   "id": "contact.dt.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account name"
+  },
+  {
+   "id": "contact.dd.1",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation"
+  },
+  {
+   "id": "contact.dt.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Account number"
+  },
+  {
+   "id": "contact.dd.2",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "096402000000775"
+  },
+  {
+   "id": "contact.dt.3",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IFSC code"
+  },
+  {
+   "id": "contact.dd.3",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "IOBA0000964"
+  },
+  {
+   "id": "contact.dt.4",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Bank & branch"
+  },
+  {
+   "id": "contact.dd.4",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Indian Overseas Bank, Nalanga (0964)"
+  },
+  {
+   "id": "contact.p.4",
+   "page": "contact",
+   "scope": "contact",
+   "group": "We usually reply within a few working days",
+   "label": "We usually reply within a few working days — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Donating by transfer? See the <a href=\"donate.html\" class=\"textlink\">donate page</a> for what each amount funds and how to get a receipt."
+  },
+  {
+   "id": "press-release.meta.title",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Press & Media | True Kind Foundation"
+  },
+  {
+   "id": "press-release.meta.description",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "News coverage, press releases and media resources from True Kind Foundation."
+  },
+  {
+   "id": "press-release.meta.ogTitle",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Press & Media | True Kind Foundation"
+  },
+  {
+   "id": "press-release.meta.ogDesc",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "News coverage, press releases and media resources from True Kind Foundation."
+  },
+  {
+   "id": "press-release.nav.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "News & coverage.",
+   "label": "News & coverage. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Press &amp; Media"
+  },
+  {
+   "id": "press-release.p.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "News & coverage.",
+   "label": "News & coverage. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press & Media"
+  },
+  {
+   "id": "press-release.h1.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "News & coverage.",
+   "label": "News & coverage. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "News & coverage."
+  },
+  {
+   "id": "press-release.p.2",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "News & coverage.",
+   "label": "News & coverage. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Where our work has been covered, and the updates we've published ourselves. The three entries below show the layout — they're waiting on your real coverage."
+  },
+  {
+   "id": "press-release.div.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Date<br>pending"
+  },
+  {
+   "id": "press-release.span.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Media coverage"
+  },
+  {
+   "id": "press-release.h3.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Newspaper feature on a skilling batch graduation"
+  },
+  {
+   "id": "press-release.p.3",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Replace with a short summary of the actual coverage — the publication, what they reported, and why it mattered to the program."
+  },
+  {
+   "id": "press-release.a.1.href",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"press-release.a.1\"]",
+    "attr": "href"
+   },
+   "default": "#"
+  },
+  {
+   "id": "press-release.a.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Read the coverage →",
+   "href": {
+    "id": "press-release.a.1.href",
+    "default": "#"
+   }
+  },
+  {
+   "id": "press-release.div.2",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Date<br>pending"
+  },
+  {
+   "id": "press-release.span.2",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press release"
+  },
+  {
+   "id": "press-release.h3.2",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Announcement of a new program or partnership"
+  },
+  {
+   "id": "press-release.p.4",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Use this slot for your own releases — program launches, new partnerships, or the publication of an annual report."
+  },
+  {
+   "id": "press-release.a.2.href",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"press-release.a.2\"]",
+    "attr": "href"
+   },
+   "default": "#"
+  },
+  {
+   "id": "press-release.a.2",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Announcement of a new program or partnership",
+   "label": "Announcement of a new program or partnership — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Read the release →",
+   "href": {
+    "id": "press-release.a.2.href",
+    "default": "#"
+   }
+  },
+  {
+   "id": "press-release.div.3",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "Date<br>pending"
+  },
+  {
+   "id": "press-release.span.3",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Broadcast"
+  },
+  {
+   "id": "press-release.h3.3",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "TV or radio segment on a community program"
+  },
+  {
+   "id": "press-release.p.5",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Add a link to the clip, plus a line on the outlet and reporter where that's relevant."
+  },
+  {
+   "id": "press-release.a.3.href",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"press-release.a.3\"]",
+    "attr": "href"
+   },
+   "default": "#"
+  },
+  {
+   "id": "press-release.a.3",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "TV or radio segment on a community program",
+   "label": "TV or radio segment on a community program — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Watch or listen →",
+   "href": {
+    "id": "press-release.a.3.href",
+    "default": "#"
+   }
+  },
+  {
+   "id": "press-release.p.6",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Newspaper feature on a skilling batch graduation",
+   "label": "Newspaper feature on a skilling batch graduation — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting your real press items — for each one we need the date, outlet, headline, a one-line summary and the link."
+  },
+  {
+   "id": "press-release.p.7",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "For journalists"
+  },
+  {
+   "id": "press-release.h2.1",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Media enquiries"
+  },
+  {
+   "id": "press-release.p.8",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We can usually turn around a comment, a figure or a site visit within a couple of working days."
+  },
+  {
+   "id": "press-release.h3.4",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press contact"
+  },
+  {
+   "id": "press-release.a.4.href",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"press-release.a.4\"]",
+    "attr": "href"
+   },
+   "default": "mailto:info@truekindfoundation.org?subject=Media%20enquiry"
+  },
+  {
+   "id": "press-release.a.4",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "info@truekindfoundation.org",
+   "href": {
+    "id": "press-release.a.4.href",
+    "default": "mailto:info@truekindfoundation.org?subject=Media%20enquiry"
+   }
+  },
+  {
+   "id": "press-release.a.5.href",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"press-release.a.5\"]",
+    "attr": "href"
+   },
+   "default": "tel:+917370067005"
+  },
+  {
+   "id": "press-release.a.5",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — link text",
+   "role": "link text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "+91 73700 67005",
+   "href": {
+    "id": "press-release.a.5.href",
+    "default": "tel:+917370067005"
+   }
+  },
+  {
+   "id": "press-release.h3.5",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Press kit"
+  },
+  {
+   "id": "press-release.p.9",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Logo files, boilerplate description, registration details and approved programme photographs, on request."
+  },
+  {
+   "id": "press-release.h3.6",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — heading (H3)",
+   "role": "heading (H3)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Site visits"
+  },
+  {
+   "id": "press-release.p.10",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Media enquiries",
+   "label": "Media enquiries — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "We can arrange a visit to an active skilling centre, health camp or collective — with the participants' consent, always."
+  },
+  {
+   "id": "press.video.reel",
+   "page": "press-release",
+   "scope": "press-release",
+   "group": "Video",
+   "label": "Press — coverage reel",
+   "help": "Broadcast clips or a montage of coverage.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"press.video.reel\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  },
+  {
+   "id": "chairperson-message.meta.title",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Chairperson's Message | True Kind Foundation"
+  },
+  {
+   "id": "chairperson-message.meta.description",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "A message from the Chairperson of True Kind Foundation on why the organisation exists and what it asks of the people who join."
+  },
+  {
+   "id": "chairperson-message.meta.ogTitle",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Chairperson's Message | True Kind Foundation"
+  },
+  {
+   "id": "chairperson-message.meta.ogDesc",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "A message from the Chairperson of True Kind Foundation on why the organisation exists and what it asks of the people who join."
+  },
+  {
+   "id": "chairperson-message.nav.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "A note from our Chairperson.",
+   "label": "A note from our Chairperson. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / <a href=\"about.html\">About Us</a> / Chairperson's Message"
+  },
+  {
+   "id": "chairperson-message.p.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "A note from our Chairperson.",
+   "label": "A note from our Chairperson. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Chairperson's Message"
+  },
+  {
+   "id": "chairperson-message.h1.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "A note from our Chairperson.",
+   "label": "A note from our Chairperson. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "A note from our Chairperson."
+  },
+  {
+   "id": "chairperson-message.span.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Chairperson's photograph"
+  },
+  {
+   "id": "chairperson-message.p.2",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — placeholder notice",
+   "role": "placeholder notice",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Awaiting the Chairperson's name and photograph."
+  },
+  {
+   "id": "chairperson-message.p.3",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Dear friend of True Kind Foundation,"
+  },
+  {
+   "id": "chairperson-message.p.4",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "Every program on this website started as someone's small decision to show up — a volunteer who kept coming back, a donor who asked hard questions before writing a cheque, a family who let us into their neighbourhood before we'd earned any right to be there. None of what we do works without that first, ordinary act of trust."
+  },
+  {
+   "id": "chairperson-message.p.5",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "I want to be honest about what we are: not a large institution, not a finished project, but a group of people trying to do a few things properly rather than many things loosely. We measure what we can. We say plainly when something hasn't worked. We ask for help when we need it. That's the whole method."
+  },
+  {
+   "id": "chairperson-message.p.6",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "textarea",
+   "target": {
+    "self": true
+   },
+   "default": "If you're reading this while deciding whether to volunteer, donate, or simply trust us with your time — thank you for taking that decision seriously. We don't take it lightly either. Kindness, in our experience, is the easy part. Organising it, sustaining it, and being accountable for it is the actual work, and it's the work we've committed ourselves to."
+  },
+  {
+   "id": "chairperson-message.p.7",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Come build it with us."
+  },
+  {
+   "id": "chairperson-message.div.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "TKF"
+  },
+  {
+   "id": "chairperson-message.b.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — bold value",
+   "role": "bold value",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Chairperson"
+  },
+  {
+   "id": "chairperson-message.span.2",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "True Kind Foundation · <span class=\"pending-inline\">name pending</span>"
+  },
+  {
+   "id": "chairperson-message.p.8",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Take the next step"
+  },
+  {
+   "id": "chairperson-message.h2.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Two ways to be part of this"
+  },
+  {
+   "id": "chairperson-message.p.9",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Give your time, or fund the programs that need it. Both are useful; neither is more welcome than the other."
+  },
+  {
+   "id": "chairperson-message.a.1.href",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"chairperson-message.a.1\"]",
+    "attr": "href"
+   },
+   "default": "volunteer.html"
+  },
+  {
+   "id": "chairperson-message.a.1",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Become a volunteer",
+   "href": {
+    "id": "chairperson-message.a.1.href",
+    "default": "volunteer.html"
+   }
+  },
+  {
+   "id": "chairperson-message.a.2.href",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"chairperson-message.a.2\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "chairperson-message.a.2",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Two ways to be part of this",
+   "label": "Two ways to be part of this — button label",
+   "role": "button label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Make a donation",
+   "href": {
+    "id": "chairperson-message.a.2.href",
+    "default": "donate.html"
+   }
+  },
+  {
+   "id": "chairperson.video.message",
+   "page": "chairperson-message",
+   "scope": "chairperson-message",
+   "group": "Video",
+   "label": "Chairperson — video message",
+   "help": "A filmed version of the written message.",
+   "role": "video",
+   "type": "video",
+   "target": {
+    "selector": "[data-cms-video=\"chairperson.video.message\"]"
+   },
+   "default": {
+    "mode": "",
+    "src": "",
+    "embedUrl": "",
+    "provider": "",
+    "poster": "",
+    "caption": ""
+   }
+  }
+ ]
+}

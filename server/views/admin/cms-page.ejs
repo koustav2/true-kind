@@ -1,0 +1,274 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'cms'}) %>
+<%
+  // Small helpers so the field loop below stays readable.
+  const val = id => { const v = values[id]; return v == null ? '' : v; };
+  const edited = new Set(editedIds);
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+%>
+<div class="wrap">
+<p class="eyebrow">Website</p>
+<h1>Edit <%= page.label %></h1>
+
+<% if (saved !== undefined && saved !== null) { %>
+  <div class="alert ok">
+    <% if (Number(saved) > 0) { %>
+      Saved <%= saved %> change<%= Number(saved) === 1 ? '' : 's' %>. Open the page and hard-refresh (Ctrl/Cmd + Shift + R) to see it.
+    <% } else { %>
+      Nothing had changed, so nothing was written.
+    <% } %>
+  </div>
+<% } %>
+<% if (Object.keys(errors).length) { %>
+  <div class="alert err"><%= Object.keys(errors).length %> field<%= Object.keys(errors).length===1?'':'s' %> could not be saved — see the red notes below. Everything else was saved.</div>
+<% } %>
+
+<div class="cms-shell">
+
+  <!-- page picker -->
+  <nav class="cms-side">
+    <% pages.forEach(function(p){ %>
+      <a href="/portal/admin/cms/page/<%= p.name %>" class="<%= p.name === page.name ? 'on' : '' %>">
+        <span><%= p.label %></span><span class="n"><%= p.count %></span>
+      </a>
+      <% if (p.name === 'global') { %><span class="sep">Pages</span><% } %>
+    <% }) %>
+    <span class="sep">Files</span>
+    <a href="/portal/admin/cms/media"><span>Media library</span></a>
+  </nav>
+
+  <!-- the fields -->
+  <div>
+    <% if (page.name === 'global') { %>
+      <p class="muted" style="margin-top:0">These appear on <strong>all nine pages</strong>. Change the phone number here and it changes everywhere at once.</p>
+    <% } else { %>
+      <p class="muted" style="margin-top:0">
+        Only what you change is stored — anything you leave alone keeps using the text already on the site.
+        <% if (page.file) { %><a class="textlink" href="/<%= page.file %>" target="_blank" rel="noopener">Open <%= page.label %> ↗</a><% } %>
+      </p>
+    <% } %>
+
+    <form method="post" action="/portal/admin/cms/page/<%= page.name %>" id="cmsForm">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <% groups.forEach(function(group, gi){ %>
+      <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
+        <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
+        <div class="cms-body">
+
+          <% group.fields.forEach(function(f){ %>
+          <div class="cms-field">
+            <div class="meta">
+              <label for="<%= f.id %>" style="margin:0"><%= f.role.charAt(0).toUpperCase() + f.role.slice(1) %></label>
+              <% if (edited.has(f.id)) { %><span class="pill info">edited</span><% } %>
+              <span class="key"><%= f.id %></span>
+            </div>
+            <% if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
+
+            <% if (f.type === 'text' || f.type === 'url') { %>
+              <input type="text" id="<%= f.id %>" name="<%= f.id %>" value="<%= val(f.id) %>"
+                     <%= f.type === 'url' ? 'placeholder="about.html  or  https://…  or  mailto:…"' : '' %>>
+
+            <% } else if (f.type === 'textarea') { %>
+              <textarea id="<%= f.id %>" name="<%= f.id %>" rows="4"><%= val(f.id) %></textarea>
+
+            <% } else if (f.type === 'richtext') { %>
+              <textarea id="<%= f.id %>" name="<%= f.id %>" rows="3" class="code"><%= val(f.id) %></textarea>
+              <p class="cms-hint">This one contains formatting. Keep the tags (&lt;em&gt;, &lt;b&gt;, &lt;a&gt;…) and edit the words between them. Anything else is stripped when you save.</p>
+
+            <% } else if (f.type === 'image') { %>
+              <% var im = val(f.id) || {}; %>
+              <div class="row2">
+                <div>
+                  <input type="hidden" name="<%= f.id %>[src]" id="<%= f.id %>_src" value="<%= im.src || '' %>">
+                  <input type="text" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
+                  <p class="cms-hint">Alt text. Describe what is in the picture.</p>
+                </div>
+                <div class="media-preview">
+                  <img id="<%= f.id %>_prev" src="<%= im.src || '' %>" alt="" onerror="this.style.visibility='hidden'">
+                  <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>">Change…</button>
+                </div>
+              </div>
+
+            <% } else if (f.type === 'video') { %>
+              <% var vd = val(f.id) || {}; %>
+              <div data-video="<%= f.id %>">
+                <input type="hidden" name="<%= f.id %>[mode]"     id="<%= f.id %>_mode"  value="<%= vd.mode || '' %>">
+                <input type="hidden" name="<%= f.id %>[src]"      id="<%= f.id %>_src"   value="<%= vd.src || '' %>">
+                <input type="hidden" name="<%= f.id %>[embedUrl]" id="<%= f.id %>_embed" value="<%= vd.embedUrl || '' %>">
+                <input type="hidden" name="<%= f.id %>[provider]" id="<%= f.id %>_prov"  value="<%= vd.provider || '' %>">
+                <div class="tabs" style="margin-bottom:12px">
+                  <a href="#" data-vmode="upload" class="<%= vd.mode === 'upload' ? 'on' : '' %>">Uploaded file</a>
+                  <a href="#" data-vmode="embed"  class="<%= vd.mode === 'embed'  ? 'on' : '' %>">YouTube / Vimeo link</a>
+                  <a href="#" data-vmode=""       class="<%= !vd.mode ? 'on' : '' %>">No video</a>
+                </div>
+                <div data-vpane="upload" <%= vd.mode === 'upload' ? '' : 'hidden' %>>
+                  <div class="media-preview">
+                    <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
+                    <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Choose a video…</button>
+                  </div>
+                  <p class="cms-hint">Up to 200 MB, .mp4 / .webm / .mov. Your server pays the bandwidth for every play.</p>
+                </div>
+                <div data-vpane="embed" <%= vd.mode === 'embed' ? '' : 'hidden' %>>
+                  <input type="text" data-vembedinput placeholder="Paste a YouTube or Vimeo link" value="<%= vd.embedUrl || '' %>">
+                  <p class="cms-hint" data-vembedmsg>Costs you nothing to serve. Viewers see the platform's branding.</p>
+                </div>
+                <div data-vpane="" <%= !vd.mode ? '' : 'hidden' %>>
+                  <p class="cms-hint">This slot stays hidden on the site. Nothing shifts on the page.</p>
+                </div>
+                <input type="text" name="<%= f.id %>[caption]" value="<%= vd.caption || '' %>" placeholder="Caption shown under the video (optional)" style="margin-top:10px">
+              </div>
+            <% } %>
+
+            <% if (f.hrefField) { %>
+              <label for="<%= f.hrefField.id %>" style="margin-top:10px">Where this links to</label>
+              <input type="text" id="<%= f.hrefField.id %>" name="<%= f.hrefField.id %>" value="<%= val(f.hrefField.id) %>">
+              <% if (errors[f.hrefField.id]) { %><p class="cms-err"><%= errors[f.hrefField.id] %></p><% } %>
+            <% } %>
+
+            <% if (errors[f.id]) { %><p class="cms-err"><%= errors[f.id] %></p><% } %>
+          </div>
+          <% }) %>
+
+        </div>
+      </details>
+      <% }) %>
+
+      <div class="cms-bar">
+        <button class="btn btn-purple" type="submit">Save changes</button>
+        <span class="muted">Only the fields you actually changed get written.</span>
+      </div>
+    </form>
+
+    <% if (editedIds.length) { %>
+    <form method="post" action="/portal/admin/cms/reset/<%= page.name %>" style="margin-top:20px"
+          onsubmit="return confirm('Put every edited field on this page back to the original wording? This cannot be undone.')">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <% editedIds.forEach(function(id){ %><input type="hidden" name="id" value="<%= id %>"><% }) %>
+      <button class="btn btn-ghost btn-sm" type="submit">Reset all <%= editedIds.length %> edited field<%= editedIds.length===1?'':'s' %> on this page</button>
+    </form>
+    <% } %>
+  </div>
+</div>
+</div>
+
+<!-- media picker -->
+<div id="picker" hidden style="position:fixed;inset:0;background:rgba(16,31,41,.5);z-index:50;overflow:auto;padding:30px 16px">
+  <div class="card" style="max-width:820px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <h3 style="margin:0;flex:1">Choose a file</h3>
+      <button type="button" class="btn btn-ghost btn-sm" id="pickerClose">Close</button>
+    </div>
+    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet. <a class="textlink" href="/portal/admin/cms/media">Upload something first ↗</a></p>
+    <div class="media-grid" id="pickerGrid"></div>
+    <p class="muted" style="margin-top:14px"><a class="textlink" href="/portal/admin/cms/media">Manage the media library ↗</a></p>
+  </div>
+</div>
+
+<script>
+/* All admin-side, no build step. Kept small and defensive: if any of it throws,
+   the plain form underneath still submits and saves correctly. */
+(function () {
+  "use strict";
+  var MEDIA = <%- JSON.stringify(media) %>;
+  var CSRF  = <%- JSON.stringify(csrfToken) %>;
+
+  /* ---- video mode tabs ---- */
+  document.querySelectorAll('[data-video]').forEach(function (box) {
+    var id = box.getAttribute('data-video');
+    box.querySelectorAll('[data-vmode]').forEach(function (tab) {
+      tab.addEventListener('click', function (e) {
+        e.preventDefault();
+        var mode = tab.getAttribute('data-vmode');
+        box.querySelectorAll('[data-vmode]').forEach(function (t) { t.classList.toggle('on', t === tab); });
+        box.querySelectorAll('[data-vpane]').forEach(function (p) {
+          p.hidden = p.getAttribute('data-vpane') !== mode;
+        });
+        document.getElementById(id + '_mode').value = mode;
+      });
+    });
+    // Resolve a pasted link to a canonical embed URL server-side, so the raw
+    // string never becomes an iframe src.
+    var input = box.querySelector('[data-vembedinput]');
+    var msg   = box.querySelector('[data-vembedmsg]');
+    if (input) input.addEventListener('change', function () {
+      var raw = input.value.trim();
+      if (!raw) { document.getElementById(id + '_embed').value = ''; return; }
+      fetch('/portal/admin/cms/media/embed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF, 'X-Requested-With': 'fetch' },
+        body: JSON.stringify({ url: raw })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d.ok) { msg.textContent = d.message || 'Could not read that link.'; msg.style.color = '#A8243A'; return; }
+        document.getElementById(id + '_embed').value = d.embedUrl;
+        document.getElementById(id + '_prov').value  = d.provider;
+        msg.textContent = 'Recognised: ' + d.provider + ' video ' + d.id;
+        msg.style.color = '';
+      }).catch(function () { msg.textContent = 'Could not reach the server to check that link.'; });
+    });
+  });
+
+  /* ---- media picker ---- */
+  var picker = document.getElementById('picker');
+  var grid   = document.getElementById('pickerGrid');
+  var empty  = document.getElementById('pickerEmpty');
+  var target = null, wantKind = 'image';
+
+  document.querySelectorAll('[data-pick]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      wantKind = btn.getAttribute('data-pick');
+      target   = btn.getAttribute('data-target');
+      render();
+      picker.hidden = false;
+    });
+  });
+  document.getElementById('pickerClose').addEventListener('click', function () { picker.hidden = true; });
+  picker.addEventListener('click', function (e) { if (e.target === picker) picker.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') picker.hidden = true; });
+
+  function render() {
+    var list = MEDIA.filter(function (m) { return m.kind === wantKind; });
+    grid.innerHTML = '';
+    empty.hidden = list.length > 0;
+    list.forEach(function (m) {
+      var tile = document.createElement('div'); tile.className = 'media-tile';
+      var th = document.createElement('div'); th.className = 'thumb';
+      if (m.kind === 'image') {
+        var img = document.createElement('img'); img.src = m.url; img.alt = m.alt || ''; th.appendChild(img);
+      } else {
+        var s = document.createElement('span'); s.className = 'vid'; s.textContent = 'VIDEO'; th.appendChild(s);
+      }
+      var cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = m.original || m.url;
+      var act = document.createElement('div'); act.className = 'media-act';
+      var use = document.createElement('button');
+      use.type = 'button'; use.className = 'btn btn-purple btn-sm'; use.textContent = 'Use this';
+      use.addEventListener('click', function () { choose(m); });
+      act.appendChild(use);
+      tile.append(th, cap, act);
+      grid.appendChild(tile);
+    });
+  }
+
+  function choose(m) {
+    var src = document.getElementById(target + '_src');
+    if (src) src.value = m.url;
+    var prev = document.getElementById(target + '_prev');
+    if (prev) { prev.src = m.url; prev.style.visibility = 'visible'; }
+    var lab = document.getElementById(target + '_srclabel');
+    if (lab) lab.textContent = m.original || m.url;
+    var mode = document.getElementById(target + '_mode');
+    if (mode && m.kind === 'video') mode.value = 'upload';
+    picker.hidden = true;
+  }
+
+  /* Warn before losing edits. */
+  var form = document.getElementById('cmsForm'), dirty = false;
+  form.addEventListener('input', function () { dirty = true; });
+  form.addEventListener('submit', function () { dirty = false; });
+  window.addEventListener('beforeunload', function (e) {
+    if (!dirty) return;
+    e.preventDefault(); e.returnValue = '';
+  });
+})();
+</script>
+</body></html>

@@ -14,7 +14,7 @@
 </div>
 <div class="card">
 <h3>Add a certificate</h3>
-<form method="post" action="/portal/admin/certificates">
+<form method="post" action="/portal/admin/certificates"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label>Title *</label><input name="title" required placeholder="Certificate of Appreciation 2026">
 <label>Description</label><textarea name="description" rows="3" placeholder="For outstanding contribution to..."></textarea>
 <div style="margin-top:18px"><button class="btn btn-purple" type="submit">Create</button></div>

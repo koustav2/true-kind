@@ -92,6 +92,57 @@ img{max-width:100%;height:auto}
 @media(max-width:400px){
   .grid.g4{grid-template-columns:1fr}
 }
+
+/* ---- CMS editor ---------------------------------------------------------
+   The portal stylesheet had no two-column shell, no sticky sidebar and no
+   media grid, so they are added here (one shared block, every view gets them)
+   rather than inlined per view. */
+.cms-shell{display:grid;gap:26px;align-items:start}
+@media(min-width:900px){.cms-shell{grid-template-columns:236px 1fr}}
+.cms-side{position:sticky;top:18px;display:flex;flex-direction:column;gap:3px}
+@media(max-width:899px){.cms-side{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.cms-side::-webkit-scrollbar{display:none}}
+.cms-side a{display:flex;justify-content:space-between;gap:8px;align-items:center;
+  padding:9px 13px;border-radius:9px;text-decoration:none;font-size:.87rem;color:var(--text);white-space:nowrap}
+.cms-side a:hover{background:rgba(125,74,177,.07)}
+.cms-side a.on{background:var(--ink);color:#fff}
+.cms-side a .n{font-family:'IBM Plex Mono',monospace;font-size:.64rem;opacity:.6}
+.cms-side .sep{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-soft);margin:14px 0 4px;padding-left:13px}
+
+.cms-group{border:1px solid var(--rule);border-radius:var(--radius);background:#fff;margin-bottom:16px;overflow:hidden}
+.cms-group > summary{padding:15px 20px;cursor:pointer;font-weight:500;font-size:.95rem;
+  display:flex;align-items:center;gap:10px;list-style:none}
+.cms-group > summary::-webkit-details-marker{display:none}
+.cms-group > summary::before{content:'\25B8';color:var(--purple);font-size:.8rem;transition:transform .15s}
+.cms-group[open] > summary::before{transform:rotate(90deg)}
+.cms-group > summary .n{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--text-soft)}
+.cms-body{padding:4px 20px 20px;border-top:1px solid var(--rule)}
+
+.cms-field{padding:14px 0;border-bottom:1px dashed var(--rule)}
+.cms-field:last-child{border-bottom:none}
+.cms-field label{margin-top:0}
+.cms-field .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.cms-field .key{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--text-soft)}
+.cms-field .row2{display:grid;gap:10px}
+@media(min-width:680px){.cms-field .row2{grid-template-columns:1fr 260px}}
+.cms-field textarea{min-height:84px;resize:vertical}
+.cms-field textarea.code{font-family:'IBM Plex Mono',monospace;font-size:.8rem;line-height:1.55}
+.cms-err{color:var(--clay-deep);font-size:.8rem;margin-top:6px}
+.cms-hint{color:var(--text-soft);font-size:.78rem;margin:4px 0 0}
+
+.cms-bar{position:sticky;bottom:0;background:rgba(255,255,255,.95);
+  border-top:1px solid var(--rule-strong);padding:14px 0;margin-top:18px;
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:5}
+
+.media-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.media-tile{border:1px solid var(--rule);border-radius:9px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.media-tile .thumb{aspect-ratio:4/3;background:var(--paper-2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media-tile .thumb img{width:100%;height:100%;object-fit:cover}
+.media-tile .thumb .vid{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--text-soft)}
+.media-tile .cap{padding:8px 10px;font-size:.72rem;color:var(--text-soft);word-break:break-all;flex:1}
+.media-act{padding:8px 10px;border-top:1px solid var(--rule);display:flex;gap:6px}
+.media-preview{display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.media-preview img{width:96px;height:72px;object-fit:cover;border-radius:6px;border:1px solid var(--rule)}
 </style>
 </head>
 <body>

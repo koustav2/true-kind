@@ -1,12 +1,15 @@
 {
   "name": "true-kind-portal",
   "version": "1.0.0",
-  "description": "True Kind Foundation — public site + member/admin portal",
+  "description": "True Kind Foundation \u2014 public site + member/admin portal",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node --watch server/server.js",
-    "seed": "node server/scripts/seed.js"
+    "seed": "node server/scripts/seed.js",
+    "cms:build": "node server/cms/build-registry.js",
+    "smoke": "node server/scripts/smoke.js",
+    "cms:smoke": "node server/scripts/cms-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",
@@ -26,6 +29,7 @@
     "sequelize": "^6.37.0"
   },
   "devDependencies": {
+    "cheerio": "^1.2.0",
     "sqlite3": "^5.1.7"
   }
 }
