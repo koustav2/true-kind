@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= result && result.found ? 'Verification — ' + result.label : 'Verify a document' %> | True Kind Foundation</title>
+<meta name="robots" content="noindex, nofollow">
+<%# noindex on purpose. This page resolves a document code to a holder's name.
+    It is meant to be reached by scanning a document you are holding, not found
+    in a search engine, and a crawler indexing it would publish that mapping. %>
+<link rel="icon" type="image/png" href="/assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --green:#3F7F04; --blue:#0276AC; --purple:#7D4AB1; --red:#C92135; --navy:#0E4C92;
+  --brand-green:#59B306; --brand-red:#DF3548; --amber:#8A5A00;
+  --ink:#111827; --text:#1F2937; --text-soft:#4B5563;
+  --paper:#FFFFFF; --paper-2:#F5F7FA; --rule:rgba(17,24,39,.11); --rule-strong:rgba(17,24,39,.2);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper-2);color:var(--text);
+  font:400 16px/1.65 'Work Sans',system-ui,sans-serif}
+a{color:var(--blue)}
+.bar{background:var(--paper);border-bottom:1px solid var(--rule);padding:14px 20px}
+.bar::after{content:"";display:block;position:absolute;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--purple) 33%,var(--brand-green) 66%,var(--brand-red))}
+.bar img{height:38px;display:block}
+.wrap{max-width:620px;margin:0 auto;padding:34px 20px 70px}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:500;color:var(--ink);
+  letter-spacing:-.02em;margin:0 0 6px;font-size:1.6rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--purple);margin:0 0 10px}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:26px;margin:0 0 18px}
+
+/* The verdict panel. Colour AND a word AND an icon — never colour alone, so it
+   still reads on a monochrome screen or to someone who cannot distinguish the
+   green from the red. */
+.verdict{display:flex;gap:16px;align-items:flex-start;padding:22px 24px;border-radius:14px;
+  border:1px solid;margin:0 0 18px}
+.verdict .mark{flex:none;width:44px;height:44px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:22px;font-weight:600;color:#fff}
+.verdict h2{margin:0 0 4px;font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:1.25rem}
+.verdict p{margin:0;font-size:.94rem;color:var(--text-soft)}
+/* The verdict heading is 20px at weight 500 — not "large text" under WCAG
+   (that needs 24px, or 18.66px bold), so it owes 4.5:1. --green on this tint
+   composited over the PAGE colour, not over white, comes to 4.29:1: the panel
+   sits on #F5F7FA and the page background is what the tint mixes with. Hence a
+   darker green for this one heading — 4.96:1. */
+.v-valid{background:rgba(89,179,6,.08);border-color:rgba(63,127,4,.35)}
+.v-valid h2{color:#3A7404} .v-valid .mark{background:var(--green)}
+.v-expired{background:rgba(138,90,0,.07);border-color:rgba(138,90,0,.32)}
+.v-expired h2{color:var(--amber)} .v-expired .mark{background:var(--amber)}
+.v-revoked,.v-notfound{background:rgba(201,33,53,.06);border-color:rgba(201,33,53,.32)}
+.v-revoked h2,.v-notfound h2{color:var(--red)} .v-revoked .mark,.v-notfound .mark{background:var(--red)}
+
+dl{margin:0;display:grid;gap:15px}
+dt{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-soft);margin:0 0 3px}
+dd{margin:0;font-size:1rem;color:var(--ink)}
+dd.code{font-family:'IBM Plex Mono',monospace;font-size:.9rem;color:var(--purple);word-break:break-all}
+label{display:block;font-size:.85rem;font-weight:500;color:var(--ink);margin:0 0 7px}
+input{width:100%;padding:14px 15px;border:1px solid var(--rule-strong);border-radius:9px;
+  font:inherit;font-size:16px;color:var(--text);background:var(--paper)}
+input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(125,74,177,.14)}
+.btn{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;
+  padding:13px 24px;border-radius:100px;border:0;background:var(--purple);color:#fff;
+  font:500 .92rem 'Work Sans',sans-serif;text-decoration:none;cursor:pointer}
+.btn:hover{background:#5B3480}
+.note{font-size:.82rem;color:var(--text-soft);margin:16px 0 0}
+.flag{display:inline-block;margin-top:10px;padding:4px 11px;border-radius:100px;
+  font-size:.72rem;background:rgba(138,90,0,.1);color:var(--amber)}
+.foot{text-align:center;font-size:.8rem;color:var(--text-soft);margin-top:26px}
+@media(max-width:600px){.wrap{padding:24px 16px 50px}.card{padding:20px 18px}.verdict{padding:18px}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="/"><img src="/assets/img/logo.png" alt="True Kind Foundation"></a></div>
+<div class="wrap">
+
+<% if (!result) { %>
+  <%# The bare form — someone typing a serial rather than scanning. %>
+  <p class="eyebrow">Verification</p>
+  <h1>Check a True Kind document</h1>
+  <p>Enter the serial printed on a membership card, certificate or receipt and we will tell you whether it is one of ours and whether it is still current.</p>
+  <div class="card">
+    <form method="get" action="/verify">
+      <label for="code">Serial number</label>
+      <input id="code" name="code" required autocapitalize="characters" autocomplete="off"
+             spellcheck="false" placeholder="TKF-M-2026-XXXXXX"
+             value="<%= typeof typed !== 'undefined' && typed ? typed : '' %>">
+      <button class="btn" type="submit">Verify</button>
+    </form>
+    <% if (typeof typed !== 'undefined' && typed) { %>
+      <p class="note"><strong>That serial does not look like one of ours.</strong> Ours begin
+      TKF-M (membership card), TKF-C (certificate), TKF-R (donation receipt) or
+      TKF-MR (membership fee receipt). Check for a mistyped character.</p>
+    <% } %>
+    <p class="note">Most documents carry a QR code — scanning it with your phone camera brings you straight here with the serial filled in.</p>
+  </div>
+
+<% } else { %>
+  <p class="eyebrow">Verification</p>
+  <h1><%= result.label || 'Document' %></h1>
+
+  <% if (result.status === 'valid') { %>
+    <div class="verdict v-valid">
+      <div class="mark" aria-hidden="true">&#10003;</div>
+      <div>
+        <h2>Valid</h2>
+        <p>This is a genuine <%= (result.label || 'document').toLowerCase() %> issued by True Kind Foundation, and it is current.</p>
+      </div>
+    </div>
+  <% } else if (result.status === 'expired') { %>
+    <div class="verdict v-expired">
+      <div class="mark" aria-hidden="true">!</div>
+      <div>
+        <h2>Genuine, but expired</h2>
+        <p>We issued this <%= (result.label || 'document').toLowerCase() %>, but the period it covers has ended. It is not proof of current membership.</p>
+      </div>
+    </div>
+  <% } else if (result.status === 'revoked') { %>
+    <div class="verdict v-revoked">
+      <div class="mark" aria-hidden="true">&#10005;</div>
+      <div>
+        <h2>Withdrawn</h2>
+        <p>
+          We issued this <%= (result.label || 'document').toLowerCase() %>, but it was withdrawn
+          <% if (result.revokedAt) { %>on <%= new Date(result.revokedAt).toDateString() %><% } %>
+          and should not be accepted.
+          <% if (result.revokedReason) { %><br>Reason given: <%= result.revokedReason %>.<% } %>
+        </p>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="verdict v-notfound">
+      <div class="mark" aria-hidden="true">?</div>
+      <div>
+        <h2>Not recognised</h2>
+        <p>No document with this serial exists in our records. It may be mistyped — or it may not be ours.</p>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="card">
+    <dl>
+      <div><dt>Serial</dt><dd class="code"><%= result.code %></dd></div>
+      <% if (result.found) { %>
+        <% if (result.holder) { %><div><dt>Issued to</dt><dd><%= result.holder %></dd></div><% } %>
+        <% if (result.title) { %><div><dt><%= result.kind === 'receipt' ? 'Programme' : 'Title' %></dt><dd><%= result.title %></dd></div><% } %>
+        <% if (result.amount) { %><div><dt>Amount</dt><dd>₹<%= (result.amount/100).toLocaleString('en-IN') %></dd></div><% } %>
+        <% if (result.issuedOn) { %><div><dt>Issued on</dt><dd><%= new Date(result.issuedOn).toDateString() %></dd></div><% } %>
+        <% if (result.validUntil) { %><div><dt>Valid until</dt><dd><%= new Date(result.validUntil).toDateString() %></dd></div><% } %>
+      <% } %>
+    </dl>
+    <%# The signature check is reported, never used to decide the verdict — see
+        the long note at the top of utils/verify.js. Saying so out loud matters:
+        an operator seeing this flag should know it means "check by hand", not
+        "this is fake". %>
+    <% if (result.found && signature === 'mismatch') { %>
+      <span class="flag">This link's security code did not match. The document above is genuine, but the link may have been retyped or copied — worth confirming with us on <%= org.phone %>.</span>
+    <% } %>
+    <p class="note">
+      <% if (result.found) { %>
+        Something not right? Call <%= org.phone %> or email
+        <a href="mailto:<%= org.email %>"><%= org.email %></a> quoting this serial.
+      <% } else { %>
+        <a href="/verify">Try another serial</a>, or contact us on <%= org.phone %>.
+      <% } %>
+    </p>
+  </div>
+<% } %>
+
+<p class="foot">
+  <strong>True Kind Foundation</strong> · Reg. No <%= org.regNo %> · NGO Darpan <%= org.darpan %><br>
+  <a href="/">truekindfoundation.org</a>
+</p>
+</div>
+</body>
+</html>

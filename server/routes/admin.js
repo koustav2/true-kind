@@ -1,11 +1,24 @@
 const router = require('express').Router();
-const { fn, col } = require('sequelize');
-const { requireAdmin } = require('../middleware/auth');
+const { fn, col, Op } = require('sequelize');
+const { requireAdmin, adminOnly } = require('../middleware/auth');
+const { SECTIONS: STAFF_SECTIONS, cleanSections } = require('../middleware/staff');
 const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry,
-        UserAccess, VolunteerLogin, CertificateFile, BoardMember } = require('../models');
+        UserAccess, VolunteerLogin, CertificateFile, BoardMember,
+        MembershipPayment, IdCardProfile, Revocation, VerificationScan,
+        CertificateStyle, VisitorCertificate, OfflineDonation, Notice,
+        ManagerAccess } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const config = require('../config');
+const membership = require('../utils/membership');
 const { serial } = require('../utils/codes');
+const { cardPdf, certificatePdf, visitorCertificatePdf, membershipReceiptPdf,
+        MODE_LABEL, CERT_TEMPLATES, CERT_TEMPLATE_KEYS } = require('../utils/pdf');
+const { idCardPdf } = require('../utils/idcard');
+
+/* The eight real blood groups. A free-text blood group on a card that may be
+   read in an emergency is worse than a blank one. */
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 // Uploads moved to utils/media.js, which adds the extension+mimetype allowlist
 // this instance never had (an uploaded .html or .svg executed as first-party
@@ -15,6 +28,42 @@ const { uploadImage, uploadDoc, uploadErrorMessage, UPLOAD_DIR } = require('../u
 router.use(requireAdmin);
 router.use(async (req, res, next) => {
   res.locals.user = await User.findByPk(req.session.userId);
+  next();
+});
+
+/* Nav badge counts.
+
+   One middleware, one Promise.all, for every admin page — the alternative is
+   each route remembering to pass them, which it will not.
+
+   Wrapped in try/catch and defaulting to {}: the navigation is chrome, and a
+   failed count query must never be able to 500 the page it decorates. The view
+   guards every reference for the same reason. */
+router.use(async (req, res, next) => {
+  res.locals.navCounts = {};
+  try {
+    const [active, guests, certs, visitorCerts, donations, receipts,
+           newVolunteers, newEnquiries, notices, users, blocked, managers] = await Promise.all([
+      User.count({ where: { role: 'member', status: 'active' } }),
+      User.count({ where: { role: 'member', status: 'guest' } }),
+      CertificateIssue.count(),
+      VisitorCertificate.count(),
+      Donation.count({ where: { status: 'paid' } }),
+      MembershipPayment.count(),
+      Volunteer.count({ where: { status: 'new' } }),
+      Enquiry.count({ where: { status: 'new' } }),
+      Notice.count({ where: { active: true } }),
+      User.count(),
+      UserAccess.count({ where: { blocked: true } }),
+      ManagerAccess.count({ where: { active: true } })
+    ]);
+    res.locals.navCounts = {
+      active, guests,
+      certificates: certs + visitorCerts,
+      donations, receipts: receipts + donations,
+      newVolunteers, newEnquiries, notices, users, blocked, managers
+    };
+  } catch (e) { /* chrome only — leave the counts empty */ }
   next();
 });
 
@@ -35,15 +84,379 @@ router.get('/', async (req, res) => {
 });
 
 // 1. Member list — Active / Guest
+//
+// "Guest" is a registration whose membership fee has not been received. The tab
+// is labelled New Memberships for that reason, and every row on it carries an
+// Unpaid pill and the action that turns it into a paid, active member.
 router.get('/members', async (req, res) => {
   const status = req.query.status === 'guest' ? 'guest' : 'active';
   const members = await User.findAll({ where: { role: 'member', status }, order: [['createdAt', 'DESC']] });
-  // One query for the whole page rather than one per row.
-  const blocks = await UserAccess.findAll({ where: { blocked: true }, attributes: ['userId'] });
+
+  // Three queries for the whole page rather than three per row.
+  const ids = members.map(m => m.id);
+  const [blocks, payments, issues, certs] = await Promise.all([
+    UserAccess.findAll({ where: { blocked: true }, attributes: ['userId'] }),
+    ids.length ? MembershipPayment.findAll({ where: { userId: ids }, order: [['paidAt', 'DESC']] }) : [],
+    ids.length ? CertificateIssue.findAll({ where: { userId: ids } }) : [],
+    // The dropdown on each row needs the list of certificates that can be issued.
+    status === 'active' ? Certificate.findAll({ order: [['title', 'ASC']] }) : []
+  ]);
+
+  // userId -> most recent payment, and userId -> how many certificates issued.
+  const lastPayment = {};
+  payments.forEach(p => { if (!lastPayment[p.userId]) lastPayment[p.userId] = p; });
+  const certCount = {};
+  issues.forEach(i => { certCount[i.userId] = (certCount[i.userId] || 0) + 1; });
+
   res.render('admin/members', {
-    title: 'Members', members, status,
-    blockedIds: blocks.map(b => b.userId)
+    title: status === 'guest' ? 'New memberships' : 'Active members',
+    members, status,
+    blockedIds: blocks.map(b => b.userId),
+    lastPayment, certCount, certs,
+    plans: config.plans,
+    modes: membership.OFFLINE_MODES,
+    saved: req.query.saved, error: req.query.error
   });
+});
+
+/* Record a membership fee taken offline, and activate the member.
+   This is the other half of "registered but has not paid": the fee usually
+   arrives as cash at an event or as a bank transfer, and until now there was no
+   way to enter one — membership could only be granted by completing a PhonePe
+   checkout. */
+router.post('/members/:id/membership', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || user.role !== 'member') return res.status(404).send('No such member');
+
+  const mode = String(req.body.mode || '').toLowerCase();
+  if (!membership.isOfflineMode(mode)) {
+    // 'online' is rejected on purpose — see utils/membership.js. A cash payment
+    // must never be recordable as a gateway transaction.
+    return res.redirect('/portal/admin/members?status=guest&error=mode');
+  }
+
+  const plan = membership.planKey(req.body.plan);
+  // The amount is what was actually collected, which is not always the list
+  // price. Blank means "the plan price".
+  const rupees = parseFloat(req.body.amount);
+  const amount = Number.isFinite(rupees) && rupees > 0 ? Math.round(rupees * 100) : undefined;
+  if (req.body.amount && amount === undefined) {
+    return res.redirect('/portal/admin/members?status=guest&error=amount');
+  }
+
+  const when = req.body.paidAt ? new Date(req.body.paidAt) : null;
+  const paidAt = when && !isNaN(when) && when <= new Date(Date.now() + 86400000) ? when : new Date();
+
+  const payment = await membership.activate({
+    user, MembershipPayment, plan, amount, mode,
+    reference: String(req.body.reference || '').trim().slice(0, 120) || null,
+    note: String(req.body.note || '').trim().slice(0, 240) || null,
+    recordedBy: req.session.userId,
+    paidAt
+  });
+
+  res.redirect(`/portal/admin/members/${user.id}?saved=${encodeURIComponent(payment.receiptNo)}`);
+});
+
+/* One member, everything about them on one page — the "View" action.
+   Membership and its payment history, certificates issued, donations given. */
+router.get('/members/:id', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || user.role !== 'member') return res.status(404).render('error',
+    { title: 'Not found', message: 'No such member.' });
+
+  const [payments, issues, donations, access, certs, card] = await Promise.all([
+    MembershipPayment.findAll({ where: { userId: user.id }, order: [['paidAt', 'DESC']] }),
+    CertificateIssue.findAll({
+      where: { userId: user.id },
+      include: [{ model: Certificate, as: 'certificate', attributes: ['id', 'title'] }],
+      order: [['issuedAt', 'DESC']]
+    }),
+    Donation.findAll({ where: { userId: user.id, status: 'paid' }, order: [['paidAt', 'DESC']] }),
+    UserAccess.findOne({ where: { userId: user.id } }),
+    Certificate.findAll({ order: [['title', 'ASC']] }),
+    IdCardProfile.findOne({ where: { userId: user.id } })
+  ]);
+
+  /* Which of this person's codes have been withdrawn. One query for the page,
+     so each certificate row can show its own state without N+1 lookups. */
+  const codes = issues.map(i => i.serial).concat(user.memberId ? [user.memberId] : []);
+  const revoked = codes.length
+    ? (await Revocation.findAll({ where: { code: codes } })).reduce((m, r) => {
+        m[r.code] = r; return m;
+      }, {})
+    : {};
+
+  res.render('admin/member-detail', {
+    title: user.name, member: user, payments, issues, donations, certs,
+    card, revoked, bloodGroups: BLOOD_GROUPS,
+    verifyUrl: user.memberId ? require('../utils/verify').verifyUrl(user.memberId) : null,
+    blocked: !!(access && access.blocked),
+    plans: config.plans, modes: membership.OFFLINE_MODES,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+/* The membership card, pulled by an admin rather than by the member.
+   cardPdf reads user.membership.plan and .validTill, so a member with no
+   membership would crash it — hence the guard. */
+router.get('/members/:id/card.pdf', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || user.role !== 'member') return res.status(404).send('No such member');
+  if (!user.memberId || !user.membership) return res.status(400).render('error', {
+    title: 'No card yet',
+    message: `${user.name} has no membership card because the membership fee has not been recorded yet. Record the payment first.`
+  });
+  await cardPdf(res, user);
+});
+
+/* Their most recent membership receipt, straight from the row. */
+router.get('/members/:id/receipt.pdf', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || user.role !== 'member') return res.status(404).send('No such member');
+  const payment = await MembershipPayment.findOne({
+    where: { userId: user.id }, order: [['paidAt', 'DESC']]
+  });
+  if (!payment) return res.status(404).render('error', {
+    title: 'No receipt',
+    message: `No membership payment has been recorded for ${user.name} yet.`
+  });
+  await membershipReceiptPdf(res, payment, user);
+});
+
+/* Issue a certificate to this member, from the member's own row.
+   The existing route is POST /certificates/:id/issue, which starts from the
+   certificate and picks a member; this starts from the member and picks a
+   certificate. Same table, opposite direction — which is the direction you are
+   facing when you are looking at a member. */
+router.post('/members/:id/certificate', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || user.role !== 'member') return res.status(404).send('No such member');
+  const cert = await Certificate.findByPk(req.body.certificateId);
+  if (!cert) return res.redirect(`/portal/admin/members/${user.id}?error=nocert`);
+
+  // Do not issue the same certificate to the same person twice: the serial is
+  // what makes it verifiable, and two live serials for one award is a mess to
+  // unpick later.
+  const already = await CertificateIssue.findOne({
+    where: { certificateId: cert.id, userId: user.id }
+  });
+  if (already) return res.redirect(`/portal/admin/members/${user.id}?error=duplicate`);
+
+  const issue = await CertificateIssue.create({
+    certificateId: cert.id, userId: user.id, serial: serial('TKF-C')
+  });
+  res.redirect(`/portal/admin/members/${user.id}?saved=${encodeURIComponent(issue.serial)}`);
+});
+
+/* ==========================================================================
+   Revocation.
+
+   This used to be a DELETE. Destroying the issue row was wrong in a way that
+   only shows up once the certificates are verifiable: the paper certificate is
+   still in somebody's hands, and after a delete its serial verified as "not
+   recognised" — as though we had never issued it. That is indistinguishable
+   from a forgery, and it loses the record that we ever made the award.
+
+   A revocation is a row instead. The serial keeps resolving, and now says
+   "withdrawn on <date>", with a reason. It can also be undone, which a delete
+   could not be.
+   ========================================================================== */
+
+async function revoke(code, kind, req) {
+  const [row] = await Revocation.findOrCreate({
+    where: { code },
+    defaults: {
+      kind,
+      reason: String(req.body.reason || '').trim().slice(0, 240) || null,
+      revokedBy: req.session.userId,
+      revokedAt: new Date()
+    }
+  });
+  return row;
+}
+
+router.post('/members/:id/certificate/:issueId/revoke', async (req, res) => {
+  const row = await CertificateIssue.findOne({
+    where: { id: req.params.issueId, userId: req.params.id }
+  });
+  if (row) await revoke(row.serial, 'certificate', req);
+  res.redirect(`/portal/admin/members/${req.params.id}?saved=revoked`);
+});
+
+router.post('/members/:id/certificate/:issueId/restore', async (req, res) => {
+  const row = await CertificateIssue.findOne({
+    where: { id: req.params.issueId, userId: req.params.id }
+  });
+  if (row) await Revocation.destroy({ where: { code: row.serial } });
+  res.redirect(`/portal/admin/members/${req.params.id}?saved=restored`);
+});
+
+/* Revoking the membership CARD, which is a different thing from deactivating
+   the account: a card can be reported lost and cancelled while the person
+   remains a member in good standing and gets a replacement. */
+router.post('/members/:id/card/revoke', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user || !user.memberId) return res.redirect(`/portal/admin/members/${req.params.id}?error=nocard`);
+  await revoke(user.memberId, 'member', req);
+  res.redirect(`/portal/admin/members/${user.id}?saved=revoked`);
+});
+
+router.post('/members/:id/card/restore', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (user && user.memberId) await Revocation.destroy({ where: { code: user.memberId } });
+  res.redirect(`/portal/admin/members/${req.params.id}?saved=restored`);
+});
+
+/* ==========================================================================
+   ID card details and printing.
+   ========================================================================== */
+
+const cardPhoto = (req, res, next) => {
+  uploadImage.single('photo')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error',
+      { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+};
+
+router.post('/members/:id/idcard', cardPhoto, async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.status(404).send('No such member');
+  }
+
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n) || null;
+  const day = v => {
+    const d = v ? new Date(v) : null;
+    return d && !isNaN(d) ? d.toISOString().slice(0, 10) : null;
+  };
+  const type = ['member', 'staff', 'volunteer'].includes(req.body.cardType) ? req.body.cardType : 'member';
+
+  const data = {
+    cardType: type,
+    employeeCode: s(req.body.employeeCode, 60),
+    designation:  s(req.body.designation, 80),
+    department:   s(req.body.department, 80),
+    // Constrained: a blood group is one of eight values, and "O positive
+    // (maybe)" on a card that might be read in an emergency is worse than blank.
+    bloodGroup:   BLOOD_GROUPS.includes(req.body.bloodGroup) ? req.body.bloodGroup : null,
+    joinedOn:   day(req.body.joinedOn),
+    issuedOn:   day(req.body.issuedOn) || new Date().toISOString().slice(0, 10),
+    validUntil: day(req.body.validUntil),
+    updatedBy:  req.session.userId
+  };
+
+  const [profile] = await IdCardProfile.findOrCreate({
+    where: { userId: user.id }, defaults: { userId: user.id }
+  });
+  if (req.file) {
+    dropPhoto(profile.photoFile);
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  } else if (req.body.removePhoto === 'on') {
+    dropPhoto(profile.photoFile);
+    data.photoUrl = null;
+    data.photoFile = null;
+  }
+  await profile.update(data);
+  res.redirect(`/portal/admin/members/${user.id}?saved=card`);
+});
+
+router.get('/members/:id/idcard.pdf', async (req, res) => {
+  const user = await User.findByPk(req.params.id);
+  if (!user) return res.status(404).send('No such member');
+  const profile = await IdCardProfile.findOne({ where: { userId: user.id } });
+  const p = profile || {};
+
+  /* The code the card's QR verifies. A member card verifies the Member ID,
+     because that is the code that resolves. A staff card with only a local
+     employee number has nothing to resolve against, so it falls back to the
+     Member ID if there is one and otherwise prints without a live QR target —
+     better than a QR that leads to "not recognised". */
+  const code = user.memberId || p.employeeCode || '';
+  if (!code) return res.status(400).render('error', {
+    title: 'No ID number yet',
+    message: `${user.name} has no Member ID and no employee code, so there is nothing for the card's QR code to verify. ` +
+             `Record the membership payment (which assigns a Member ID), or enter an employee code in the ID card panel first.`
+  });
+
+  let photoPath = null;
+  if (p.photoFile) {
+    const guess = require('path').join(UPLOAD_DIR, p.photoFile);
+    try { if (require('fs').statSync(guess).isFile()) photoPath = guess; } catch (e) {}
+  }
+  await idCardPdf(res, user, p, { photoPath, code });
+});
+
+/* ==========================================================================
+   Verification scan log — who checked what, and what they were told.
+   ========================================================================== */
+router.get('/verification-log', async (req, res) => {
+  const scans = await VerificationScan.findAll({ order: [['createdAt', 'DESC']], limit: 500 });
+  const counts = scans.reduce((acc, s) => {
+    acc[s.result] = (acc[s.result] || 0) + 1;
+    return acc;
+  }, {});
+  const revocations = await Revocation.findAll({ order: [['revokedAt', 'DESC']] });
+  res.render('admin/verification-log', {
+    title: 'Verification log', scans, counts, revocations
+  });
+});
+
+/* A certificate PDF for any member, without signing in as them. */
+router.get('/members/:id/certificate/:issueId.pdf', async (req, res) => {
+  const issue = await CertificateIssue.findOne({
+    where: { id: req.params.issueId, userId: req.params.id },
+    include: [{ model: Certificate, as: 'certificate' }]
+  });
+  if (!issue) return res.status(404).send('Not found');
+  const user = await User.findByPk(req.params.id);
+  const style = await CertificateStyle.findOne({ where: { certificateId: issue.certificateId } });
+  await certificatePdf(res, issue.certificate, issue, user, style ? style.template : 'navy');
+});
+
+/* 1b. Membership receipts — every fee received, in one list. */
+router.get('/membership-receipts', async (req, res) => {
+  const payments = await MembershipPayment.findAll({
+    include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email', 'memberId'] }],
+    order: [['paidAt', 'DESC']]
+  });
+  const total = payments.reduce((n, p) => n + p.amount, 0);
+  res.render('admin/membership-receipts', {
+    title: 'Membership receipts', payments, total,
+    modeLabel: MODE_LABEL, plans: config.plans
+  });
+});
+
+router.get('/membership-receipts/:id/pdf', async (req, res) => {
+  const payment = await MembershipPayment.findByPk(req.params.id);
+  if (!payment) return res.status(404).send('Not found');
+  const user = await User.findByPk(payment.userId);
+  await membershipReceiptPdf(res, payment, user);
+});
+
+router.get('/membership-receipts.csv', async (req, res) => {
+  const payments = await MembershipPayment.findAll({
+    include: [{ model: User, as: 'user', attributes: ['name', 'email', 'memberId'] }],
+    order: [['paidAt', 'DESC']]
+  });
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="membership-receipts.csv"');
+  const rows = [['Receipt', 'Date', 'MemberId', 'Name', 'Email', 'Plan', 'Amount(INR)', 'Mode', 'Reference', 'ValidTill', 'RecordedOffline'].join(',')];
+  payments.forEach(p => {
+    const u = p.user || {};
+    rows.push([
+      p.receiptNo, (p.paidAt || p.createdAt).toISOString().slice(0, 10),
+      u.memberId || '', JSON.stringify(u.name || ''), u.email || '',
+      p.plan || '', (p.amount / 100).toFixed(2), p.mode || '',
+      JSON.stringify(p.reference || ''),
+      p.validTill ? p.validTill.toISOString().slice(0, 10) : '',
+      p.recordedBy ? 'yes' : 'no'
+    ].join(','));
+  });
+  res.send(rows.join('\n'));
 });
 
 // 2. Certificates
@@ -58,6 +471,85 @@ router.post('/certificates', async (req, res) => {
   await Certificate.create({ title: req.body.title, description: req.body.description });
   res.redirect('/portal/admin/certificates');
 });
+/* ORDER MATTERS. These two must stay ABOVE '/certificates/:id' — Express
+   matches in declaration order, so with :id first a request for
+   /certificates/generate is handled as certificate id "generate" and dies in
+   findByPk. Do not move them below it. */
+/* "Generate Certificate" — the reference admin's flow. Starts from the list of
+   active members rather than from a certificate, which is the direction you are
+   facing when you have a batch of people to award. */
+router.get('/certificates/generate', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  const where = { role: 'member', status: 'active' };
+  if (q) {
+    where[Op.or] = [
+      { name: { [Op.like]: `%${q}%` } },
+      { email: { [Op.like]: `%${q}%` } },
+      { memberId: { [Op.like]: `%${q}%` } }
+    ];
+  }
+  const [members, certs] = await Promise.all([
+    User.findAll({ where, order: [['name', 'ASC']], limit: 300 }),
+    Certificate.findAll({ order: [['title', 'ASC']] })
+  ]);
+  const issues = members.length
+    ? await CertificateIssue.findAll({ where: { userId: members.map(m => m.id) } })
+    : [];
+  // userId -> Set of certificateIds already issued, so the page can grey out a
+  // duplicate instead of letting the admin click it and get an error.
+  const already = {};
+  issues.forEach(i => {
+    (already[i.userId] = already[i.userId] || []).push(i.certificateId);
+  });
+  res.render('admin/cert-generate', {
+    title: 'Generate certificate', members, certs, already, q,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+/* Every certificate ever issued — members and visitors together, because
+   "which certificates exist" is one question, not two. */
+router.get('/certificates/issued', async (req, res) => {
+  const [issues, visitors] = await Promise.all([
+    CertificateIssue.findAll({
+      include: [
+        { model: Certificate, as: 'certificate', attributes: ['id', 'title'] },
+        { model: User, as: 'user', attributes: ['id', 'name', 'email', 'memberId'] }
+      ],
+      order: [['issuedAt', 'DESC']]
+    }),
+    VisitorCertificate.findAll({ order: [['createdAt', 'DESC']] })
+  ]);
+
+  const codes = issues.map(i => i.serial).concat(visitors.map(v => v.serial));
+  const revoked = codes.length
+    ? (await Revocation.findAll({ where: { code: codes } }))
+        .reduce((m, r) => { m[r.code] = r; return m; }, {})
+    : {};
+
+  /* One list, sorted together — an admin looking for a serial does not know or
+     care which table it came from. */
+  const rows = issues.map(i => ({
+    serial: i.serial, title: i.certificate ? i.certificate.title : '—',
+    holder: i.user ? i.user.name : '—', extra: i.user ? (i.user.memberId || i.user.email) : '',
+    issuedAt: i.issuedAt, kind: 'member',
+    pdf: i.user ? `/portal/admin/members/${i.user.id}/certificate/${i.id}.pdf` : null,
+    memberId: i.user ? i.user.id : null, issueId: i.id
+  })).concat(visitors.map(v => ({
+    serial: v.serial, title: v.programme || 'Certificate',
+    holder: v.name, extra: v.mobile || v.email || '',
+    issuedAt: v.issuedOn ? new Date(v.issuedOn) : v.createdAt, kind: 'visitor',
+    pdf: `/portal/admin/visitor-certificates/${v.id}.pdf`,
+    visitorId: v.id
+  }))).sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
+
+  res.render('admin/cert-issued', {
+    title: 'Issued certificates', rows, revoked,
+    liveCount: rows.filter(r => !revoked[r.serial]).length,
+    saved: req.query.saved
+  });
+});
+
 router.get('/certificates/:id', async (req, res) => {
   const cert = await Certificate.findByPk(req.params.id, {
     include: [{ model: CertificateIssue, as: 'issued', include: [{ model: User, as: 'user', attributes: ['name', 'email', 'memberId'] }] }]
@@ -65,8 +557,10 @@ router.get('/certificates/:id', async (req, res) => {
   if (!cert) return res.status(404).render('error', { title: 'Not found', message: 'No such certificate.' });
   const members = await User.findAll({ where: { role: 'member', status: 'active' }, order: [['name', 'ASC']] });
   const file = await CertificateFile.findOne({ where: { certificateId: cert.id } });
+  const style = await CertificateStyle.findOne({ where: { certificateId: cert.id } });
   res.render('admin/certificate-detail', {
     title: cert.title, cert, members, file,
+    templates: CERT_TEMPLATES, template: style ? style.template : 'navy',
     saved: req.query.saved, error: req.query.error
   });
 });
@@ -87,7 +581,14 @@ router.get('/donations', async (req, res) => {
     include: [{ model: User, as: 'user', attributes: ['name', 'email', 'memberId'] }],
     order: [['paidAt', 'DESC']]
   });
-  res.render('admin/donations', { title: 'Donations', donations, kind });
+  const offlineBy = (await OfflineDonation.findAll({
+    where: donations.length ? { donationId: donations.map(d => d.id) } : { donationId: -1 }
+  })).reduce((m, r) => { m[r.donationId] = r; return m; }, {});
+  res.render('admin/donations', {
+    title: 'Donations', donations, kind, offlineBy, modeLabel: MODE_LABEL,
+    categories: config.donationCategories, modes: membership.OFFLINE_MODES,
+    saved: req.query.saved, error: req.query.error
+  });
 });
 router.get('/donations.csv', async (req, res) => {
   const donations = await Donation.findAll({
@@ -498,6 +999,431 @@ router.post('/board/:id/delete', async (req, res) => {
     dropPhoto(file);
   }
   res.redirect('/portal/admin/board?saved=1');
+});
+
+/* ==========================================================================
+   Certificate designs, the Generate page, and the issued-certificate register.
+   ========================================================================== */
+
+/* Which of the three designs a certificate type prints in. Stored per type in
+   CertificateStyle — see models/index.js on why it cannot be a column. */
+async function styleMap(ids) {
+  if (!ids.length) return {};
+  const rows = await CertificateStyle.findAll({ where: { certificateId: ids } });
+  return rows.reduce((m, r) => { m[r.certificateId] = r.template; return m; }, {});
+}
+
+router.post('/certificates/:id/style', async (req, res) => {
+  const cert = await Certificate.findByPk(req.params.id);
+  if (!cert) return res.status(404).send('No such certificate');
+  const template = CERT_TEMPLATE_KEYS.includes(req.body.template) ? req.body.template : 'navy';
+  const [row] = await CertificateStyle.findOrCreate({
+    where: { certificateId: cert.id }, defaults: { certificateId: cert.id, template }
+  });
+  if (row.template !== template) await row.update({ template });
+  res.redirect(`/portal/admin/certificates/${cert.id}?saved=style`);
+});
+
+/* ==========================================================================
+   Visitor certificates — for somebody with no account.
+   ========================================================================== */
+
+router.get('/visitor-certificates', async (req, res) => {
+  const list = await VisitorCertificate.findAll({ order: [['createdAt', 'DESC']], limit: 300 });
+  const revoked = list.length
+    ? (await Revocation.findAll({ where: { code: list.map(v => v.serial) } }))
+        .reduce((m, r) => { m[r.code] = r; return m; }, {})
+    : {};
+  res.render('admin/visitor-certificates', {
+    title: 'Visitor certificates', list, revoked,
+    templates: CERT_TEMPLATES, programmes: config.donationCategories,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+router.post('/visitor-certificates', async (req, res) => {
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n) || null;
+  const name = s(req.body.name, 120);
+  if (!name) return res.redirect('/portal/admin/visitor-certificates?error=name');
+
+  const vc = await VisitorCertificate.create({
+    serial: serial('TKF-VC'),
+    name,
+    fatherName: s(req.body.fatherName, 120),
+    mobile:     s(req.body.mobile, 30),
+    email:      s(req.body.email, 160),
+    programme:  s(req.body.programme, 120),
+    template:   CERT_TEMPLATE_KEYS.includes(req.body.template) ? req.body.template : 'navy',
+    issuedOn:   new Date().toISOString().slice(0, 10),
+    issuedBy:   req.session.userId
+  });
+  res.redirect(`/portal/admin/visitor-certificates?saved=${encodeURIComponent(vc.serial)}`);
+});
+
+router.get('/visitor-certificates/:id.pdf', async (req, res) => {
+  const vc = await VisitorCertificate.findByPk(req.params.id);
+  if (!vc) return res.status(404).send('Not found');
+  await visitorCertificatePdf(res, vc);
+});
+
+router.post('/visitor-certificates/:id/revoke', async (req, res) => {
+  const vc = await VisitorCertificate.findByPk(req.params.id);
+  if (vc) await revoke(vc.serial, 'certificate', req);
+  res.redirect('/portal/admin/visitor-certificates?saved=revoked');
+});
+
+router.post('/visitor-certificates/:id/restore', async (req, res) => {
+  const vc = await VisitorCertificate.findByPk(req.params.id);
+  if (vc) await Revocation.destroy({ where: { code: vc.serial } });
+  res.redirect('/portal/admin/visitor-certificates?saved=restored');
+});
+
+/* ==========================================================================
+   A donation taken offline.
+
+   Stored as an ordinary Donation so it appears in every list and total, with an
+   OfflineDonation row recording how it arrived and who entered it. Same
+   reasoning as a membership fee taken in cash.
+   ========================================================================== */
+router.post('/donations/offline', async (req, res) => {
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n) || null;
+  const mode = String(req.body.mode || '').toLowerCase();
+  if (!membership.isOfflineMode(mode)) return res.redirect('/portal/admin/donations?error=mode');
+
+  const rupees = parseFloat(req.body.amount);
+  if (!Number.isFinite(rupees) || rupees < 1) return res.redirect('/portal/admin/donations?error=amount');
+  const name = s(req.body.name, 120);
+  if (!name) return res.redirect('/portal/admin/donations?error=name');
+
+  const category = config.donationCategories.includes(req.body.category)
+    ? req.body.category : 'Where it is needed most';
+
+  const when = req.body.paidAt ? new Date(req.body.paidAt) : null;
+  const paidAt = when && !isNaN(when) && when <= new Date(Date.now() + 86400000) ? when : new Date();
+
+  /* An offline donation is `guest` kind even when the donor is a member: `kind`
+     records HOW it arrived (through the member portal, or not), and this one did
+     not come through the portal at all. If they are a member we still link the
+     userId, so it shows on their record. */
+  const linkedMember = req.body.userId ? await User.findByPk(req.body.userId) : null;
+
+  const donation = await Donation.create({
+    kind: 'guest',
+    guest: {
+      name,
+      email: s(req.body.email, 160),
+      phone: s(req.body.phone, 30),
+      city:  s(req.body.city, 80),
+      pan:   s(req.body.pan, 20)
+    },
+    userId: linkedMember ? linkedMember.id : null,
+    category,
+    amount: Math.round(rupees * 100),
+    status: 'paid',
+    // Prefixed so it is obvious in the list that no gateway was involved.
+    txnId: 'OFFLINE' + Date.now() + crypto.randomBytes(3).toString('hex').toUpperCase(),
+    receiptNo: serial('TKF-R'),
+    paidAt
+  });
+  await OfflineDonation.create({
+    donationId: donation.id, mode,
+    reference: s(req.body.reference, 120),
+    note: s(req.body.note, 240),
+    recordedBy: req.session.userId
+  });
+  res.redirect(`/portal/admin/donations?saved=${encodeURIComponent(donation.receiptNo)}`);
+});
+
+/* ==========================================================================
+   All Receipts — one hub, four lists.
+   ========================================================================== */
+
+const RECEIPT_TABS = [
+  { key: 'membership', label: 'Membership receipts' },
+  { key: 'member',     label: 'Member donation receipts' },
+  { key: 'visitor',    label: 'Visitor donation receipts' },
+  { key: 'offline',    label: 'Cash & offline receipts' }
+];
+
+router.get('/receipts', async (req, res) => {
+  const [memberships, memberDon, visitorDon, offline] = await Promise.all([
+    MembershipPayment.count(),
+    Donation.count({ where: { kind: 'member', status: 'paid' } }),
+    Donation.count({ where: { kind: 'guest', status: 'paid' } }),
+    OfflineDonation.count()
+  ]);
+  const [mTotal, dTotal] = await Promise.all([
+    MembershipPayment.sum('amount'),
+    Donation.sum('amount', { where: { status: 'paid' } })
+  ]);
+  res.render('admin/receipts', {
+    title: 'All receipts', tabs: RECEIPT_TABS,
+    counts: { membership: memberships, member: memberDon, visitor: visitorDon, offline },
+    totals: { membership: mTotal || 0, donations: dTotal || 0 }
+  });
+});
+
+router.get('/receipts/:kind', async (req, res) => {
+  const kind = RECEIPT_TABS.some(t => t.key === req.params.kind) ? req.params.kind : 'membership';
+
+  if (kind === 'membership') {
+    const payments = await MembershipPayment.findAll({
+      include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email', 'memberId'] }],
+      order: [['paidAt', 'DESC']]
+    });
+    return res.render('admin/membership-receipts', {
+      title: 'Membership receipts', payments,
+      total: payments.reduce((n, p) => n + p.amount, 0),
+      modeLabel: MODE_LABEL, plans: config.plans
+    });
+  }
+
+  /* The three donation lists. `offline` cuts across the other two — it is the
+     ones an admin keyed in rather than a kind of donor — so it is selected by
+     the presence of an OfflineDonation row, not by Donation.kind. */
+  let where = { status: 'paid' };
+  let offlineIds = null;
+  if (kind === 'member') where.kind = 'member';
+  if (kind === 'visitor') where.kind = 'guest';
+  if (kind === 'offline') {
+    const rows = await OfflineDonation.findAll({ attributes: ['donationId'] });
+    offlineIds = rows.map(r => r.donationId);
+    where.id = offlineIds.length ? offlineIds : [-1];
+  }
+  const donations = await Donation.findAll({
+    where, include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email', 'memberId'] }],
+    order: [['paidAt', 'DESC']]
+  });
+  const offlineBy = (await OfflineDonation.findAll({
+    where: donations.length ? { donationId: donations.map(d => d.id) } : { donationId: -1 }
+  })).reduce((m, r) => { m[r.donationId] = r; return m; }, {});
+
+  res.render('admin/donation-receipts', {
+    title: RECEIPT_TABS.find(t => t.key === kind).label,
+    kind, tabs: RECEIPT_TABS, donations, offlineBy, modeLabel: MODE_LABEL,
+    total: donations.reduce((n, d) => n + d.amount, 0)
+  });
+});
+
+/* ==========================================================================
+   All Users Data, and the Blocked Users list.
+   ========================================================================== */
+
+router.get('/users', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  const where = {};
+  if (q) {
+    where[Op.or] = [
+      { name: { [Op.like]: `%${q}%` } },
+      { email: { [Op.like]: `%${q}%` } },
+      { phone: { [Op.like]: `%${q}%` } },
+      { memberId: { [Op.like]: `%${q}%` } }
+    ];
+  }
+  const users = await User.findAll({ where, order: [['createdAt', 'DESC']], limit: 500 });
+  const ids = users.map(u => u.id);
+  const [access, managers, payments] = await Promise.all([
+    ids.length ? UserAccess.findAll({ where: { userId: ids } }) : [],
+    ids.length ? ManagerAccess.findAll({ where: { userId: ids } }) : [],
+    ids.length ? MembershipPayment.findAll({ where: { userId: ids }, attributes: ['userId'] }) : []
+  ]);
+  const accessBy = access.reduce((m, a) => { m[a.userId] = a; return m; }, {});
+  const managerBy = managers.reduce((m, a) => { m[a.userId] = a; return m; }, {});
+  const paidIds = new Set(payments.map(p => p.userId));
+  res.render('admin/users', {
+    title: 'All users', users, accessBy, managerBy, paidIds, q,
+    total: await User.count()
+  });
+});
+
+router.get('/blocked', async (req, res) => {
+  const blocks = await UserAccess.findAll({ where: { blocked: true }, order: [['blockedAt', 'DESC']] });
+  const users = blocks.length
+    ? await User.findAll({ where: { id: blocks.map(b => b.userId) } })
+    : [];
+  const byId = users.reduce((m, u) => { m[u.id] = u; return m; }, {});
+  res.render('admin/blocked', { title: 'Deactivated accounts', blocks, byId });
+});
+
+/* ==========================================================================
+   Notices.
+
+   In-portal only. There is no mail sender in this application, so the view says
+   so in as many words — see the note on the Notice model.
+   ========================================================================== */
+
+router.get('/notices', async (req, res) => {
+  const notices = await Notice.findAll({ order: [['pinned', 'DESC'], ['createdAt', 'DESC']] });
+  const [members, guests] = await Promise.all([
+    User.count({ where: { role: 'member', status: 'active' } }),
+    User.count({ where: { role: 'member', status: 'guest' } })
+  ]);
+  res.render('admin/notices', {
+    title: 'Notices', notices, audienceCounts: { members, guests, all: members + guests },
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+router.post('/notices', async (req, res) => {
+  const title = String(req.body.title || '').trim().slice(0, 160);
+  const body = String(req.body.body || '').trim().slice(0, 4000);
+  if (!title || !body) return res.redirect('/portal/admin/notices?error=empty');
+  const audience = ['all', 'members', 'guests'].includes(req.body.audience) ? req.body.audience : 'all';
+  const exp = req.body.expiresOn ? new Date(req.body.expiresOn) : null;
+  await Notice.create({
+    title, body, audience,
+    pinned: req.body.pinned === 'on',
+    expiresOn: exp && !isNaN(exp) ? exp.toISOString().slice(0, 10) : null,
+    createdBy: req.session.userId
+  });
+  res.redirect('/portal/admin/notices?saved=1');
+});
+
+router.post('/notices/:id/toggle', async (req, res) => {
+  const n = await Notice.findByPk(req.params.id);
+  if (n) await n.update({ active: !n.active });
+  res.redirect('/portal/admin/notices?saved=1');
+});
+
+router.post('/notices/:id/delete', adminOnly, async (req, res) => {
+  const n = await Notice.findByPk(req.params.id);
+  if (n) await n.destroy();
+  res.redirect('/portal/admin/notices?saved=1');
+});
+
+/* ==========================================================================
+   Manager section.
+
+   Admin-only throughout, including the GET: the list of who can see what is
+   itself sensitive, and a manager who can read it is halfway to editing it.
+   `adminOnly` is redundant with the allow table (which does not mention these
+   paths at all) and that is the point — two independent checks on the one thing
+   where a mistake is a privilege escalation.
+   ========================================================================== */
+
+router.get('/managers', adminOnly, async (req, res) => {
+  const grants = await ManagerAccess.findAll({ order: [['createdAt', 'DESC']] });
+  const users = grants.length
+    ? await User.findAll({ where: { id: grants.map(g => g.userId) } })
+    : [];
+  const byId = users.reduce((m, u) => { m[u.id] = u; return m; }, {});
+  // Candidates: ordinary member accounts that are not already managers.
+  const taken = new Set(grants.map(g => g.userId));
+  const candidates = (await User.findAll({
+    where: { role: 'member' }, order: [['name', 'ASC']], limit: 500
+  })).filter(u => !taken.has(u.id));
+  res.render('admin/managers', {
+    title: 'Managers', grants, byId, candidates,
+    sections: STAFF_SECTIONS, saved: req.query.saved, error: req.query.error
+  });
+});
+
+router.post('/managers', adminOnly, async (req, res) => {
+  const user = await User.findByPk(req.body.userId);
+  if (!user) return res.redirect('/portal/admin/managers?error=nouser');
+  if (user.role === 'admin') return res.redirect('/portal/admin/managers?error=isadmin');
+  const sections = cleanSections([].concat(req.body.sections || []));
+  const [grant] = await ManagerAccess.findOrCreate({
+    where: { userId: user.id },
+    defaults: { userId: user.id, sections, grantedBy: req.session.userId }
+  });
+  await grant.update({
+    sections,
+    note: String(req.body.note || '').trim().slice(0, 240) || null,
+    active: true,
+    grantedBy: req.session.userId
+  });
+  res.redirect('/portal/admin/managers?saved=1');
+});
+
+router.post('/managers/:id/update', adminOnly, async (req, res) => {
+  const grant = await ManagerAccess.findByPk(req.params.id);
+  if (!grant) return res.redirect('/portal/admin/managers?error=nouser');
+  await grant.update({
+    sections: cleanSections([].concat(req.body.sections || [])),
+    note: String(req.body.note || '').trim().slice(0, 240) || null,
+    active: req.body.active === 'on'
+  });
+  res.redirect('/portal/admin/managers?saved=1');
+});
+
+router.post('/managers/:id/delete', adminOnly, async (req, res) => {
+  const grant = await ManagerAccess.findByPk(req.params.id);
+  if (grant) await grant.destroy();
+  res.redirect('/portal/admin/managers?saved=1');
+});
+
+/* ==========================================================================
+   Report downloads — every export in one place.
+   ========================================================================== */
+
+const REPORTS = [
+  { key: 'donations',           label: 'All donations',        href: '/portal/admin/donations.csv',
+    note: 'Every paid donation, member and visitor, with receipt number and transaction.' },
+  { key: 'membership-receipts', label: 'Membership fees',      href: '/portal/admin/membership-receipts.csv',
+    note: 'Every membership fee received, flagged by whether it came from the gateway or was keyed in.' },
+  { key: 'members',             label: 'Members',              href: '/portal/admin/members.csv',
+    note: 'Member list with ID, plan, validity and fee state.' },
+  { key: 'certificates',        label: 'Issued certificates',  href: '/portal/admin/certificates.csv',
+    note: 'Every certificate issued, members and visitors, with its verification status.' },
+  { key: 'volunteers',          label: 'Volunteer applications', href: '/portal/admin/volunteers.csv',
+    note: 'Volunteer registrations from the public form.' },
+  { key: 'enquiries',           label: 'Contact enquiries',    href: '/portal/admin/enquiries.csv',
+    note: 'Messages from the contact form.' }
+];
+
+router.get('/reports', async (req, res) => {
+  res.render('admin/reports', { title: 'Report downloads', reports: REPORTS });
+});
+
+const csvCell = v => {
+  const s = String(v == null ? '' : v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+function sendCsv(res, filename, header, rows) {
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send([header.join(','), ...rows.map(r => r.map(csvCell).join(','))].join('\n'));
+}
+
+router.get('/members.csv', async (req, res) => {
+  const members = await User.findAll({ where: { role: 'member' }, order: [['createdAt', 'DESC']] });
+  const paid = new Set((await MembershipPayment.findAll({ attributes: ['userId'] })).map(p => p.userId));
+  sendCsv(res, 'members.csv',
+    ['MemberId', 'Name', 'Email', 'Phone', 'City', 'State', 'Plan', 'PaidOn', 'ValidTill', 'FeeReceived', 'Registered'],
+    members.map(u => [
+      u.memberId || '', u.name, u.email, u.phone, u.city || '',
+      u.status, u.membershipPlan || '',
+      u.membershipPaidAt ? u.membershipPaidAt.toISOString().slice(0, 10) : '',
+      u.membershipValidTill ? u.membershipValidTill.toISOString().slice(0, 10) : '',
+      paid.has(u.id) ? 'yes' : 'no',
+      u.createdAt.toISOString().slice(0, 10)
+    ]));
+});
+
+router.get('/certificates.csv', async (req, res) => {
+  const [issues, visitors] = await Promise.all([
+    CertificateIssue.findAll({
+      include: [
+        { model: Certificate, as: 'certificate', attributes: ['title'] },
+        { model: User, as: 'user', attributes: ['name', 'email', 'memberId'] }
+      ], order: [['issuedAt', 'DESC']]
+    }),
+    VisitorCertificate.findAll({ order: [['createdAt', 'DESC']] })
+  ]);
+  const revoked = new Set((await Revocation.findAll({ attributes: ['code'] })).map(r => r.code));
+  const rows = issues.map(i => [
+    i.serial, 'member', i.certificate ? i.certificate.title : '',
+    i.user ? i.user.name : '', i.user ? (i.user.memberId || '') : '',
+    i.user ? i.user.email : '', i.issuedAt.toISOString().slice(0, 10),
+    revoked.has(i.serial) ? 'withdrawn' : 'valid'
+  ]).concat(visitors.map(v => [
+    v.serial, 'visitor', v.programme || '', v.name, '', v.email || '',
+    v.issuedOn || v.createdAt.toISOString().slice(0, 10),
+    revoked.has(v.serial) ? 'withdrawn' : 'valid'
+  ]));
+  sendCsv(res, 'certificates.csv',
+    ['Serial', 'Type', 'Title', 'Holder', 'MemberId', 'Email', 'Issued', 'Status'], rows);
 });
 
 module.exports = router;

@@ -1,0 +1,55 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'members'}) %>
+<%#
+  Every membership fee received, gateway and by-hand together in one list.
+
+  The "Entered" column is the point of it: a row stamped `by hand` was typed in
+  by an admin from a cash or bank payment, and a row stamped `gateway` came back
+  from PhonePe. Reconciling the two is the whole job, so the distinction is a
+  column and not a footnote.
+%>
+<div class="wrap">
+<p class="eyebrow">Members</p>
+<h1>Membership receipts</h1>
+<div class="tabs">
+  <a href="/portal/admin/members?status=guest">New memberships</a>
+  <a href="/portal/admin/members">Active members</a>
+  <a href="/portal/admin/membership-receipts" class="on">Membership receipts</a>
+</div>
+
+<div class="grid g2" style="margin-bottom:18px">
+  <div class="card stat" style="margin:0"><b><%= payments.length %></b><span>membership payments recorded</span></div>
+  <div class="card stat" style="margin:0"><b>₹<%= (total/100).toLocaleString('en-IN') %></b><span>total received</span></div>
+</div>
+
+<% if (payments.length) { %>
+  <p><a class="btn btn-ghost btn-sm" href="/portal/admin/membership-receipts.csv">Download CSV</a></p>
+<% } %>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Receipt</th><th>Member</th><th>Member ID</th><th>Plan</th><th>Amount</th><th>Paid by</th><th>Reference</th><th>Date</th><th>Valid till</th><th>Entered</th><th></th></tr>
+<% if (!payments.length) { %>
+  <tr><td colspan="11" class="muted">
+    No membership fees recorded yet. Payments made online land here automatically;
+    cash, bank, UPI and cheque payments appear once you record them from
+    <a href="/portal/admin/members?status=guest">New memberships</a>.
+  </td></tr>
+<% } %>
+<% payments.forEach(p => { %>
+<tr>
+  <td class="serial"><%= p.receiptNo %></td>
+  <td><% if (p.user) { %><a href="/portal/admin/members/<%= p.user.id %>"><%= p.user.name %></a><br><span class="muted" style="font-size:.76rem"><%= p.user.email %></span><% } else { %>—<% } %></td>
+  <td class="serial"><%= p.user && p.user.memberId ? p.user.memberId : '—' %></td>
+  <td><%= plans[p.plan] ? plans[p.plan].name : (p.plan || '—') %></td>
+  <td>₹<%= (p.amount/100).toLocaleString('en-IN') %></td>
+  <td><%= modeLabel[p.mode] || p.mode || '—' %></td>
+  <td><%= p.reference || '—' %></td>
+  <td><%= (p.paidAt || p.createdAt).toDateString() %></td>
+  <td><%= p.validTill ? p.validTill.toDateString() : '—' %></td>
+  <td><% if (p.recordedBy) { %><span class="pill info">by hand</span><% } else { %><span class="pill ok">gateway</span><% } %></td>
+  <td><a class="btn btn-ghost btn-sm" href="/portal/admin/membership-receipts/<%= p.id %>/pdf" target="_blank" rel="noopener">PDF</a></td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

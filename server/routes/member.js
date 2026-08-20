@@ -2,9 +2,12 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const config = require('../config');
 const { requireLogin } = require('../middleware/auth');
-const { User, Donation, Certificate, CertificateIssue, FormConfig, UserAccess } = require('../models');
+const { User, Donation, Certificate, CertificateIssue, FormConfig, UserAccess,
+        MembershipPayment, Notice, CertificateStyle } = require('../models');
+const { Op } = require('sequelize');
 const { qrDataUrl, barcodeDataUrl } = require('../utils/codes');
-const { receiptPdf, certificatePdf, cardPdf } = require('../utils/pdf');
+const verify = require('../utils/verify');
+const { receiptPdf, membershipReceiptPdf, certificatePdf, cardPdf } = require('../utils/pdf');
 
 router.use(requireLogin);
 router.use(async (req, res, next) => {
@@ -16,11 +19,44 @@ router.use(async (req, res, next) => {
 
 // 1. Profile / dashboard
 router.get('/', async (req, res) => {
-  const donations = await Donation.findAll({
-    where: { userId: req.user.id, status: 'paid' },
-    order: [['paidAt', 'DESC']], limit: 5
+  /* Notices the admin has posted for this person. `audience` is 'all', or
+     'members'/'guests' matching their membership state — so an unpaid
+     registration does not see a notice written for paid members. */
+  const today = new Date().toISOString().slice(0, 10);
+  const [donations, payments, notices] = await Promise.all([
+    Donation.findAll({
+      where: { userId: req.user.id, status: 'paid' },
+      order: [['paidAt', 'DESC']], limit: 5
+    }),
+    // Membership fees now leave a receipt of their own, including the ones an
+    // admin recorded from cash or a bank transfer — so the member can see and
+    // download proof of a payment they made in person.
+    MembershipPayment.findAll({ where: { userId: req.user.id }, order: [['paidAt', 'DESC']] }),
+    Notice.findAll({
+      where: {
+        active: true,
+        audience: { [Op.in]: ['all', req.user.status === 'active' ? 'members' : 'guests'] },
+        [Op.or]: [{ expiresOn: null }, { expiresOn: { [Op.gte]: today } }]
+      },
+      order: [['pinned', 'DESC'], ['createdAt', 'DESC']],
+      limit: 10
+    })
+  ]);
+  res.render('member/dashboard', {
+    title: 'My profile', plans: config.plans, donations, payments, notices
   });
-  res.render('member/dashboard', { title: 'My profile', plans: config.plans, donations });
+});
+
+/* A member's own membership receipt. Scoped by userId in the WHERE clause, not
+   checked after the fetch: an id from someone else's account simply does not
+   match, so there is no way to read another member's receipt by guessing. */
+router.get('/membership-receipt/:id/pdf', async (req, res) => {
+  const payment = await MembershipPayment.findOne({
+    where: { id: req.params.id, userId: req.user.id }
+  });
+  if (!payment) return res.status(404).render('error',
+    { title: 'Not found', message: 'Receipt not found.' });
+  await membershipReceiptPdf(res, payment, req.user);
 });
 
 // Membership card
@@ -28,7 +64,7 @@ router.get('/card', async (req, res) => {
   if (!req.user.membershipValid) return res.redirect('/portal/member');
   res.render('member/card', {
     title: 'Membership card',
-    qr: await qrDataUrl(req.user.memberId),
+    qr: await qrDataUrl(verify.verifyUrl(req.user.memberId)),
     barcode: await barcodeDataUrl(req.user.memberId)
   });
 });
@@ -73,14 +109,17 @@ router.get('/certificate/:certId/:serial', async (req, res) => {
   if (!issuance) return res.status(404).render('error', { title: 'Not found', message: 'Certificate not found.' });
   res.render('member/certificate', {
     title: issuance.certificate.title, cert: issuance.certificate, issuance,
-    qr: await qrDataUrl(issuance.serial),
+    qr: await qrDataUrl(verify.verifyUrl(issuance.serial)),
     barcode: await barcodeDataUrl(issuance.serial)
   });
 });
 router.get('/certificate/:certId/:serial/pdf', async (req, res) => {
   const issuance = await findIssue(req);
   if (!issuance) return res.status(404).send('Not found');
-  await certificatePdf(res, issuance.certificate, issuance, req.user);
+  // Same design the admin sees — a member downloading their own certificate must
+  // not get a different-looking document from the one the office printed.
+  const style = await CertificateStyle.findOne({ where: { certificateId: issuance.certificateId } });
+  await certificatePdf(res, issuance.certificate, issuance, req.user, style ? style.template : 'navy');
 });
 
 // 4. Receipts
@@ -89,7 +128,7 @@ router.get('/receipt/:id', async (req, res) => {
   if (!d) return res.status(404).render('error', { title: 'Not found', message: 'Receipt not found.' });
   res.render('member/receipt', {
     title: 'Donation receipt', d,
-    qr: await qrDataUrl(d.receiptNo),
+    qr: await qrDataUrl(verify.verifyUrl(d.receiptNo)),
     barcode: await barcodeDataUrl(d.receiptNo)
   });
 });

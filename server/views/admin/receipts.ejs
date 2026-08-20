@@ -1,0 +1,52 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'receipts'}) %>
+<%#
+  All Receipts — the hub. Four lists, because there are genuinely four kinds of
+  money and they reconcile against different things: membership fees, donations
+  from members through the portal, donations from visitors, and anything an admin
+  keyed in by hand.
+
+  The last one CUTS ACROSS the other two rather than sitting beside them — a cash
+  donation from a member appears both under visitor donations (that is the
+  Donation.kind it carries, because it did not come through the member portal)
+  and under cash. That is deliberate and the note below says so, because a total
+  that appears twice is confusing unless you know why.
+%>
+<div class="wrap">
+<p class="eyebrow">Receipts</p>
+<h1 style="margin-bottom:6px">All receipts</h1>
+<p class="muted" style="max-width:78ch;margin-bottom:22px">
+  Every receipt the Foundation has issued. <strong>Cash &amp; offline</strong> is not a
+  fifth kind of money — it is the subset of donations that an admin entered by hand rather
+  than the payment gateway confirming, so those rows also appear in one of the lists above it.
+</p>
+
+<div class="grid g2">
+  <div class="card stat" style="margin:0">
+    <b>₹<%= (totals.membership/100).toLocaleString('en-IN') %></b>
+    <span>membership fees received (<%= counts.membership %> receipts)</span>
+  </div>
+  <div class="card stat" style="margin:0">
+    <b>₹<%= (totals.donations/100).toLocaleString('en-IN') %></b>
+    <span>donations received (<%= counts.member + counts.visitor %> receipts)</span>
+  </div>
+</div>
+
+<div class="grid g2" style="margin-top:18px">
+  <% tabs.forEach(t => { %>
+    <a class="card" href="/portal/admin/receipts/<%= t.key %>" style="text-decoration:none;display:block">
+      <h3 style="margin:0 0 4px"><%= t.label %></h3>
+      <p class="muted" style="margin:0">
+        <b style="font-size:1.3rem;color:var(--ink);font-family:'Fraunces',serif;font-weight:500"><%= counts[t.key] %></b>
+        receipt<%= counts[t.key] === 1 ? '' : 's' %>
+      </p>
+    </a>
+  <% }) %>
+</div>
+
+<div class="card" style="margin-top:18px">
+  <h3 style="margin-top:0">Exports</h3>
+  <p><a class="btn btn-ghost btn-sm" href="/portal/admin/membership-receipts.csv">Membership fees CSV</a>
+     <a class="btn btn-ghost btn-sm" href="/portal/admin/donations.csv">Donations CSV</a>
+     <a class="btn btn-ghost btn-sm" href="/portal/admin/reports">All report downloads</a></p>
+</div>
+</div></body></html>

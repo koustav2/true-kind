@@ -31,6 +31,18 @@ a{color:inherit}
 .topnav .links{display:flex;gap:4px;flex-wrap:wrap}
 .topnav .links a{padding:8px 13px;border-radius:100px;font-size:.85rem;text-decoration:none;color:var(--text-soft)}
 .topnav .links a.on,.topnav .links a:hover{background:rgba(125,74,177,.1);color:var(--purple)}
+/* Count badges on the nav links. Sized to sit on the baseline of an .85rem
+   label without changing the link's height, so adding a badge never reflows the
+   navigation. */
+.topnav .links a .n{
+  display:inline-block;min-width:17px;padding:1px 5px;margin-left:5px;
+  border-radius:100px;background:var(--clay);color:#fff;
+  font:500 .64rem/1.5 'Work Sans',sans-serif;text-align:center;vertical-align:1px}
+.topnav .links a.on .n{background:var(--purple)}
+.nav-role{
+  align-self:center;padding:4px 11px;border-radius:100px;
+  background:rgba(3,146,212,.12);color:var(--blue);
+  font:500 .7rem 'Work Sans',sans-serif;white-space:nowrap}
 .wrap{max-width:1060px;margin:0 auto;padding:34px 24px 80px}
 .card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px;overflow-x:auto}
 .grid{display:grid;gap:18px}
@@ -48,9 +60,15 @@ th{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.14em;t
 td{padding:12px;border-bottom:1px solid var(--rule);vertical-align:top}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin:0 0 8px}
 .pill{display:inline-block;padding:3px 11px;border-radius:100px;font-size:.72rem;font-weight:500}
-.pill.ok{background:rgba(89,179,6,.14);color:var(--green)}
-.pill.warn{background:rgba(223,53,72,.12);color:var(--red)}
-.pill.info{background:rgba(3,146,212,.12);color:var(--blue)}
+/* Pill text is .72rem — 11.5px, ordinary text, so it owes 4.5:1.
+   --green on its own tint came to 4.34:1 and --blue to 4.36:1: close enough to
+   look fine and not close enough to pass, on the status labels that appear on
+   every screen in the admin. Darkened one step each (5.0:1 and 5.2:1). The tint
+   is unchanged, so nothing moves visually except the text getting slightly
+   deeper. */
+.pill.ok{background:rgba(89,179,6,.14);color:#3A7404}
+.pill.warn{background:rgba(223,53,72,.12);color:#BD1E30}
+.pill.info{background:rgba(3,146,212,.12);color:#026A9B}
 .alert{padding:13px 17px;border-radius:var(--radius-sm);border:1px solid;font-size:.88rem;margin:0 0 16px}
 .alert.err{background:rgba(223,53,72,.07);border-color:rgba(223,53,72,.3);color:var(--clay-deep)}
 .alert.ok{background:rgba(89,179,6,.08);border-color:rgba(89,179,6,.3);color:var(--green)}

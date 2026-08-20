@@ -1,0 +1,110 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<%#
+  Generate Certificate — starts from the people, not from the certificate.
+
+  The certificate detail page already lets you pick a member from a dropdown.
+  That is the right direction when you are looking at one award. This is the
+  other direction, and it is the one you need when a training batch finishes and
+  there are forty certificates to issue: the list is the people, and each row
+  issues in one click.
+
+  Certificates already issued to someone are greyed out in their row rather than
+  omitted, so it is obvious that they have it — and clicking it is not an option
+  that then fails.
+%>
+<style>
+.cg-head{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.cg-search{flex:1;min-width:220px;max-width:380px}
+.cg-search label{margin-top:0}
+.cg-row form{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cg-row select{width:auto;min-width:180px;padding:7px 10px;font-size:.82rem}
+.cg-has{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+/* Same story as the status pills: --green on this tint is 4.38:1, which is
+   under the 4.5 that .7rem text owes. One step darker. */
+.cg-has span{font-size:.7rem;padding:2px 8px;border-radius:100px;
+  background:rgba(89,179,6,.13);color:#3A7404}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Certificates</p>
+<h1 style="margin-bottom:6px">Generate certificate</h1>
+<div class="tabs">
+  <a href="/portal/admin/certificates">Certificate types</a>
+  <a href="/portal/admin/certificates/generate" class="on">Generate</a>
+  <a href="/portal/admin/certificates/issued">Issued register</a>
+  <a href="/portal/admin/visitor-certificates">Visitor certificates</a>
+</div>
+
+<% if (!certs.length) { %>
+  <div class="alert err">
+    There are no certificate types yet, so there is nothing to issue.
+    <a href="/portal/admin/certificates">Create one first</a> — a type is the title and
+    wording that gets printed; issuing attaches it to a person with a unique serial.
+  </div>
+<% } %>
+
+<div class="cg-head">
+  <form method="get" action="/portal/admin/certificates/generate" class="cg-search">
+    <label for="q">Find an active member</label>
+    <input id="q" name="q" value="<%= q %>" placeholder="Name, email or Member ID">
+  </form>
+  <div>
+    <button class="btn btn-ghost btn-sm" form="none" type="button" disabled style="visibility:hidden">.</button>
+    <a class="btn btn-ghost btn-sm" href="/portal/admin/certificates/generate">Clear</a>
+  </div>
+</div>
+
+<p class="muted" style="margin-top:-6px">
+  <%= members.length %> active member<%= members.length === 1 ? '' : 's' %><%= q ? ' matching “' + q + '”' : '' %>.
+  Only active members appear here — a certificate needs a Member ID to print on it and
+  to verify against. For somebody with no account, use
+  <a href="/portal/admin/visitor-certificates">visitor certificates</a>.
+</p>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Member</th><th>Member ID</th><th>Already has</th><th>Issue</th></tr>
+<% if (!members.length) { %>
+  <tr><td colspan="4" class="muted" style="padding:18px">
+    <%= q ? 'Nobody matches that search.' : 'No active members yet — record a membership payment first.' %>
+  </td></tr>
+<% } %>
+<% members.forEach(m => { %>
+<% var has = already[m.id] || []; %>
+<tr class="cg-row">
+  <td><b><a href="/portal/admin/members/<%= m.id %>"><%= m.name %></a></b><br>
+      <span class="muted" style="font-size:.78rem"><%= m.email %></span></td>
+  <td class="serial"><%= m.memberId || '—' %></td>
+  <td>
+    <% if (!has.length) { %><span class="muted" style="font-size:.8rem">none</span><% } %>
+    <div class="cg-has">
+      <% certs.filter(c => has.indexOf(c.id) !== -1).forEach(c => { %>
+        <span><%= c.title %></span>
+      <% }) %>
+    </div>
+  </td>
+  <td>
+    <% var available = certs.filter(c => has.indexOf(c.id) === -1); %>
+    <% if (!certs.length) { %>
+      <span class="muted">—</span>
+    <% } else if (!available.length) { %>
+      <span class="muted" style="font-size:.8rem">has every certificate</span>
+    <% } else { %>
+      <form method="post" action="/portal/admin/members/<%= m.id %>/certificate">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <select name="certificateId" required aria-label="Certificate for <%= m.name %>">
+          <option value="">Choose…</option>
+          <% available.forEach(c => { %><option value="<%= c.id %>"><%= c.title %></option><% }) %>
+        </select>
+        <button class="btn btn-purple btn-sm" type="submit">Generate</button>
+      </form>
+    <% } %>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+<% if (members.length >= 300) { %>
+  <p class="muted" style="font-size:.8rem">Showing the first 300. Use the search to narrow it.</p>
+<% } %>
+</div></body></html>

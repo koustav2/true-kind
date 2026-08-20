@@ -1,0 +1,45 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'blocked'}) %>
+<%#
+  Deactivated accounts.
+
+  Deactivation is enforced per request (see middleware/auth.js), so someone
+  deactivated here is signed out on their very next click rather than keeping
+  access until their cookie expires. Worth stating on the page, because it is the
+  question an admin has when they deactivate somebody mid-incident.
+%>
+<div class="wrap">
+<p class="eyebrow">Users</p>
+<h1 style="margin-bottom:6px">Deactivated accounts</h1>
+<p class="muted" style="max-width:78ch;margin-bottom:20px">
+  These accounts cannot sign in. Deactivation takes effect immediately — including for
+  someone already logged in, whose session ends on their next click. It is separate from
+  membership: paying again does not reinstate an account.
+</p>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Name</th><th>Contact</th><th>Deactivated</th><th>Note</th><th></th></tr>
+<% if (!blocks.length) { %>
+  <tr><td colspan="5" class="muted" style="padding:18px">No accounts are deactivated.</td></tr>
+<% } %>
+<% blocks.forEach(b => { var u = byId[b.userId]; %>
+<tr>
+  <td><b><% if (u) { %><%= u.name %><% } else { %><span class="muted">account #<%= b.userId %> (deleted)</span><% } %></b></td>
+  <td><span class="muted" style="font-size:.78rem"><%= u ? u.email : '—' %><% if (u) { %><br><%= u.phone %><% } %></span></td>
+  <td><%= b.blockedAt ? b.blockedAt.toDateString() : '—' %></td>
+  <td><%= b.note || '—' %></td>
+  <td>
+    <% if (u) { %>
+      <form method="post" action="/portal/admin/members/<%= u.id %>/access"
+            onsubmit="return confirm('Reinstate <%= u.name %>? They will be able to sign in again.')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="action" value="unblock">
+        <button class="btn btn-ghost btn-sm" type="submit">Reinstate</button>
+      </form>
+    <% } %>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

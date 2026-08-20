@@ -1,0 +1,100 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'notices'}) %>
+<%#
+  Notices.
+
+  The banner at the top is the most important thing on this page. This posts to
+  the portal dashboard. It does NOT email and does NOT text, because this
+  application has no mail sender and no SMS gateway — see the note on the Notice
+  model. An admin who writes a notice believing 508 members just got an email,
+  when they did not, is worse off than an admin with no notice feature at all.
+%>
+<style>
+.nt-form{max-width:640px}
+.nt-body{min-height:120px;resize:vertical}
+.nt-item{border-left:3px solid var(--purple);padding:2px 0 2px 16px;margin-bottom:20px}
+.nt-item.off{border-left-color:var(--rule-strong);opacity:.62}
+.nt-item h4{margin:0 0 4px;font-size:1rem}
+.nt-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0 8px}
+.nt-text{white-space:pre-wrap;font-size:.9rem;color:var(--text-soft);margin:0 0 10px}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Notices</p>
+<h1 style="margin-bottom:6px">Send a notice</h1>
+
+<div class="alert" style="background:rgba(3,146,212,.07);border-color:rgba(2,118,172,.32);color:var(--text)">
+  <strong>These appear inside the portal, on the member's dashboard when they sign in.</strong>
+  They are not emailed and not sent by SMS — this portal has no mail sender or SMS gateway
+  connected. If you need a notice to reach people who do not sign in, it has to go out by
+  email or WhatsApp separately, and connecting a mail provider is a piece of work we can
+  quote for.
+</div>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'empty') { %><div class="alert err">A notice needs both a title and some text.</div><% } %>
+
+<div class="card">
+<form method="post" action="/portal/admin/notices" class="nt-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <label for="title" style="margin-top:0">Title *</label>
+  <input id="title" name="title" required maxlength="160" placeholder="e.g. Annual general meeting — 14 September">
+  <label for="body">Notice *</label>
+  <textarea id="body" name="body" class="nt-body" required maxlength="4000"
+            placeholder="Plain text. Line breaks are kept."></textarea>
+  <div class="grid g2">
+    <div>
+      <label for="audience">Who sees it</label>
+      <select id="audience" name="audience">
+        <option value="all">Everyone who signs in (<%= audienceCounts.all %>)</option>
+        <option value="members">Paid members only (<%= audienceCounts.members %>)</option>
+        <option value="guests">Unpaid registrations only (<%= audienceCounts.guests %>)</option>
+      </select>
+    </div>
+    <div>
+      <label for="expiresOn">Stop showing it on</label>
+      <input id="expiresOn" type="date" name="expiresOn">
+      <p class="cms-hint">Optional. Leave blank to keep it up until you switch it off.</p>
+    </div>
+  </div>
+  <label style="display:flex;gap:8px;align-items:center;font-size:.85rem;margin-top:14px">
+    <input type="checkbox" name="pinned" style="width:auto;margin:0"> Pin to the top
+  </label>
+  <button class="btn btn-purple btn-sm" style="margin-top:16px" type="submit">Post notice</button>
+</form>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">Posted notices</h3>
+<% if (!notices.length) { %>
+  <p class="muted">Nothing posted yet.</p>
+<% } %>
+<% notices.forEach(n => { %>
+  <div class="nt-item <%= n.active ? '' : 'off' %>">
+    <h4><%= n.title %></h4>
+    <div class="nt-meta">
+      <% if (n.pinned) { %><span class="pill info">pinned</span><% } %>
+      <% if (n.active) { %><span class="pill ok">showing</span><% } else { %><span class="pill warn">switched off</span><% } %>
+      <span class="muted" style="font-size:.76rem">
+        <%= n.audience === 'members' ? 'paid members' : n.audience === 'guests' ? 'unpaid registrations' : 'everyone' %>
+        · posted <%= n.createdAt.toDateString() %>
+        <% if (n.expiresOn) { %> · until <%= n.expiresOn %><% } %>
+      </span>
+    </div>
+    <p class="nt-text"><%= n.body %></p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <form method="post" action="/portal/admin/notices/<%= n.id %>/toggle">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit"><%= n.active ? 'Switch off' : 'Switch on' %></button>
+      </form>
+      <% if (typeof isAdmin === 'undefined' || isAdmin) { %>
+        <form method="post" action="/portal/admin/notices/<%= n.id %>/delete"
+              onsubmit="return confirm('Delete this notice permanently?')">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-ghost btn-sm" type="submit">Delete</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+<% }) %>
+</div>
+</div></body></html>

@@ -25,7 +25,12 @@ router.post('/signin', async (req, res) => {
   if (!user || !(await bcrypt.compare(password || '', user.passwordHash)))
     return res.render('auth/signin', { title: 'Sign in', error: 'Wrong email or password.' });
   req.session.userId = user.id; req.session.role = user.role;
-  res.redirect(user.role === 'admin' ? '/portal/admin' : '/portal/member');
+  /* Managers are member rows with a grant (middleware/staff.js), so role alone
+     would send them to the member area they have no use for. */
+  if (user.role === 'admin') return res.redirect('/portal/admin');
+  const { ManagerAccess } = require('../models');
+  const grant = await ManagerAccess.findOne({ where: { userId: user.id, active: true } });
+  res.redirect(grant && (grant.sections || []).length ? '/portal/admin' : '/portal/member');
 });
 
 router.post('/signout', (req, res) => req.session.destroy(() => res.redirect('/portal/signin')));

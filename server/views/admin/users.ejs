@@ -1,0 +1,53 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'users'}) %>
+<%#
+  All Users Data — every account in one place, whatever its state.
+
+  The member tabs answer "who has paid". This answers "who exists", which is a
+  different question and the one you have when somebody rings up and you do not
+  know whether they ever finished signing up.
+%>
+<div class="wrap">
+<p class="eyebrow">Users</p>
+<h1 style="margin-bottom:6px">All users</h1>
+<p class="muted" style="margin:0 0 18px">
+  <%= total %> account<%= total === 1 ? '' : 's' %> in total. Includes administrators and
+  managers as well as members.
+</p>
+
+<form method="get" action="/portal/admin/users" style="max-width:400px;margin-bottom:18px">
+  <label for="q" style="margin-top:0">Search</label>
+  <input id="q" name="q" value="<%= q %>" placeholder="Name, email, phone or Member ID">
+</form>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Name</th><th>Contact</th><th>Role</th><th>Member ID</th><th>Fee</th><th>Access</th><th>Joined</th><th></th></tr>
+<% if (!users.length) { %>
+  <tr><td colspan="8" class="muted" style="padding:18px"><%= q ? 'Nobody matches that search.' : 'No accounts yet.' %></td></tr>
+<% } %>
+<% users.forEach(u => { %>
+<% var acc = accessBy[u.id]; var mgr = managerBy[u.id]; var blocked = acc && acc.blocked; %>
+<tr>
+  <td><b><% if (u.role === 'member') { %><a href="/portal/admin/members/<%= u.id %>"><%= u.name %></a><% } else { %><%= u.name %><% } %></b></td>
+  <td><span class="muted" style="font-size:.78rem"><%= u.email %><br><%= u.phone %></span></td>
+  <td>
+    <% if (u.role === 'admin') { %><span class="pill warn">Admin</span>
+    <% } else if (mgr && mgr.active) { %><span class="pill info">Manager</span>
+      <br><span class="muted" style="font-size:.7rem"><%= (mgr.sections || []).length %> section<%= (mgr.sections||[]).length===1?'':'s' %></span>
+    <% } else { %><span class="pill ok">Member</span><% } %>
+  </td>
+  <td class="serial"><%= u.memberId || '—' %></td>
+  <td>
+    <% if (u.role !== 'member') { %><span class="muted">n/a</span>
+    <% } else if (paidIds.has(u.id)) { %><span class="pill ok">Paid</span>
+    <% } else { %><span class="pill warn">Unpaid</span><% } %>
+  </td>
+  <td><% if (blocked) { %><span class="pill warn">Deactivated</span><% } else { %><span class="pill ok">Allowed</span><% } %></td>
+  <td><span class="muted" style="font-size:.78rem"><%= u.createdAt.toDateString() %></span></td>
+  <td><% if (u.role === 'member') { %><a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>">View</a><% } %></td>
+</tr>
+<% }) %>
+</table>
+</div>
+<% if (users.length >= 500) { %><p class="muted" style="font-size:.8rem">Showing the first 500 — use the search to narrow it.</p><% } %>
+</div></body></html>

@@ -1,10 +1,48 @@
 <%- include('../partials/head') %><%- include('../partials/nav') %>
 <div class="wrap">
 <p class="eyebrow">My profile</p><h1>Hello, <%= user.name %></h1>
+
+<%# Notices posted by the Foundation. Pinned ones sort first. %>
+<% if (typeof notices !== 'undefined' && notices.length) { %>
+  <% notices.forEach(function(n){ %>
+    <div class="card" style="border-left:3px solid <%= n.pinned ? 'var(--clay)' : 'var(--purple)' %>">
+      <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+        <% if (n.pinned) { %><span class="pill warn">Important</span><% } else { %><span class="pill info">Notice</span><% } %>
+        <span class="muted" style="font-size:.76rem"><%= n.createdAt.toDateString() %></span>
+      </div>
+      <h3 style="margin:0 0 6px;font-size:1.05rem"><%= n.title %></h3>
+      <p style="white-space:pre-wrap;margin:0;color:var(--text-soft);font-size:.92rem"><%= n.body %></p>
+    </div>
+  <% }) %>
+<% } %>
+
 <% if (!user.membershipValid) { %>
   <div class="card" style="border-color:var(--brand-red)">
-    <h3>Please verify your membership</h3>
-    <p class="muted">Pick a plan and pay to become an active member. You'll get a member ID and a card with a unique QR + barcode.</p>
+    <%# Two different reasons this panel appears, and they need different words.
+        Telling a long-standing member whose cover merely lapsed to "become a
+        member" reads as though their previous years never happened. %>
+    <% if (payments.length) { %>
+      <h3 style="margin-top:0">Your membership has expired</h3>
+      <p class="muted">
+        Your last payment was on <%= (payments[0].paidAt || payments[0].createdAt).toDateString() %>,
+        and cover ran to <%= payments[0].validTill ? payments[0].validTill.toDateString() : '—' %>.
+        Renew below to carry on — your Member ID <span class="serial"><%= user.memberId %></span>
+        stays the same.
+      </p>
+    <% } else { %>
+      <h3 style="margin-top:0">Membership fee not received yet</h3>
+      <p class="muted">
+        Your account is registered, but the membership fee has not reached us — so you are not an
+        active member yet. Pay below and you get a Member ID and a card with a unique QR and
+        barcode straight away.
+      </p>
+      <p class="muted">
+        Already paid in cash, by bank transfer, UPI or cheque? There is nothing more for you to do —
+        we record it at our end and your account activates as soon as we have. If it has been a few
+        days, email <a href="mailto:info@truekindfoundation.org">info@truekindfoundation.org</a>
+        with the date and the reference.
+      </p>
+    <% } %>
     <form method="post" action="/portal/pay/membership" class="grid g2" style="align-items:end"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div>
         <label>Plan</label>
@@ -13,23 +51,49 @@
           <option value="monthly">Monthly — ₹<%= plans.monthly.amount/100 %></option>
         </select>
       </div>
-      <div><button class="btn btn-primary" type="submit">Verify & pay</button></div>
+      <div><button class="btn btn-primary" type="submit"><%= payments.length ? 'Renew now' : 'Pay & activate' %></button></div>
     </form>
   </div>
 <% } else { %>
   <div class="card">
     <span class="pill ok">Active member</span>
     <h3 style="margin-top:10px">Member ID <span class="serial"><%= user.memberId %></span></h3>
-    <p class="muted"><%= user.membership.plan %> plan · valid till <%= user.membership.validTill.toDateString() %></p>
+    <p class="muted"><%= plans[user.membership.plan] ? plans[user.membership.plan].name : user.membership.plan %> plan · valid till <%= user.membership.validTill.toDateString() %></p>
     <a class="btn btn-purple btn-sm" href="/portal/member/card">View membership card</a>
     <a class="btn btn-ghost btn-sm" href="/portal/member/card/pdf">Download PDF</a>
   </div>
 <% } %>
+
+<% if (payments.length) { %>
+  <div class="card">
+    <h3 style="margin-top:0">Membership payments</h3>
+    <p class="muted" style="margin-top:-6px">
+      Every fee we have received from you, including any paid in cash or by transfer.
+    </p>
+    <div style="overflow-x:auto">
+    <table>
+    <tr><th>Receipt</th><th>Date</th><th>Plan</th><th>Amount</th><th>Paid by</th><th>Covers to</th><th></th></tr>
+    <% payments.forEach(p => { %>
+      <tr>
+        <td class="serial"><%= p.receiptNo %></td>
+        <td><%= (p.paidAt || p.createdAt).toDateString() %></td>
+        <td><%= plans[p.plan] ? plans[p.plan].name : (p.plan || '—') %></td>
+        <td>₹<%= (p.amount/100).toLocaleString('en-IN') %></td>
+        <td><%= p.mode === 'online' ? 'Online' : p.mode.charAt(0).toUpperCase() + p.mode.slice(1) %></td>
+        <td><%= p.validTill ? p.validTill.toDateString() : '—' %></td>
+        <td><a class="btn btn-ghost btn-sm" href="/portal/member/membership-receipt/<%= p.id %>/pdf" target="_blank" rel="noopener">Receipt PDF</a></td>
+      </tr>
+    <% }) %>
+    </table>
+    </div>
+  </div>
+<% } %>
+
 <div class="grid g2">
   <div class="card">
     <h3>Quick actions</h3>
     <p><a class="btn btn-primary btn-sm" href="/portal/member/donate">Add a donation</a>
-       <a class="btn btn-ghost btn-sm" href="/portal/member/donations">Your donations & certificates</a></p>
+       <a class="btn btn-ghost btn-sm" href="/portal/member/donations">Your donations &amp; certificates</a></p>
   </div>
   <div class="card">
     <h3>Recent donations</h3>

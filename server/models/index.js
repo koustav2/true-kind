@@ -163,6 +163,233 @@ const CertificateFile = sequelize.define('CertificateFile', {
 });
 
 /* ---------------------------------------------------------------------------
+   One row per membership fee actually received.
+
+   Until now a membership payment left no record of its own: routes/payment.js
+   wrote the plan, the paid-at date and the gateway reference onto the User row
+   and that was it. Three things followed from that, all of them problems:
+
+     - No receipt. Donations get a receiptNo; memberships got nothing, so there
+       was no membership receipt to hand anyone and no list to reconcile
+       against.
+     - Only one payment could ever be remembered. A renewal overwrote the
+       previous one, so a member's payment history was always exactly one row
+       deep.
+     - Cash and bank transfers were impossible to record at all. Membership
+       could ONLY be granted by completing a PhonePe checkout, which is not how
+       most of these fees are actually collected.
+
+   A table fixes all three. It is a NEW table because the app runs a bare
+   sequelize.sync(): columns can never be added to User, but a new table is
+   created safely on every deployment.
+
+   `recordedBy` is null when the member paid online themselves, and the admin's
+   user id when an admin entered a payment taken offline — that distinction is
+   the audit trail, so a fee marked paid by hand is always identifiable as such.
+   --------------------------------------------------------------------------- */
+const MembershipPayment = sequelize.define('MembershipPayment', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  userId: { type: DataTypes.INTEGER, allowNull: false },
+  plan:   { type: DataTypes.STRING },                        // monthly | annual
+  amount: { type: DataTypes.INTEGER, allowNull: false },      // paise, like Donation
+  // Free-form rather than an ENUM on purpose: adding a payment method later
+  // must not need a schema change, and an ENUM cannot be extended by sync().
+  mode:      { type: DataTypes.STRING, defaultValue: 'online' },
+  reference: { type: DataTypes.STRING },                     // gateway ref, UTR, cheque no
+  receiptNo: { type: DataTypes.STRING, unique: true },
+  paidAt:    { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  validTill: { type: DataTypes.DATE },
+  recordedBy: { type: DataTypes.INTEGER },                   // null = paid online by the member
+  note:       { type: DataTypes.STRING }
+});
+
+/* ---------------------------------------------------------------------------
+   Certificate design.
+
+   The client's reference admin lets you pick one of three certificate designs
+   when you issue. `Certificate` is an existing table so it cannot gain a
+   `template` column under a bare sync(), and the choice belongs to the
+   certificate TYPE rather than to each issue — so it is one row per certificate
+   type, created the first time somebody picks a design.
+   --------------------------------------------------------------------------- */
+const CertificateStyle = sequelize.define('CertificateStyle', {
+  _id: { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  certificateId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  template: { type: DataTypes.STRING, defaultValue: 'navy' }   // navy | purple | green
+});
+
+/* ---------------------------------------------------------------------------
+   Visitor certificates.
+
+   A certificate for somebody with no account — a visitor, a camp attendee, a
+   guest speaker. CertificateIssue requires a userId, so issuing one of these
+   through it would mean creating a login for a person who never asked for one,
+   with a password nobody knows.
+
+   Own table, own serial prefix (TKF-VC), verifiable through /verify like
+   everything else.
+   --------------------------------------------------------------------------- */
+const VisitorCertificate = sequelize.define('VisitorCertificate', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  serial: { type: DataTypes.STRING, allowNull: false, unique: true },
+  name:   { type: DataTypes.STRING, allowNull: false },
+  fatherName: { type: DataTypes.STRING },
+  mobile:     { type: DataTypes.STRING },
+  email:      { type: DataTypes.STRING },
+  programme:  { type: DataTypes.STRING },
+  template:   { type: DataTypes.STRING, defaultValue: 'navy' },
+  issuedOn:   { type: DataTypes.DATEONLY },
+  issuedBy:   { type: DataTypes.INTEGER }
+});
+
+/* ---------------------------------------------------------------------------
+   Donations taken offline.
+
+   Donation.kind is ENUM('member','guest') and that table is live, so 'cash'
+   cannot be added to it. A cash or bank donation is therefore stored as an
+   ordinary Donation — so it appears in the lists, the totals and the reporting
+   like any other — with a row here recording HOW it arrived and who entered it.
+
+   Same reasoning as MembershipPayment.recordedBy: a payment entered by hand has
+   to stay distinguishable from one the gateway confirmed, or the accounts cannot
+   be reconciled.
+   --------------------------------------------------------------------------- */
+const OfflineDonation = sequelize.define('OfflineDonation', {
+  _id: { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  donationId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  mode:       { type: DataTypes.STRING },        // cash | bank | upi | cheque
+  reference:  { type: DataTypes.STRING },
+  recordedBy: { type: DataTypes.INTEGER },
+  note:       { type: DataTypes.STRING }
+});
+
+/* ---------------------------------------------------------------------------
+   Notices.
+
+   IMPORTANT: these are shown INSIDE the portal, on the member's dashboard.
+   They are not emailed and not sent by SMS, because this application has no
+   mail sender and no SMS gateway — there is no nodemailer, no SMTP config, no
+   provider credential anywhere in it.
+
+   That constraint is written here because the obvious next request is "send it
+   to everyone", and the honest answer is that it would need a mail provider
+   first. A "Send Notice" screen that quietly only posts to a dashboard, while
+   letting an admin believe it emailed 508 members, is worse than no feature.
+   The screen says so plainly.
+   --------------------------------------------------------------------------- */
+const Notice = sequelize.define('Notice', {
+  _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  title: { type: DataTypes.STRING, allowNull: false },
+  body:  { type: DataTypes.TEXT, allowNull: false },
+  // all = everyone who signs in; members = paid members only; guests = unpaid
+  audience:  { type: DataTypes.STRING, defaultValue: 'all' },
+  pinned:    { type: DataTypes.BOOLEAN, defaultValue: false },
+  active:    { type: DataTypes.BOOLEAN, defaultValue: true },
+  expiresOn: { type: DataTypes.DATEONLY },
+  createdBy: { type: DataTypes.INTEGER }
+});
+
+/* ---------------------------------------------------------------------------
+   Manager accounts.
+
+   A manager works the queues — records payments, issues certificates, answers
+   enquiries — without full admin rights. User.role is ENUM('member','admin')
+   and cannot gain a third value under a bare sync(), so a manager is a member
+   row with a grant here.
+
+   `sections` is an ALLOWLIST, and the guard that reads it is default-deny: a
+   route not explicitly mapped to a section is admin-only. That direction
+   matters. If it were default-allow, every route added later would silently
+   become manager-accessible, and the person adding it would have no reason to
+   think about who should see it.
+
+   Deliberately NOT grantable: account deactivation, volunteer logins, password
+   issuing, the CMS, the media library, the board, deletion of anything, and
+   this table itself. A manager who can create managers is an admin.
+   --------------------------------------------------------------------------- */
+const ManagerAccess = sequelize.define('ManagerAccess', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  userId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  sections: { type: DataTypes.JSON, defaultValue: [] },
+  note:      { type: DataTypes.STRING },
+  grantedBy: { type: DataTypes.INTEGER },
+  active:    { type: DataTypes.BOOLEAN, defaultValue: true }
+});
+
+/* ---------------------------------------------------------------------------
+   ID card details.
+
+   The printed card carries a designation, a department, a blood group, a date
+   of joining and a photograph. None of those are columns on User and none can
+   become columns on User: the app runs a bare sequelize.sync(), which never
+   adds a column to a table that already exists. So they live here, one row per
+   person, created the first time somebody fills the card in.
+
+   `cardType` decides the wording on the card itself — MEMBER / STAFF /
+   VOLUNTEER ID CARD — because the same layout serves all three and the only
+   real difference is the label and which id number is printed.
+   --------------------------------------------------------------------------- */
+const IdCardProfile = sequelize.define('IdCardProfile', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  userId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  cardType:    { type: DataTypes.STRING, defaultValue: 'member' },  // member | staff | volunteer
+  // A staff card prints this instead of the Member ID. Free-form so the client
+  // can keep whatever numbering they already use on paper.
+  employeeCode: { type: DataTypes.STRING },
+  designation:  { type: DataTypes.STRING },
+  department:   { type: DataTypes.STRING },
+  bloodGroup:   { type: DataTypes.STRING },
+  joinedOn:     { type: DataTypes.DATEONLY },
+  photoUrl:     { type: DataTypes.STRING },
+  photoFile:    { type: DataTypes.STRING },      // on-disk name, so a replace can unlink
+  issuedOn:     { type: DataTypes.DATEONLY },
+  validUntil:   { type: DataTypes.DATEONLY },
+  updatedBy:    { type: DataTypes.INTEGER }
+});
+
+/* ---------------------------------------------------------------------------
+   Revocation.
+
+   A card, certificate or receipt that has been withdrawn. Kept as its own
+   table rather than a flag for two reasons: the flag cannot be added to the
+   existing tables, and — more importantly — revocation needs a reason, a date
+   and a name against it. "Revoke" used to mean DELETE the certificate issue
+   row, which destroyed the evidence that the certificate had ever existed and
+   left an already-printed certificate verifying as simply "not found".
+
+   Now the row survives, and its serial verifies as REVOKED with a date. That is
+   the difference between a verification system and a lookup table.
+   --------------------------------------------------------------------------- */
+const Revocation = sequelize.define('Revocation', {
+  _id:  { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  code: { type: DataTypes.STRING, allowNull: false, unique: true },  // the serial/receipt/member id
+  kind: { type: DataTypes.STRING },                                  // member | certificate | receipt | membership
+  reason:     { type: DataTypes.STRING },
+  revokedBy:  { type: DataTypes.INTEGER },
+  revokedAt:  { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+});
+
+/* ---------------------------------------------------------------------------
+   Verification scans.
+
+   Every hit on /verify/<code>, whether it resolved or not. Two uses: the client
+   can see that a card was checked at the gate, and a run of `not_found` results
+   from one address is what someone trying codes at random looks like.
+
+   No raw IP is stored — a salted hash, which is enough to spot repetition
+   without keeping a log of who looked at what.
+   --------------------------------------------------------------------------- */
+const VerificationScan = sequelize.define('VerificationScan', {
+  _id:  { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  code: { type: DataTypes.STRING, allowNull: false },
+  kind: { type: DataTypes.STRING },
+  result: { type: DataTypes.STRING },        // valid | expired | revoked | not_found
+  signature: { type: DataTypes.STRING },     // ok | missing | mismatch
+  ipHash:    { type: DataTypes.STRING },
+  userAgent: { type: DataTypes.STRING }
+});
+
+/* ---------------------------------------------------------------------------
    The board of trustees, as data.
 
    about.html used to carry four hardcoded cards — Chairperson, Vice
@@ -202,9 +429,15 @@ Certificate.hasMany(CertificateIssue, { as: 'issued', foreignKey: 'certificateId
 CertificateIssue.belongsTo(Certificate, { as: 'certificate', foreignKey: 'certificateId' });
 CertificateIssue.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 CertificateIssue.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' });
+MembershipPayment.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+User.hasMany(MembershipPayment, { as: 'membershipPayments', foreignKey: 'userId' });
+IdCardProfile.belongsTo(User, { as: 'user', foreignKey: 'userId' });
+OfflineDonation.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' });
+ManagerAccess.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 
 module.exports = {
   sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig,
   Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
-  BoardMember
+  BoardMember, MembershipPayment, IdCardProfile, Revocation, VerificationScan,
+  CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess
 };

@@ -1,0 +1,54 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'receipts'}) %>
+<div class="wrap">
+<p class="eyebrow">Receipts</p>
+<h1 style="margin-bottom:6px"><%= title %></h1>
+<div class="tabs">
+  <a href="/portal/admin/receipts">All receipts</a>
+  <a href="/portal/admin/receipts/membership" class="<%= kind==='membership'?'on':'' %>">Membership</a>
+  <a href="/portal/admin/receipts/member" class="<%= kind==='member'?'on':'' %>">Member donations</a>
+  <a href="/portal/admin/receipts/visitor" class="<%= kind==='visitor'?'on':'' %>">Visitor donations</a>
+  <a href="/portal/admin/receipts/offline" class="<%= kind==='offline'?'on':'' %>">Cash &amp; offline</a>
+  <a href="/portal/admin/donations.csv">⬇ CSV</a>
+</div>
+
+<% if (kind === 'offline') { %>
+  <p class="muted" style="max-width:78ch">Donations an admin entered by hand. Each one shows who
+  recorded it — these are the rows that need reconciling against the cash book or the bank
+  statement, because no gateway confirmed them.</p>
+<% } %>
+
+<div class="card stat" style="max-width:320px"><b>₹<%= (total/100).toLocaleString('en-IN') %></b><span><%= donations.length %> receipt<%= donations.length===1?'':'s' %></span></div>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Receipt</th><th>Date</th><th>Donor</th><th>Programme</th><th>Amount</th><th>How</th><th></th></tr>
+<% if (!donations.length) { %><tr><td colspan="7" class="muted" style="padding:18px">None yet.</td></tr><% } %>
+<% donations.forEach(d => { var who = d.user || d.guest || {}; var off = offlineBy[d.id]; %>
+<tr>
+  <td class="serial"><%= d.receiptNo || '—' %></td>
+  <td><%= (d.paidAt || d.createdAt).toDateString() %></td>
+  <td><%= who.name || '—' %>
+    <% if (who.email) { %><br><span class="muted" style="font-size:.76rem"><%= who.email %></span><% } %>
+    <% if (d.user && d.user.memberId) { %><br><span class="serial" style="font-size:.72rem"><%= d.user.memberId %></span><% } %>
+  </td>
+  <td><%= d.category %></td>
+  <td>₹<%= (d.amount/100).toLocaleString('en-IN') %></td>
+  <td>
+    <% if (off) { %>
+      <span class="pill info"><%= modeLabel[off.mode] || off.mode %></span>
+      <br><span class="muted" style="font-size:.72rem">by hand<%= off.reference ? ' · ' + off.reference : '' %></span>
+    <% } else { %>
+      <span class="pill ok">Gateway</span>
+      <br><span class="serial" style="font-size:.7rem"><%= d.gatewayRef || d.txnId %></span>
+    <% } %>
+  </td>
+  <td style="display:flex;gap:6px;flex-wrap:wrap">
+    <% if (d.txnId) { %><a class="btn btn-ghost btn-sm" href="/portal/receipt/<%= d.txnId %>/pdf" target="_blank" rel="noopener">PDF</a><% } %>
+    <% if (d.receiptNo) { %><a class="btn btn-ghost btn-sm" href="/verify/<%= d.receiptNo %>" target="_blank" rel="noopener">Verify</a><% } %>
+  </td>
+</tr>
+<% if (off && off.note) { %><tr><td colspan="7" class="muted" style="font-size:.8rem">Note: <%= off.note %></td></tr><% } %>
+<% }) %>
+</table>
+</div>
+</div></body></html>

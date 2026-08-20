@@ -13,7 +13,10 @@
     "ui:smoke": "node server/scripts/admin-ui-smoke.js",
     "donate:smoke": "node server/scripts/donate-btn-smoke.js",
     "board:smoke": "node server/scripts/board-smoke.js",
-    "board:render": "node server/scripts/board-render-smoke.js"
+    "board:render": "node server/scripts/board-render-smoke.js",
+    "member:smoke": "node server/scripts/membership-smoke.js",
+    "verify:smoke": "node server/scripts/verify-smoke.js",
+    "sections:smoke": "node server/scripts/sections-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",

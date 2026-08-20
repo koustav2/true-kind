@@ -1,23 +1,101 @@
 <%- include('../partials/head') %><%- include('../partials/nav', {active:'don'}) %>
+<%#
+  Donations, plus the form for one taken offline.
+
+  A cash donation is stored as an ordinary Donation with an OfflineDonation row
+  beside it, so it counts in every total while staying identifiable as something
+  a person keyed in rather than a gateway confirmed. The "How" column is that
+  distinction, and it is the column you reconcile against the cash book.
+%>
+<style>
+.od-panel{margin:0 0 20px}
+.od-panel > summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:100px;background:var(--purple);color:#fff;
+  font:500 .86rem 'Work Sans',sans-serif}
+.od-panel > summary::-webkit-details-marker{display:none}
+.od-panel[open] > summary{background:var(--purple-deep)}
+.od-body{margin-top:14px;max-width:660px}
+.od-row{display:grid;gap:12px}
+@media(min-width:560px){.od-row.two{grid-template-columns:1fr 1fr}}
+</style>
+
 <div class="wrap">
-<p class="eyebrow">Donations</p><h1>Donation list</h1>
+<p class="eyebrow">Donations</p><h1 style="margin-bottom:6px">Donations</h1>
 <div class="tabs">
   <a href="/portal/admin/donations" class="<%= kind==='member'?'on':'' %>">Member donations</a>
-  <a href="/portal/admin/donations?kind=guest" class="<%= kind==='guest'?'on':'' %>">Guest donations</a>
+  <a href="/portal/admin/donations?kind=guest" class="<%= kind==='guest'?'on':'' %>">Visitor donations</a>
+  <a href="/portal/admin/receipts">All receipts</a>
   <a href="/portal/admin/donations.csv">⬇ CSV</a>
 </div>
+
+<% if (saved) { %><div class="alert ok">Recorded — receipt <span class="serial"><%= saved %></span>.</div><% } %>
+<% if (error === 'mode') { %><div class="alert err">Pick how the donation was received. "Online" cannot be entered by hand — that is only ever set by the payment gateway.</div><% } %>
+<% if (error === 'amount') { %><div class="alert err">Enter an amount of at least ₹1.</div><% } %>
+<% if (error === 'name') { %><div class="alert err">A donor name is required — it goes on the receipt.</div><% } %>
+
+<details class="od-panel">
+  <summary>Record a donation taken offline</summary>
+  <form method="post" action="/portal/admin/donations/offline" class="od-body">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="card" style="margin:0">
+      <p class="muted" style="margin:0 0 8px">Cash at an event, a bank transfer, UPI or a cheque. It gets a receipt number and appears in the totals like any other donation, flagged as entered by hand.</p>
+      <div class="od-row two">
+        <div><label for="d-name" style="margin-top:0">Donor name *</label><input id="d-name" name="name" required maxlength="120"></div>
+        <div><label for="d-amount" style="margin-top:0">Amount (₹) *</label><input id="d-amount" type="number" name="amount" min="1" step="1" required></div>
+      </div>
+      <div class="od-row two">
+        <div><label for="d-email">Email</label><input id="d-email" type="email" name="email" maxlength="160"></div>
+        <div><label for="d-phone">Mobile</label><input id="d-phone" type="tel" name="phone" maxlength="30"></div>
+      </div>
+      <div class="od-row two">
+        <div>
+          <label for="d-mode">Received as *</label>
+          <select id="d-mode" name="mode" required>
+            <option value="">Select…</option>
+            <% modes.forEach(m => { %><option value="<%= m %>"><%= m.charAt(0).toUpperCase() + m.slice(1) %></option><% }) %>
+          </select>
+        </div>
+        <div><label for="d-date">Date received</label><input id="d-date" type="date" name="paidAt"></div>
+      </div>
+      <label for="d-cat">Programme</label>
+      <select id="d-cat" name="category">
+        <% categories.forEach(c => { %><option><%= c %></option><% }) %>
+      </select>
+      <div class="od-row two">
+        <div><label for="d-ref">Reference (UTR, cheque no)</label><input id="d-ref" name="reference" maxlength="120"></div>
+        <div><label for="d-pan">PAN (for 80G)</label><input id="d-pan" name="pan" maxlength="20"></div>
+      </div>
+      <label for="d-note">Note</label>
+      <input id="d-note" name="note" maxlength="240" placeholder="e.g. collected at the Bhadrak camp">
+      <button class="btn btn-primary btn-sm" style="margin-top:16px" type="submit">Record donation</button>
+    </div>
+  </form>
+</details>
+
 <div class="card" style="padding:0;overflow-x:auto">
 <table>
-<tr><th>Receipt</th><th>Date</th><th>Donor</th><th>Program</th><th>Amount</th><th>Txn</th></tr>
-<% if (!donations.length) { %><tr><td colspan="6" class="muted">None yet.</td></tr><% } %>
-<% donations.forEach(d => { const who = d.user || d.guest || {}; %>
+<tr><th>Receipt</th><th>Date</th><th>Donor</th><th>Programme</th><th>Amount</th><th>How</th><th></th></tr>
+<% if (!donations.length) { %><tr><td colspan="7" class="muted" style="padding:18px">None yet.</td></tr><% } %>
+<% donations.forEach(d => { var who = d.user || d.guest || {}; var off = offlineBy[d.id]; %>
 <tr>
-  <td class="serial"><%= d.receiptNo %></td>
+  <td class="serial"><%= d.receiptNo || '—' %></td>
   <td><%= (d.paidAt || d.createdAt).toDateString() %></td>
-  <td><%= who.name %><br><span class="muted"><%= who.email %></span></td>
+  <td><%= who.name || '—' %><% if (who.email) { %><br><span class="muted" style="font-size:.76rem"><%= who.email %></span><% } %></td>
   <td><%= d.category %></td>
   <td>₹<%= (d.amount/100).toLocaleString('en-IN') %></td>
-  <td class="serial"><%= d.gatewayRef || d.txnId %></td>
+  <td>
+    <% if (off) { %>
+      <span class="pill info"><%= modeLabel[off.mode] || off.mode %></span>
+      <br><span class="muted" style="font-size:.72rem">by hand</span>
+    <% } else { %>
+      <span class="pill ok">Gateway</span>
+      <br><span class="serial" style="font-size:.7rem"><%= d.gatewayRef || d.txnId %></span>
+    <% } %>
+  </td>
+  <td style="display:flex;gap:6px;flex-wrap:wrap">
+    <% if (d.txnId) { %><a class="btn btn-ghost btn-sm" href="/portal/receipt/<%= d.txnId %>/pdf" target="_blank" rel="noopener">PDF</a><% } %>
+    <% if (d.receiptNo) { %><a class="btn btn-ghost btn-sm" href="/verify/<%= d.receiptNo %>" target="_blank" rel="noopener">Verify</a><% } %>
+  </td>
 </tr>
 <% }) %>
 </table>

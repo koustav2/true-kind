@@ -1,0 +1,19 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'reports'}) %>
+<div class="wrap">
+<p class="eyebrow">Reports</p>
+<h1 style="margin-bottom:6px">Report downloads</h1>
+<p class="muted" style="max-width:78ch;margin-bottom:22px">
+  Every export in one place. All of them are CSV, which opens in Excel, Numbers and Google
+  Sheets. Values containing commas or quotes are properly escaped, so a name like
+  <em>Nayak, Priya</em> stays in one column.
+</p>
+<div class="grid g2">
+  <% reports.forEach(r => { %>
+    <div class="card" style="margin:0">
+      <h3 style="margin:0 0 6px;font-size:1rem"><%= r.label %></h3>
+      <p class="muted" style="margin:0 0 14px;font-size:.86rem"><%= r.note %></p>
+      <a class="btn btn-ghost btn-sm" href="<%= r.href %>">Download CSV</a>
+    </div>
+  <% }) %>
+</div>
+</div></body></html>

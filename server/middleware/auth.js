@@ -88,17 +88,57 @@ async function requireAdmin(req, res, next) {
     return req.session.destroy(() => deny(req, res, 403, 'blocked',
       'This account has been deactivated.'));
   }
-  // Role comes from the database, not the session, so a demotion applies at once
-  // rather than surviving until the cookie expires.
-  if (acct.user.role !== 'admin') {
-    return deny(req, res, 403, 'forbidden', 'Admin access only.');
-  }
   if (acct.access && acct.access.mustChangePassword && fullPath(req) !== CHANGE_PATH) {
     return res.redirect(CHANGE_PATH);
   }
+
+  /* Role comes from the database, not the session, so a demotion applies at once
+     rather than surviving until the cookie expires. */
+  if (acct.user.role === 'admin') {
+    req.account = acct.user;
+    req.isAdmin = true;
+    req.session.role = 'admin';
+    res.locals.isAdmin = true;
+    res.locals.isManager = false;
+    res.locals.managerSections = [];
+    return next();
+  }
+
+  /* Not an admin — but they may be a MANAGER: a member row with an explicit
+     grant (see middleware/staff.js, which explains why it is a separate table
+     and why the check is default-deny). The grant has to name the section this
+     exact request belongs to; anything unlisted is admin-only. */
+  const { ManagerAccess } = models();
+  let grant = null;
+  try {
+    grant = await ManagerAccess.findOne({ where: { userId: acct.user.id, active: true } });
+  } catch (e) { return next(e); }
+
+  if (!grant) return deny(req, res, 403, 'forbidden', 'Admin access only.');
+
+  const { managerMay } = require('./staff');
+  // Inside a mounted router req.path is relative to the mount point, which is
+  // exactly what the allow table is written against.
+  if (!managerMay(grant.sections, req.method, req.path)) {
+    return deny(req, res, 403, 'forbidden',
+      'Your account does not have access to that section. Ask an administrator if you need it.');
+  }
+
   req.account = acct.user;
-  req.session.role = acct.user.role;   // keep the views' copy honest
+  req.isAdmin = false;
+  req.manager = grant;
+  res.locals.isAdmin = false;
+  res.locals.isManager = true;
+  res.locals.managerSections = Array.isArray(grant.sections) ? grant.sections : [];
   next();
 }
 
-module.exports = { requireLogin, requireAdmin, CHANGE_PATH };
+/* Belt to the allow-table's braces, for a route where a manager is allowed the
+   GET but must never reach the POST. Cheap to add, and it means a mistake in the
+   allow table is caught by a second, explicit check at the route itself. */
+function adminOnly(req, res, next) {
+  if (req.isAdmin) return next();
+  return deny(req, res, 403, 'forbidden', 'That action is restricted to administrators.');
+}
+
+module.exports = { requireLogin, requireAdmin, adminOnly, CHANGE_PATH };

@@ -1,6 +1,15 @@
 <%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
 <div class="wrap">
-<p class="eyebrow">Certificates</p><h1>Certificate list</h1>
+<p class="eyebrow">Certificates</p><h1 style="margin-bottom:6px">Certificate types</h1>
+<div class="tabs">
+  <a href="/portal/admin/certificates" class="on">Certificate types</a>
+  <a href="/portal/admin/certificates/generate">Generate</a>
+  <a href="/portal/admin/certificates/issued">Issued register</a>
+  <a href="/portal/admin/visitor-certificates">Visitor certificates</a>
+</div>
+<p class="muted" style="max-width:78ch">A <strong>type</strong> is the title and wording that
+gets printed. Issuing one attaches it to a person and mints a unique, verifiable serial —
+so a type is created once and issued many times.</p>
 <div class="grid g2">
 <div class="card" style="padding:0;overflow-x:auto">
 <table>

@@ -1,39 +1,214 @@
-<%- include('../partials/head') %><%- include('../partials/nav', {active:'members'}) %>
+<%- include('../partials/head') %><%- include('../partials/nav', {active: status === 'guest' ? 'newmem' : 'members'}) %>
+<%#
+  Two genuinely different screens behind one set of tabs, because they are two
+  stages of the same thing:
+
+    New memberships  — registered, fee NOT received. Every row's job is to
+                       become paid, so the row carries the payment form.
+    Active members   — fee received. Every row's job is day-to-day admin, so the
+                       row carries card / receipt / certificate / access.
+
+  The payment form is a <details> per row rather than a modal: it needs a plan,
+  an amount, a mode, a date and a reference, which is too much for an inline
+  cell and not worth a second page load.
+%>
+<style>
+.mem-id{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--purple)}
+.mem-who b{display:block;font-weight:500}
+.mem-who span{font-size:.78rem;color:var(--text-soft)}
+.mem-acts{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.mem-acts form{display:inline}
+.pay-panel{margin:0}
+.pay-panel > summary{
+  list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  padding:8px 15px;border-radius:100px;background:var(--purple);color:#fff;
+  font:500 .82rem 'Work Sans',sans-serif;white-space:nowrap;
+}
+.pay-panel > summary::-webkit-details-marker{display:none}
+.pay-panel[open] > summary{background:var(--purple-deep)}
+.pay-body{
+  margin-top:10px;padding:14px 16px;border:1px solid var(--rule-strong);
+  border-radius:var(--radius-sm);background:var(--paper-2);min-width:420px;
+}
+.pay-body .row{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.pay-body label{margin-top:10px}
+.pay-hint{font-size:.75rem;color:var(--text-soft);margin:8px 0 0}
+.cert-inline{display:flex;gap:5px;align-items:center}
+.cert-inline select{width:auto;min-width:150px;padding:7px 10px;font-size:.8rem}
+@media(max-width:880px){
+  .pay-body{min-width:0}
+  .pay-body .row{grid-template-columns:1fr}
+}
+</style>
+
 <div class="wrap">
-<p class="eyebrow">Members</p><h1>Member list</h1>
+<p class="eyebrow">Members</p>
+<h1><%= status === 'guest' ? 'New membership requests' : 'Active members' %></h1>
 <div class="tabs">
-  <a href="/portal/admin/members" class="<%= status==='active'?'on':'' %>">Active</a>
-  <a href="/portal/admin/members?status=guest" class="<%= status==='guest'?'on':'' %>">Guest</a>
+  <a href="/portal/admin/members?status=guest" class="<%= status==='guest'?'on':'' %>">New memberships</a>
+  <a href="/portal/admin/members" class="<%= status==='active'?'on':'' %>">Active members</a>
+  <a href="/portal/admin/membership-receipts">Membership receipts</a>
 </div>
-<p class="muted">
-  <strong>Active / Guest</strong> is the membership state — whether they have paid.
-  <strong>Access</strong> is separate: deactivating an account blocks sign-in
-  immediately, even if the person is already logged in, and paying again does not
-  undo it.
-</p>
+
+<% if (error === 'mode') { %><div class="alert err">Pick how the fee was paid. A payment cannot be recorded as "online" by hand — that mode is only ever set by the payment gateway.</div><% } %>
+<% if (error === 'amount') { %><div class="alert err">That amount is not a number. Leave it blank to use the plan price.</div><% } %>
+
+<% if (status === 'guest') { %>
+  <p class="muted" style="max-width:78ch">
+    These people have registered but their <strong>membership fee has not been received</strong>, so
+    they are not members yet. Paying online activates them automatically. If the fee came in as
+    cash, a bank transfer, UPI or a cheque, record it here with
+    <strong>Record payment</strong> — that assigns a Member ID, sets the validity, issues a
+    numbered receipt and moves them to <strong>Active members</strong>.
+  </p>
+<% } else { %>
+  <p class="muted" style="max-width:78ch">
+    Fee received, Member ID assigned. <strong>Access</strong> is a separate thing from membership:
+    deactivating an account blocks sign-in immediately, even for someone already logged in, and
+    paying again does not undo it.
+  </p>
+<% } %>
+
 <div class="card" style="padding:0;overflow-x:auto">
 <table>
-<tr><th>Name</th><th>Email</th><th>Phone</th><th>Member ID</th><th>Plan / valid till</th><th>Joined</th><th>Access</th><th></th></tr>
-<% if (!members.length) { %><tr><td colspan="8" class="muted">Nobody here yet.</td></tr><% } %>
+<% if (status === 'guest') { %>
+  <tr><th>Name / contact</th><th>Registered</th><th>Fee</th><th>Access</th><th>Action</th></tr>
+<% } else { %>
+  <tr><th>Name / contact</th><th>Member ID</th><th>Plan / valid till</th><th>Fee</th><th>Certificates</th><th>Access</th><th>Action</th></tr>
+<% } %>
+
+<% if (!members.length) { %>
+  <tr><td colspan="7" class="muted"><%= status === 'guest' ? 'No pending registrations.' : 'No active members yet.' %></td></tr>
+<% } %>
+
 <% members.forEach(u => { %>
-<% var blocked = blockedIds.indexOf(u.id) !== -1; %>
+<% var blocked = blockedIds.indexOf(u.id) !== -1;
+   var paid = lastPayment[u.id];
+   var self = u.id === session.userId; %>
 <tr>
-  <td><%= u.name %></td><td><%= u.email %></td><td><%= u.phone %></td>
-  <td class="serial"><%= u.memberId || '—' %></td>
-  <td><%= u.membership && u.membership.plan ? `${u.membership.plan} · ${u.membership.validTill.toDateString()}` : '—' %></td>
-  <td><%= u.createdAt.toDateString() %></td>
-  <td><% if (blocked) { %><span class="pill warn">Deactivated</span><% } else { %><span class="pill ok">Active</span><% } %></td>
+  <td class="mem-who">
+    <b><a href="/portal/admin/members/<%= u.id %>"><%= u.name %></a></b>
+    <span><%= u.email %> · <%= u.phone %></span>
+  </td>
+
+  <% if (status === 'guest') { %>
+    <td><%= u.createdAt.toDateString() %></td>
+  <% } else { %>
+    <td class="mem-id"><%= u.memberId || '—' %></td>
+    <td>
+      <% if (u.membership && u.membership.plan) { %>
+        <%= plans[u.membership.plan] ? plans[u.membership.plan].name : u.membership.plan %><br>
+        <span class="muted"><%= u.membership.validTill.toDateString() %></span>
+        <% if (!u.membershipValid) { %><br><span class="pill warn">Expired</span><% } %>
+      <% } else { %>—<% } %>
+    </td>
+  <% } %>
+
   <td>
-    <% if (u.id === session.userId) { %>
-      <span class="muted">you</span>
+    <% if (paid) { %>
+      <span class="pill ok">Paid</span><br>
+      <span class="muted" style="font-size:.74rem">₹<%= (paid.amount/100).toLocaleString('en-IN') %> · <%= paid.mode %></span>
     <% } else { %>
-      <form method="post" action="/portal/admin/members/<%= u.id %>/access" style="display:inline"
-            onsubmit="return confirm('<%= blocked ? "Reactivate" : "Deactivate" %> <%= u.name %>?<%= blocked ? "" : " They will be signed out immediately." %>')">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <input type="hidden" name="action" value="<%= blocked ? 'unblock' : 'block' %>">
-        <button class="btn btn-ghost btn-sm" type="submit"><%= blocked ? 'Reactivate' : 'Deactivate' %></button>
-      </form>
+      <span class="pill warn">Unpaid</span>
     <% } %>
+  </td>
+
+  <% if (status === 'active') { %>
+    <td>
+      <% if (certCount[u.id]) { %>
+        <a href="/portal/admin/members/<%= u.id %>"><%= certCount[u.id] %> issued</a>
+      <% } else { %><span class="muted">none</span><% } %>
+    </td>
+  <% } %>
+
+  <td>
+    <% if (blocked) { %><span class="pill warn">Deactivated</span>
+    <% } else { %><span class="pill ok">Active</span><% } %>
+  </td>
+
+  <td>
+    <div class="mem-acts">
+      <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>">View</a>
+
+      <% if (status === 'active') { %>
+        <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>/card.pdf" target="_blank" rel="noopener">ID card</a>
+        <% if (paid) { %>
+          <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>/receipt.pdf" target="_blank" rel="noopener">Receipt</a>
+        <% } %>
+        <% if (certs.length) { %>
+          <form method="post" action="/portal/admin/members/<%= u.id %>/certificate" class="cert-inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <select name="certificateId" required aria-label="Certificate to issue to <%= u.name %>">
+              <option value="">Certificate…</option>
+              <% certs.forEach(c => { %><option value="<%= c.id %>"><%= c.title %></option><% }) %>
+            </select>
+            <button class="btn btn-purple btn-sm" type="submit">Issue</button>
+          </form>
+        <% } %>
+      <% } %>
+
+      <% if (!self) { %>
+        <form method="post" action="/portal/admin/members/<%= u.id %>/access"
+              onsubmit="return confirm('<%= blocked ? "Reactivate" : "Deactivate" %> <%= u.name %>?<%= blocked ? "" : " They will be signed out immediately." %>')">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="action" value="<%= blocked ? 'unblock' : 'block' %>">
+          <button class="btn btn-ghost btn-sm" type="submit"><%= blocked ? 'Reactivate' : 'Deactivate' %></button>
+        </form>
+      <% } else { %>
+        <span class="muted">you</span>
+      <% } %>
+    </div>
+
+    <%# The payment form. On the guest tab it is the whole point of the row; on
+        the active tab it records a renewal taken in cash, which extends from the
+        current expiry rather than from today. %>
+    <details class="pay-panel" style="margin-top:8px">
+      <summary><%= status === 'guest' ? 'Record payment' : 'Record renewal' %></summary>
+      <form method="post" action="/portal/admin/members/<%= u.id %>/membership">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="pay-body">
+          <div class="row">
+            <div>
+              <label for="plan-<%= u.id %>" style="margin-top:0">Plan</label>
+              <select id="plan-<%= u.id %>" name="plan">
+                <% Object.keys(plans).forEach(k => { %>
+                  <option value="<%= k %>" <%= k === 'annual' ? 'selected' : '' %>><%= plans[k].label %> — ₹<%= (plans[k].amount/100).toLocaleString('en-IN') %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label for="mode-<%= u.id %>" style="margin-top:0">Paid by *</label>
+              <select id="mode-<%= u.id %>" name="mode" required>
+                <option value="">Select…</option>
+                <% modes.forEach(m => { %><option value="<%= m %>"><%= m.charAt(0).toUpperCase() + m.slice(1) %></option><% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="amt-<%= u.id %>">Amount received (₹)</label>
+              <input id="amt-<%= u.id %>" type="number" name="amount" min="1" step="1" placeholder="Plan price">
+            </div>
+            <div>
+              <label for="on-<%= u.id %>">Date received</label>
+              <input id="on-<%= u.id %>" type="date" name="paidAt">
+            </div>
+          </div>
+          <label for="ref-<%= u.id %>">Reference (UTR, cheque no, UPI ref)</label>
+          <input id="ref-<%= u.id %>" name="reference" maxlength="120">
+          <label for="note-<%= u.id %>">Note</label>
+          <input id="note-<%= u.id %>" name="note" maxlength="240" placeholder="e.g. collected at the Bhadrak camp">
+          <p class="pay-hint">
+            Leave the amount blank to use the plan price. A numbered receipt is issued
+            either way, and the entry is stamped with your name as the person who
+            recorded it.
+          </p>
+          <button class="btn btn-primary btn-sm" style="margin-top:12px" type="submit">
+            <%= status === 'guest' ? 'Record payment and activate' : 'Record renewal' %>
+          </button>
+        </div>
+      </form>
+    </details>
   </td>
 </tr>
 <% }) %>

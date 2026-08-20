@@ -1,0 +1,87 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<%#
+  The issued register — every certificate that exists, member and visitor
+  together in one list sorted by date.
+
+  Two tables back this (CertificateIssue and VisitorCertificate) and the page
+  deliberately does not show that seam: somebody looking up a serial off a piece
+  of paper does not know which table it came from, and should not have to guess
+  which tab to look in.
+%>
+<div class="wrap">
+<p class="eyebrow">Certificates</p>
+<h1 style="margin-bottom:6px">Issued certificates</h1>
+<div class="tabs">
+  <a href="/portal/admin/certificates">Certificate types</a>
+  <a href="/portal/admin/certificates/generate">Generate</a>
+  <a href="/portal/admin/certificates/issued" class="on">Issued register</a>
+  <a href="/portal/admin/visitor-certificates">Visitor certificates</a>
+  <a href="/portal/admin/certificates.csv">⬇ CSV</a>
+</div>
+
+<div class="grid g3" style="margin-bottom:18px">
+  <div class="card stat" style="margin:0"><b><%= rows.length %></b><span>issued in total</span></div>
+  <div class="card stat" style="margin:0"><b><%= liveCount %></b><span>currently valid</span></div>
+  <div class="card stat" style="margin:0"><b><%= rows.length - liveCount %></b><span>withdrawn</span></div>
+</div>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Serial</th><th>Certificate</th><th>Issued to</th><th>Type</th><th>Date</th><th>Status</th><th></th></tr>
+<% if (!rows.length) { %>
+  <tr><td colspan="7" class="muted" style="padding:18px">
+    Nothing issued yet. Use <a href="/portal/admin/certificates/generate">Generate</a> for a member,
+    or <a href="/portal/admin/visitor-certificates">Visitor certificates</a> for somebody without an account.
+  </td></tr>
+<% } %>
+<% rows.forEach(r => { %>
+<tr>
+  <td class="serial"><%= r.serial %></td>
+  <td><%= r.title %></td>
+  <td><%= r.holder %><% if (r.extra) { %><br><span class="muted" style="font-size:.76rem"><%= r.extra %></span><% } %></td>
+  <td><% if (r.kind === 'visitor') { %><span class="pill info">visitor</span><% } else { %><span class="pill ok">member</span><% } %></td>
+  <td><%= new Date(r.issuedAt).toDateString() %></td>
+  <td>
+    <% if (revoked[r.serial]) { %>
+      <span class="pill warn">Withdrawn</span>
+      <% if (revoked[r.serial].reason) { %><br><span class="muted" style="font-size:.74rem"><%= revoked[r.serial].reason %></span><% } %>
+    <% } else { %><span class="pill ok">Valid</span><% } %>
+  </td>
+  <td style="display:flex;gap:6px;flex-wrap:wrap">
+    <% if (r.pdf) { %><a class="btn btn-ghost btn-sm" href="<%= r.pdf %>" target="_blank" rel="noopener">PDF</a><% } %>
+    <a class="btn btn-ghost btn-sm" href="/verify/<%= r.serial %>" target="_blank" rel="noopener">Verify</a>
+    <% if (r.kind === 'visitor') { %>
+      <% if (revoked[r.serial]) { %>
+        <form method="post" action="/portal/admin/visitor-certificates/<%= r.visitorId %>/restore">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-ghost btn-sm" type="submit">Restore</button>
+        </form>
+      <% } else { %>
+        <form method="post" action="/portal/admin/visitor-certificates/<%= r.visitorId %>/revoke"
+              onsubmit="return confirm('Withdraw <%= r.serial %>? It will verify as withdrawn. The record is kept and this can be undone.')">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="reason" value="Withdrawn by the Foundation">
+          <button class="btn btn-ghost btn-sm" type="submit">Withdraw</button>
+        </form>
+      <% } %>
+    <% } else if (r.memberId) { %>
+      <% if (revoked[r.serial]) { %>
+        <form method="post" action="/portal/admin/members/<%= r.memberId %>/certificate/<%= r.issueId %>/restore">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-ghost btn-sm" type="submit">Restore</button>
+        </form>
+      <% } else { %>
+        <form method="post" action="/portal/admin/members/<%= r.memberId %>/certificate/<%= r.issueId %>/revoke"
+              onsubmit="return confirm('Withdraw <%= r.serial %>? It will verify as withdrawn. The record is kept and this can be undone.')">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="reason" value="Withdrawn by the Foundation">
+          <button class="btn btn-ghost btn-sm" type="submit">Withdraw</button>
+        </form>
+      <% } %>
+    <% } %>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

@@ -1,0 +1,126 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'managers'}) %>
+<%#
+  Managers.
+
+  Admin-only, including reading it: the map of who can see what is itself
+  sensitive.
+
+  The list of things a manager can NEVER be granted is printed on the page rather
+  than left in the code, because an admin deciding whether to make somebody a
+  manager needs to know where the line is without reading middleware/staff.js.
+%>
+<style>
+.mg-sections{display:grid;gap:10px;margin-top:8px}
+@media(min-width:620px){.mg-sections{grid-template-columns:1fr 1fr}}
+.mg-sec{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;
+  border:1px solid var(--rule);border-radius:9px;font-size:.85rem;cursor:pointer;margin:0}
+.mg-sec input{width:auto;margin:2px 0 0;flex:none;accent-color:var(--purple)}
+.mg-sec:has(input:checked){border-color:var(--purple);background:rgba(125,74,177,.05)}
+.mg-sec b{display:block;font-weight:500}
+.mg-sec span{display:block;font-size:.76rem;color:var(--text-soft);margin-top:2px}
+.mg-card{border:1px solid var(--rule);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.mg-held{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.mg-held span{font-size:.72rem;padding:3px 10px;border-radius:100px;background:rgba(125,74,177,.1);color:var(--purple)}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Access</p>
+<h1 style="margin-bottom:6px">Managers</h1>
+<p class="muted" style="max-width:80ch">
+  A manager works the queues without full administrator rights. Tick only the sections they
+  need — anything not ticked returns a "no access" page, and anything not listed here is
+  administrator-only whether you tick things or not.
+</p>
+<div class="alert" style="background:rgba(223,53,72,.06);border-color:rgba(201,33,53,.3);color:var(--text)">
+  <strong>A manager can never</strong> deactivate an account, issue a password or a volunteer
+  login, edit the website or the media library, edit the board, delete anything, or reach this
+  page. Those stay with administrators — a manager who can create managers is an administrator,
+  and a manager who can issue a password can take over any account.
+</div>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'nouser') { %><div class="alert err">Pick an account.</div><% } %>
+<% if (error === 'isadmin') { %><div class="alert err">That account is already an administrator — it has full access and does not need a manager grant.</div><% } %>
+
+<div class="card">
+<h3 style="margin-top:0">Give someone manager access</h3>
+<% if (!candidates.length) { %>
+  <p class="muted">Every member account is already a manager, or there are no member accounts yet.</p>
+<% } else { %>
+<form method="post" action="/portal/admin/managers" style="max-width:760px">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <label for="userId" style="margin-top:0">Account</label>
+  <select id="userId" name="userId" required>
+    <option value="">Choose an account…</option>
+    <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %> — <%= c.email %></option><% }) %>
+  </select>
+  <label style="margin-top:16px">Sections they may work</label>
+  <div class="mg-sections">
+    <% sections.forEach(s => { %>
+      <label class="mg-sec">
+        <input type="checkbox" name="sections" value="<%= s.key %>">
+        <span><b><%= s.label %></b><span><%= s.help %></span></span>
+      </label>
+    <% }) %>
+  </div>
+  <label for="note">Note</label>
+  <input id="note" name="note" maxlength="240" placeholder="e.g. Bhadrak field office">
+  <button class="btn btn-purple btn-sm" style="margin-top:16px" type="submit">Grant access</button>
+</form>
+<% } %>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">Current managers</h3>
+<% if (!grants.length) { %>
+  <p class="muted">Nobody has manager access. Everything is administrator-only.</p>
+<% } %>
+<% grants.forEach(g => { var u = byId[g.userId]; %>
+  <div class="mg-card">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <b><%= u ? u.name : 'account #' + g.userId %></b>
+      <% if (g.active) { %><span class="pill ok">active</span><% } else { %><span class="pill warn">suspended</span><% } %>
+      <span class="muted" style="font-size:.78rem"><%= u ? u.email : '' %></span>
+    </div>
+    <% if (g.note) { %><p class="muted" style="margin:6px 0 0;font-size:.82rem"><%= g.note %></p><% } %>
+    <div class="mg-held">
+      <% if (!(g.sections || []).length) { %>
+        <span style="background:rgba(201,33,53,.1);color:var(--red)">no sections — cannot reach anything</span>
+      <% } %>
+      <% sections.filter(s => (g.sections || []).indexOf(s.key) !== -1).forEach(s => { %>
+        <span><%= s.label %></span>
+      <% }) %>
+    </div>
+
+    <details>
+      <summary class="btn btn-ghost btn-sm" style="display:inline-flex">Change</summary>
+      <form method="post" action="/portal/admin/managers/<%= g.id %>/update" style="margin-top:14px">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="mg-sections">
+          <% sections.forEach(s => { %>
+            <label class="mg-sec">
+              <input type="checkbox" name="sections" value="<%= s.key %>" <%= (g.sections||[]).indexOf(s.key)!==-1 ? 'checked' : '' %>>
+              <span><b><%= s.label %></b><span><%= s.help %></span></span>
+            </label>
+          <% }) %>
+        </div>
+        <label for="note-<%= g.id %>">Note</label>
+        <input id="note-<%= g.id %>" name="note" value="<%= g.note || '' %>" maxlength="240">
+        <label style="display:flex;gap:8px;align-items:center;font-size:.85rem;margin-top:14px">
+          <input type="checkbox" name="active" <%= g.active ? 'checked' : '' %> style="width:auto;margin:0">
+          Access is active
+        </label>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" type="submit">Save</button>
+        </div>
+      </form>
+      <form method="post" action="/portal/admin/managers/<%= g.id %>/delete" style="margin-top:8px"
+            onsubmit="return confirm('Remove manager access entirely? Their account stays, they just lose admin sections.')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Remove manager access</button>
+      </form>
+    </details>
+  </div>
+<% }) %>
+</div>
+</div></body></html>

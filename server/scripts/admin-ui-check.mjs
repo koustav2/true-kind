@@ -96,9 +96,14 @@ let r=await p.evaluate(async(t)=>{
     body:new URLSearchParams({_csrf:t,action:'block'}).toString()});
   const body=await res.text();
   const visible=body.replace(/<(style|script)[\s\S]*?<\/\1>/gi,' ').replace(/<[^>]+>/g,' ');
-  return {status:res.status, text:visible.replace(/\s+/g,' ').trim().slice(0,200)};
+  // Match against the WHOLE visible text, not a leading slice. This was
+  // slice(0,200) and broke the moment a nav link was added: the page body got
+  // pushed past the window and a passing behaviour started reporting as a
+  // failure. Report a short excerpt, but assert on everything.
+  const flat=visible.replace(/\s+/g,' ').trim();
+  return {status:res.status, text:flat, excerpt:flat.slice(0,160)};
 },tok);
-ck('cannot deactivate your own account', r.status===400 && /your own account/i.test(r.text), r.status+' '+r.text);
+ck('cannot deactivate your own account', r.status===400 && /your own account/i.test(r.text), r.status+' '+r.excerpt);
 
 // ---- certificate file upload ---------------------------------------------
 await p.goto(B+'/portal/admin/certificates',{waitUntil:'domcontentloaded'});

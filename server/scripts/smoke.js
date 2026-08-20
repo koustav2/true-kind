@@ -68,7 +68,15 @@ process.env.ADMIN_PASSWORD = 'admin123';
   let r = await call('POST', '/portal/signup', { name: 'Test Member', email: 'm@test.org', phone: '9999999999', password: 'secret1' });
   check('signup redirects to member', [302,303].includes(r.status) && r.headers.get('location') === '/portal/member');
   r = await call('GET', '/portal/member');
-  check('member dashboard shows verify prompt', (await r.text()).includes('Please verify your membership'));
+  // The unpaid panel now names the actual state — "the fee has not reached us" —
+  // rather than the vaguer "verify your membership", and says something
+  // different again once a membership has lapsed. Assert on the state, not the
+  // old wording.
+  {
+    const body = await r.text();
+    check('member dashboard says the membership fee has not arrived',
+      body.includes('Membership fee not received yet') && body.includes('Pay &amp; activate'));
+  }
 
   // membership payment (mock)
   r = await call('POST', '/portal/pay/membership', { plan: 'annual' });

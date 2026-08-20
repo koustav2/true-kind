@@ -1,0 +1,316 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'members'}) %>
+<%#
+  One member, everything about them. Reached from the "View" action on either
+  members tab. Nothing here is a new capability — it is the same membership,
+  certificate and donation records, gathered in the one place you look when
+  someone rings up about their own account.
+%>
+<style>
+.md-head{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}
+.md-shot{
+  width:64px;height:64px;border-radius:50%;flex:none;
+  border:1.5px solid var(--brand-blue);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--blue);
+}
+.md-head h1{margin:0 0 4px}
+.md-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.md-facts{display:grid;gap:14px 26px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:0}
+.md-facts dt{
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-soft);margin:0 0 3px;
+}
+.md-facts dd{margin:0;font-size:.9rem}
+.md-acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px}
+.pay-body .row{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+@media(max-width:600px){.pay-body .row{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<p class="eyebrow"><a href="/portal/admin/members?status=<%= member.status %>">← <%= member.status === 'guest' ? 'New memberships' : 'Active members' %></a></p>
+
+<% if (saved === 'card') { %><div class="alert ok">ID card details saved.</div>
+<% } else if (saved === 'revoked') { %><div class="alert ok">Withdrawn. The serial now verifies as <strong>withdrawn</strong> rather than disappearing — anyone scanning the printed document will be told so.</div>
+<% } else if (saved === 'restored') { %><div class="alert ok">Restored. The serial verifies as valid again.</div>
+<% } else if (saved) { %><div class="alert ok">Saved — reference <span class="serial"><%= saved %></span>.</div><% } %>
+<% if (error === 'nocard') { %><div class="alert err">There is no Member ID to withdraw yet.</div><% } %>
+<% if (error === 'duplicate') { %><div class="alert err">That certificate has already been issued to this member. Each issue gets its own verifiable serial, so the same award is not issued twice.</div><% } %>
+<% if (error === 'nocert') { %><div class="alert err">Pick a certificate to issue.</div><% } %>
+<% if (error === 'mode') { %><div class="alert err">Pick how the fee was paid.</div><% } %>
+<% if (error === 'amount') { %><div class="alert err">That amount is not a number.</div><% } %>
+
+<div class="md-head">
+  <div class="md-shot"><%= member.name.split(/\s+/).slice(0,2).map(function(w){return w.charAt(0).toUpperCase()}).join('') %></div>
+  <div>
+    <h1><%= member.name %></h1>
+    <p class="muted" style="margin:0"><%= member.email %> · <%= member.phone %></p>
+    <div class="md-pills">
+      <% if (member.status === 'active') { %><span class="pill ok">Member</span>
+      <% } else { %><span class="pill warn">Fee not received</span><% } %>
+      <% if (payments.length) { %><span class="pill ok">Fee paid</span>
+      <% } else { %><span class="pill warn">Unpaid</span><% } %>
+      <% if (member.status === 'active' && !member.membershipValid) { %><span class="pill warn">Membership expired</span><% } %>
+      <% if (blocked) { %><span class="pill warn">Account deactivated</span>
+      <% } else { %><span class="pill info">Sign-in allowed</span><% } %>
+      <% if (member.memberId && revoked[member.memberId]) { %><span class="pill warn">Card withdrawn</span><% } %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Membership</h3>
+  <dl class="md-facts">
+    <div><dt>Member ID</dt><dd class="serial"><%= member.memberId || '—' %></dd></div>
+    <div><dt>Plan</dt><dd><%= member.membership && plans[member.membership.plan] ? plans[member.membership.plan].name : (member.membership ? member.membership.plan : '—') %></dd></div>
+    <div><dt>Paid on</dt><dd><%= member.membershipPaidAt ? member.membershipPaidAt.toDateString() : '—' %></dd></div>
+    <div><dt>Valid till</dt><dd><%= member.membershipValidTill ? member.membershipValidTill.toDateString() : '—' %></dd></div>
+    <div><dt>Registered</dt><dd><%= member.createdAt.toDateString() %></dd></div>
+    <div><dt>City</dt><dd><%= member.city || '—' %></dd></div>
+    <div><dt>PAN</dt><dd><%= member.pan || '—' %></dd></div>
+  </dl>
+  <div class="md-acts">
+    <% if (member.memberId && member.membership) { %>
+      <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= member.id %>/card.pdf" target="_blank" rel="noopener">ID card PDF</a>
+    <% } %>
+    <% if (payments.length) { %>
+      <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= member.id %>/receipt.pdf" target="_blank" rel="noopener">Latest receipt PDF</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Membership payments</h3>
+  <% if (!payments.length) { %>
+    <p class="muted">Nothing received yet. This person registered but has not paid the membership fee, so they are not an active member. Record the payment below to activate them.</p>
+  <% } else { %>
+    <div style="overflow-x:auto">
+    <table>
+    <tr><th>Receipt</th><th>Date</th><th>Plan</th><th>Amount</th><th>Paid by</th><th>Reference</th><th>Valid till</th><th>Entered</th><th></th></tr>
+    <% payments.forEach(p => { %>
+      <tr>
+        <td class="serial"><%= p.receiptNo %></td>
+        <td><%= (p.paidAt || p.createdAt).toDateString() %></td>
+        <td><%= plans[p.plan] ? plans[p.plan].name : (p.plan || '—') %></td>
+        <td>₹<%= (p.amount/100).toLocaleString('en-IN') %></td>
+        <td><%= p.mode %></td>
+        <td><%= p.reference || '—' %></td>
+        <td><%= p.validTill ? p.validTill.toDateString() : '—' %></td>
+        <td><% if (p.recordedBy) { %><span class="pill info">by hand</span><% } else { %><span class="pill ok">gateway</span><% } %></td>
+        <td><a class="btn btn-ghost btn-sm" href="/portal/admin/membership-receipts/<%= p.id %>/pdf" target="_blank" rel="noopener">PDF</a></td>
+      </tr>
+      <% if (p.note) { %><tr><td colspan="9" class="muted" style="font-size:.8rem">Note: <%= p.note %></td></tr><% } %>
+    <% }) %>
+    </table>
+    </div>
+  <% } %>
+
+  <details class="pay-panel" style="margin-top:16px" <%= payments.length ? '' : 'open' %>>
+    <summary class="btn btn-purple btn-sm" style="display:inline-flex"><%= payments.length ? 'Record a renewal' : 'Record payment and activate' %></summary>
+    <form method="post" action="/portal/admin/members/<%= member.id %>/membership">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="pay-body" style="margin-top:12px;max-width:560px">
+        <div class="row">
+          <div>
+            <label for="plan" style="margin-top:0">Plan</label>
+            <select id="plan" name="plan">
+              <% Object.keys(plans).forEach(k => { %>
+                <option value="<%= k %>" <%= k === 'annual' ? 'selected' : '' %>><%= plans[k].label %> — ₹<%= (plans[k].amount/100).toLocaleString('en-IN') %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div>
+            <label for="mode" style="margin-top:0">Paid by *</label>
+            <select id="mode" name="mode" required>
+              <option value="">Select…</option>
+              <% modes.forEach(m => { %><option value="<%= m %>"><%= m.charAt(0).toUpperCase() + m.slice(1) %></option><% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div><label for="amount">Amount received (₹)</label><input id="amount" type="number" name="amount" min="1" step="1" placeholder="Plan price"></div>
+          <div><label for="paidAt">Date received</label><input id="paidAt" type="date" name="paidAt"></div>
+        </div>
+        <label for="reference">Reference (UTR, cheque no, UPI ref)</label>
+        <input id="reference" name="reference" maxlength="120">
+        <label for="note">Note</label>
+        <input id="note" name="note" maxlength="240">
+        <p class="cms-hint" style="margin-top:8px">Online payments record themselves. Use this for cash, a bank transfer, UPI or a cheque — it is stamped with your name.</p>
+        <button class="btn btn-primary btn-sm" style="margin-top:12px" type="submit">Save payment</button>
+      </div>
+    </form>
+  </details>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">ID card</h3>
+  <p class="muted" style="margin-top:-6px;max-width:74ch">
+    The printed card. Its QR code links to
+    <% if (verifyUrl) { %><a href="<%= verifyUrl %>" target="_blank" rel="noopener">the public verification page</a><% } else { %>the public verification page<% } %>,
+    so anyone can scan it and be told whether the card is valid, expired or withdrawn.
+  </p>
+
+  <div class="md-acts" style="margin-top:0;margin-bottom:6px">
+    <% if (member.memberId || (card && card.employeeCode)) { %>
+      <a class="btn btn-purple btn-sm" href="/portal/admin/members/<%= member.id %>/idcard.pdf" target="_blank" rel="noopener">Print ID card (front &amp; back)</a>
+    <% } %>
+    <% if (member.memberId) { %>
+      <a class="btn btn-ghost btn-sm" href="/verify/<%= member.memberId %>" target="_blank" rel="noopener">Check what a scan shows</a>
+      <% if (revoked[member.memberId]) { %>
+        <form method="post" action="/portal/admin/members/<%= member.id %>/card/restore" style="display:inline">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-ghost btn-sm" type="submit">Restore card</button>
+        </form>
+      <% } else { %>
+        <form method="post" action="/portal/admin/members/<%= member.id %>/card/revoke" style="display:inline"
+              onsubmit="return confirm('Withdraw this card? Anyone scanning it is told it has been withdrawn. Use this for a lost or stolen card — it does not affect their membership or their sign-in.')">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="reason" value="Reported lost or replaced">
+          <button class="btn btn-ghost btn-sm" type="submit">Report lost / withdraw card</button>
+        </form>
+      <% } %>
+    <% } %>
+  </div>
+
+  <% if (revoked[member.memberId]) { %>
+    <div class="alert err" style="margin-top:12px">
+      This card was withdrawn on <%= revoked[member.memberId].revokedAt.toDateString() %><% if (revoked[member.memberId].reason) { %> — <%= revoked[member.memberId].reason %><% } %>.
+      Scanning it now returns <strong>withdrawn</strong>. Restore it above if that was a mistake.
+    </div>
+  <% } %>
+  <% if (!member.memberId && !(card && card.employeeCode)) { %>
+    <p class="muted">No Member ID yet, and no employee code. Record the membership payment above (which assigns a Member ID), or enter an employee code below — the card's QR needs a code to point at.</p>
+  <% } %>
+
+  <%# Multipart, so ?_csrf= rides in the action as well as the hidden field —
+      the CSRF guard runs before multer and cannot see the parsed body yet. %>
+  <form method="post" action="/portal/admin/members/<%= member.id %>/idcard?_csrf=<%= csrfToken %>" enctype="multipart/form-data" style="margin-top:16px;max-width:640px">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="pay-body" style="background:var(--paper);border-color:var(--rule)">
+      <div class="row">
+        <div>
+          <label for="cardType" style="margin-top:0">Card type</label>
+          <select id="cardType" name="cardType">
+            <% ['member','staff','volunteer'].forEach(function(t){ %>
+              <option value="<%= t %>" <%= (card && card.cardType === t) || (!card && t === 'member') ? 'selected' : '' %>><%= t.charAt(0).toUpperCase() + t.slice(1) %> ID card</option>
+            <% }) %>
+          </select>
+        </div>
+        <div>
+          <label for="employeeCode" style="margin-top:0">Employee / staff code</label>
+          <input id="employeeCode" name="employeeCode" maxlength="60" value="<%= card && card.employeeCode ? card.employeeCode : '' %>" placeholder="e.g. TKF2026-0157">
+        </div>
+      </div>
+      <div class="row">
+        <div><label for="designation">Designation</label><input id="designation" name="designation" maxlength="80" value="<%= card && card.designation ? card.designation : '' %>" placeholder="Programme Coordinator"></div>
+        <div><label for="department">Department</label><input id="department" name="department" maxlength="80" value="<%= card && card.department ? card.department : '' %>" placeholder="Community Development"></div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="bloodGroup">Blood group</label>
+          <select id="bloodGroup" name="bloodGroup">
+            <option value="">Not stated</option>
+            <% bloodGroups.forEach(function(g){ %>
+              <option value="<%= g %>" <%= card && card.bloodGroup === g ? 'selected' : '' %>><%= g %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div><label for="joinedOn">Date of joining</label><input id="joinedOn" type="date" name="joinedOn" value="<%= card && card.joinedOn ? card.joinedOn : '' %>"></div>
+      </div>
+      <div class="row">
+        <div><label for="issuedOn">Issue date</label><input id="issuedOn" type="date" name="issuedOn" value="<%= card && card.issuedOn ? card.issuedOn : '' %>"></div>
+        <div><label for="validUntil">Valid until</label><input id="validUntil" type="date" name="validUntil" value="<%= card && card.validUntil ? card.validUntil : '' %>"></div>
+      </div>
+
+      <label for="photo">Photograph</label>
+      <input id="photo" type="file" name="photo" accept="image/*">
+      <p class="cms-hint">A passport-style headshot. Printed at about 21 x 25 mm, so 600px on the short side is plenty. Leave empty to keep the current one.</p>
+      <% if (card && card.photoUrl) { %>
+        <div class="media-preview">
+          <img src="<%= card.photoUrl %>" alt="">
+          <label class="bm-check" style="margin:0;display:flex;gap:8px;align-items:center;font-size:.85rem">
+            <input type="checkbox" name="removePhoto" style="width:auto;margin:0"> Remove the current photograph
+          </label>
+        </div>
+      <% } %>
+
+      <button class="btn btn-primary btn-sm" style="margin-top:14px" type="submit">Save ID card details</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Certificates</h3>
+  <% if (!issues.length) { %>
+    <p class="muted">None issued to this member yet.</p>
+  <% } else { %>
+    <div style="overflow-x:auto">
+    <table>
+    <tr><th>Certificate</th><th>Serial</th><th>Issued</th><th>Status</th><th></th></tr>
+    <% issues.forEach(i => { %>
+      <tr>
+        <td><%= i.certificate ? i.certificate.title : '—' %></td>
+        <td class="serial"><%= i.serial %></td>
+        <td><%= i.issuedAt.toDateString() %></td>
+        <td>
+          <% if (revoked[i.serial]) { %><span class="pill warn">Withdrawn</span><% } else { %><span class="pill ok">Valid</span><% } %>
+        </td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= member.id %>/certificate/<%= i.id %>.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="btn btn-ghost btn-sm" href="/verify/<%= i.serial %>" target="_blank" rel="noopener">Verify</a>
+          <% if (revoked[i.serial]) { %>
+            <form method="post" action="/portal/admin/members/<%= member.id %>/certificate/<%= i.id %>/restore">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button class="btn btn-ghost btn-sm" type="submit">Restore</button>
+            </form>
+          <% } else { %>
+            <form method="post" action="/portal/admin/members/<%= member.id %>/certificate/<%= i.id %>/revoke"
+                  onsubmit="return confirm('Withdraw this certificate? Serial <%= i.serial %> will verify as withdrawn. The record is kept and this can be undone.')">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button class="btn btn-ghost btn-sm" type="submit">Withdraw</button>
+            </form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+    </table>
+    </div>
+  <% } %>
+
+  <% if (!certs.length) { %>
+    <p class="muted" style="margin-top:14px">No certificate types exist yet — <a href="/portal/admin/certificates">create one first</a>.</p>
+  <% } else { %>
+    <form method="post" action="/portal/admin/members/<%= member.id %>/certificate" style="margin-top:16px;max-width:420px">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="certificateId">Issue a certificate</label>
+      <select id="certificateId" name="certificateId" required>
+        <option value="">Select a certificate…</option>
+        <% certs.forEach(c => { %><option value="<%= c.id %>"><%= c.title %></option><% }) %>
+      </select>
+      <button class="btn btn-purple btn-sm" style="margin-top:12px" type="submit">Issue (generates a unique serial, QR and barcode)</button>
+    </form>
+  <% } %>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Donations</h3>
+  <% if (!donations.length) { %>
+    <p class="muted">No donations from this member.</p>
+  <% } else { %>
+    <div style="overflow-x:auto">
+    <table>
+    <tr><th>Receipt</th><th>Date</th><th>Programme</th><th>Amount</th><th></th></tr>
+    <% donations.forEach(d => { %>
+      <tr>
+        <td class="serial"><%= d.receiptNo || '—' %></td>
+        <td><%= (d.paidAt || d.createdAt).toDateString() %></td>
+        <td><%= d.category %></td>
+        <td>₹<%= (d.amount/100).toLocaleString('en-IN') %></td>
+        <td><% if (d.txnId) { %><a class="btn btn-ghost btn-sm" href="/portal/receipt/<%= d.txnId %>/pdf" target="_blank" rel="noopener">PDF</a><% } %></td>
+      </tr>
+    <% }) %>
+    </table>
+    </div>
+  <% } %>
+</div>
+
+</div></body></html>

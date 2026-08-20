@@ -1,0 +1,96 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'verify'}) %>
+<%#
+  Who scanned what, and what they were told.
+
+  The useful signal here is not the valid scans — it is a run of `not recognised`
+  from one connection, which is what somebody trying serials at random looks
+  like. Hence the counters at the top and the result column being the thing you
+  read first.
+
+  No addresses are stored, only a salted hash, so repetition is visible without
+  keeping a record of who looked at what.
+%>
+<style>
+.vl-counts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:20px}
+.vl-counts .card{margin:0;padding:16px 18px}
+.vl-counts b{display:block;font:500 1.7rem 'Fraunces',Georgia,serif;color:var(--ink);line-height:1.1}
+.vl-counts span{font-size:.78rem;color:var(--text-soft)}
+.vl-ip{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--text-soft)}
+.vl-ua{font-size:.72rem;color:var(--text-soft);max-width:280px;display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Verification</p>
+<h1 style="margin-bottom:6px">Verification log</h1>
+<p class="muted" style="margin:0 0 22px;max-width:78ch">
+  Every scan of a card, certificate or receipt QR code, and every serial typed into
+  <a href="/verify" target="_blank" rel="noopener">the public check page</a>. A cluster of
+  <strong>not recognised</strong> results from one connection is what somebody guessing serials
+  looks like — everything else is ordinary use.
+</p>
+
+<div class="vl-counts">
+  <div class="card"><b><%= counts.valid || 0 %></b><span>valid</span></div>
+  <div class="card"><b><%= counts.expired || 0 %></b><span>expired</span></div>
+  <div class="card"><b><%= counts.revoked || 0 %></b><span>withdrawn</span></div>
+  <div class="card"><b><%= counts.not_found || 0 %></b><span>not recognised</span></div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Withdrawn documents</h3>
+  <% if (!revocations.length) { %>
+    <p class="muted">Nothing has been withdrawn. When you withdraw a card or a certificate it appears here, and its serial starts verifying as <em>withdrawn</em> instead of vanishing.</p>
+  <% } else { %>
+    <div style="overflow-x:auto">
+    <table>
+    <tr><th>Serial</th><th>Type</th><th>Withdrawn</th><th>Reason</th><th></th></tr>
+    <% revocations.forEach(r => { %>
+      <tr>
+        <td class="serial"><%= r.code %></td>
+        <td><%= r.kind || '—' %></td>
+        <td><%= r.revokedAt.toDateString() %></td>
+        <td><%= r.reason || '—' %></td>
+        <td><a class="btn btn-ghost btn-sm" href="/verify/<%= r.code %>" target="_blank" rel="noopener">What a scan shows</a></td>
+      </tr>
+    <% }) %>
+    </table>
+    </div>
+  <% } %>
+</div>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>When</th><th>Serial</th><th>Type</th><th>Answer</th><th>Link signature</th><th>From</th><th>Device</th></tr>
+<% if (!scans.length) { %>
+  <tr><td colspan="7" class="muted" style="padding:18px">
+    Nothing scanned yet. Print a card or a certificate and scan its QR with a phone — it will
+    appear here.
+  </td></tr>
+<% } %>
+<% scans.forEach(s => { %>
+<tr>
+  <td><%= s.createdAt.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) %></td>
+  <td class="serial"><%= s.code %></td>
+  <td><%= s.kind || '—' %></td>
+  <td>
+    <% if (s.result === 'valid') { %><span class="pill ok">valid</span>
+    <% } else if (s.result === 'expired') { %><span class="pill info">expired</span>
+    <% } else if (s.result === 'revoked') { %><span class="pill warn">withdrawn</span>
+    <% } else { %><span class="pill warn">not recognised</span><% } %>
+  </td>
+  <td>
+    <%# 'missing' is completely normal — it means the serial was typed in rather
+        than scanned from one of our QR codes. Only 'mismatch' is worth a look. %>
+    <% if (s.signature === 'ok') { %><span class="pill ok">ours</span>
+    <% } else if (s.signature === 'mismatch') { %><span class="pill warn">mismatch</span>
+    <% } else { %><span class="muted" style="font-size:.78rem">typed in</span><% } %>
+  </td>
+  <td class="vl-ip"><%= s.ipHash ? s.ipHash.slice(0, 10) : '—' %></td>
+  <td><span class="vl-ua" title="<%= s.userAgent || '' %>"><%= s.userAgent || '—' %></span></td>
+</tr>
+<% }) %>
+</table>
+</div>
+<p class="muted" style="font-size:.8rem">Showing the most recent 500 scans. <strong>From</strong> is a salted hash of the connection, not an address — the same visitor shows the same value, but the value cannot be turned back into an address.</p>
+</div></body></html>

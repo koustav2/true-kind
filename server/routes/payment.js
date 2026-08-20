@@ -3,7 +3,8 @@ const crypto = require('crypto');
 const config = require('../config');
 const phonepe = require('../utils/phonepe');
 const { serial } = require('../utils/codes');
-const { User, Donation } = require('../models');
+const membership = require('../utils/membership');
+const { User, Donation, MembershipPayment } = require('../models');
 
 function txn() { return 'TXN' + Date.now() + crypto.randomBytes(3).toString('hex').toUpperCase(); }
 const base = () => process.env.APP_BASE_URL || '';
@@ -82,15 +83,20 @@ router.get('/return', async (req, res) => {
     delete req.session.pending;
     if (!st.success) return res.render('pay-result', { title: 'Payment failed', ok: false, message: 'The payment did not complete. No money was captured — try again.' });
     const user = await User.findByPk(req.session.userId);
-    const till = new Date(); till.setMonth(till.getMonth() + config.plans[plan].months);
-    user.status = 'active';
-    user.memberId = user.memberId || serial('TKF-M');
-    user.membershipPlan = plan;
-    user.membershipPaidAt = new Date();
-    user.membershipValidTill = till;
-    user.membershipTxn = st.gatewayRef || txnId;
-    await user.save();
-    return res.render('pay-result', { title: 'Membership active', ok: true, message: `Welcome — your membership is active. Member ID ${user.memberId}.`, cta: { href: '/portal/member/card', label: 'View your membership card' } });
+    // Activation lives in utils/membership.js so that this path and the admin's
+    // "fee taken in cash" path cannot diverge. It also writes the receipt row
+    // that the admin's Membership Receipts list reads.
+    const payment = await membership.activate({
+      user, MembershipPayment, plan,
+      amount: config.plans[membership.planKey(plan)].amount,
+      mode: 'online',
+      reference: st.gatewayRef || txnId
+    });
+    return res.render('pay-result', {
+      title: 'Membership active', ok: true,
+      message: `Welcome — your membership is active. Member ID ${user.memberId}. Receipt ${payment.receiptNo}.`,
+      cta: { href: '/portal/member/card', label: 'View your membership card' }
+    });
   }
   const donation = await Donation.findOne({ where: { txnId } });
   if (!donation) return res.status(404).render('error', { title: 'Not found', message: 'Unknown transaction.' });

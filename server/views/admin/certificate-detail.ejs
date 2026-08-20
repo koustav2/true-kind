@@ -14,6 +14,29 @@
 </table>
 </div>
 <div class="card">
+<h3 style="margin-top:0">Printed design</h3>
+<% if (saved === 'style') { %><div class="alert ok">Design saved. Certificates of this type now print in it.</div><% } %>
+<p class="muted" style="margin-top:-4px">Applies to every certificate of this type, including ones already issued — the PDF is generated fresh each time it is downloaded.</p>
+<form method="post" action="/portal/admin/certificates/<%= cert._id %>/style">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+    <% Object.keys(templates).forEach(function(k){ var t = templates[k]; %>
+      <label style="cursor:pointer;display:flex;gap:8px;align-items:center;padding:9px 14px;
+                    border:2px solid <%= template === k ? 'var(--purple)' : 'var(--rule-strong)' %>;
+                    border-radius:9px;font-size:.86rem;margin:0">
+        <input type="radio" name="template" value="<%= k %>" <%= template === k ? 'checked' : '' %> style="width:auto;margin:0;accent-color:var(--purple)">
+        <span style="display:inline-block;width:26px;height:18px;border:2px solid <%= t.frame %>;background:<%= t.wash %>;border-radius:2px;position:relative">
+          <span style="position:absolute;right:1px;bottom:1px;width:6px;height:6px;border-radius:50%;background:<%= t.accent %>"></span>
+        </span>
+        <%= t.label %>
+      </label>
+    <% }) %>
+  </div>
+  <button class="btn btn-ghost btn-sm" style="margin-top:14px" type="submit">Save design</button>
+</form>
+</div>
+
+<div class="card">
 <h3>Issue to a member</h3>
 <form method="post" action="/portal/admin/certificates/<%= cert._id %>/issue"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
 <label>Active member</label>

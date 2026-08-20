@@ -47,9 +47,12 @@ registry generator, never at runtime).
 npm run smoke          # 30 — portal end to end
 npm run cms:smoke      # 40 — the content editor
 npm run board:smoke    # 50 — board CRUD + the donation form's server-side checks
+npm run member:smoke   # 87 — unpaid to active, receipts, certificates, ID cards
+npm run verify:smoke   # 59 — QR verification, revocation, the printed card
+npm run sections:smoke # 78 — every admin section + the manager permission sweep
 npm run ui:smoke       # 27 — admin screens, real browser
 npm run donate:smoke   # 23 — the header Donate button on all 9 pages
-npm run board:render   # 26 — the About page's board section, real browser
+npm run board:render   # 29 — the About page's board section, real browser
 ```
 
 **Check:** `ALL PASS` or `n/n passed` at the end of each. If any of them fails,
@@ -62,7 +65,7 @@ npm i -D playwright && npx playwright install chromium
 ```
 
 They skip cleanly (exit 0, with a note) when playwright is absent, so a missing
-browser will not block a deploy — but those 76 assertions then simply do not
+browser will not block a deploy — but those 79 assertions then simply do not
 run.
 
 ### 4. Commit and push
@@ -360,3 +363,223 @@ docker compose up -d --build
 The CMS only *adds* rows and a table, so rolling the code back leaves your
 members, donations and certificates untouched. Saved CMS text stays in the
 database and reappears if you roll forward again.
+
+
+---
+
+## Membership, ID cards and QR verification
+
+Three things landed together here. All of them add tables and none of them touch
+an existing column, so `sequelize.sync()` creates what it needs on the next start
+and there is nothing to run by hand.
+
+### Registered but not paid
+
+A signup is a **guest** until the membership fee arrives. That was already true;
+what was missing was any way to record a fee that did not come through PhonePe.
+
+**Members → New memberships** now shows every unpaid registration with an
+**Unpaid** pill and a **Record payment** panel: plan, how it was paid (cash, bank
+transfer, UPI or cheque), the amount actually collected, the date, a reference
+and a note. Saving it assigns a Member ID, sets the validity, issues a numbered
+receipt and moves the row to **Active members**.
+
+Two deliberate refusals in that form:
+
+- **"Online" is not offered.** That mode is only ever set by the gateway. If an
+  admin could label a cash payment as online, a hand-entered fee would be
+  indistinguishable from a real transaction in the accounts.
+- **Every by-hand entry is stamped** with the name of the admin who entered it,
+  and shows as `by hand` against the gateway's `gateway` in the receipts list.
+  Reconciling those two columns is the whole job.
+
+**Members → Membership receipts** lists every fee ever received, with a PDF each
+and a CSV export. Online payments appear there automatically — including the
+gateway ones, which previously left no receipt at all.
+
+Renewing now **extends from the current expiry** rather than resetting to today.
+The old code always set validity to "today + plan", so anyone renewing a month
+early silently forfeited the month they had left.
+
+### ID cards
+
+**Members → any member → ID card.** Card type (member / staff / volunteer),
+employee code, designation, department, blood group, joining date, validity and a
+photograph. **Print ID card** produces a two-page PDF — front and back — at true
+CR80 card size (54 × 85.6 mm), so it feeds a card printer without scaling.
+
+Every field is optional. With nothing filled in the card still prints and still
+looks deliberate: the photo box shows the holder's initials, empty fields show a
+dash. The one thing it will not do is print without an ID number, because the
+QR would then verify as "not recognised".
+
+The card uses `assets/img/logo.png`. If you drop higher-resolution variants in as
+`assets/img/logo-lockup.png` or `logo-lockup@2x.png` they are picked up
+automatically — no code change, and nothing breaks if they are absent.
+
+### The QR codes now verify
+
+**This is the change worth understanding.** Every card, certificate and receipt
+already carried a QR code, and it encoded the bare serial — so scanning one with
+a phone produced a line of text and nothing else. The printed caption said
+"verify this document by quoting the serial", which meant telephoning the office.
+
+The QR now encodes a URL. Scanning it opens **`/verify/<serial>`**, a public page
+that says in words whether the document is **valid**, **genuine but expired**,
+**withdrawn**, or **not recognised** — resolved live against the database. It
+works for all four document types (membership cards, certificates, donation
+receipts, membership fee receipts). There is a typed-in form at `/verify` and a
+JSON endpoint at `/api/verify/<serial>` for a gate scanner.
+
+The barcode still carries the bare serial, on purpose: a Code128 scanner is a
+keyboard, and it should type the serial into your spreadsheet, not a URL.
+
+**Withdrawing** replaced deleting. Withdrawing a certificate used to delete the
+issue row, which meant the certificate still in somebody's hand started verifying
+as "not recognised" — indistinguishable from a forgery, and the record that we
+ever made the award was gone. Now the record survives and the serial reports
+*withdrawn*, with a date and a reason, and it can be undone. A membership card can
+be withdrawn the same way when it is reported lost; that does not touch the
+person's membership or their sign-in.
+
+**Verification** in the admin nav shows every scan — what was checked, what answer
+was given, and whether the link was one of ours. A run of *not recognised* from
+one connection is what somebody trying serials at random looks like. No addresses
+are stored, only a salted hash, so repetition is visible without keeping a record
+of who looked at what.
+
+**One optional setting.** `VERIFY_SECRET` signs the verification links. Leave it
+unset and it is derived from `SESSION_SECRET`, which is fine. If you do set it,
+**do not change it later without reading `server/utils/verify.js` first** — the
+signature is deliberately advisory rather than a gate, precisely so that rotating
+a key cannot turn thousands of printed documents into failures. Changing it makes
+old links report a signature mismatch (a warning on the page); it does not stop
+them verifying.
+
+### After deploying this
+
+1. Sign in and open **Members → New memberships**. Confirm the unpaid
+   registrations are listed with the payment panel.
+2. Record a test payment for one of them. Check they move to **Active members**
+   with a Member ID, and that the receipt appears under **Membership receipts**.
+3. Open that member, fill in the ID card panel, and print the card.
+4. **Scan the QR on the printed card with your phone.** It should open the
+   verification page and say *Valid*. That single test proves the whole chain —
+   `APP_BASE_URL`, the QR, the route and the database lookup.
+5. Withdraw the card, scan it again, confirm it now says *Withdrawn*, then
+   restore it.
+
+If step 4 opens a page on the wrong domain, `APP_BASE_URL` in `.env` is wrong —
+it is what gets printed into the QR, so fix it **before** printing any real cards.
+
+
+---
+
+## The rest of the admin
+
+The sections from the reference admin, in the order they appear in the navigation.
+
+### Certificates — four screens instead of one
+
+- **Certificate types** — the title and wording. Created once, issued many times.
+  Each type now also has a **printed design**: navy & gold, purple, or green. The
+  choice applies to every certificate of that type, including ones already
+  issued, because the PDF is generated fresh each time it is downloaded.
+- **Generate** — starts from the list of active members, one click per person.
+  This is the screen you want when a training batch finishes. Certificates
+  somebody already holds are shown as held rather than offered again, so a click
+  cannot fail.
+- **Issued register** — every certificate that exists, member and visitor
+  together, sorted by date, with its verification status. One list on purpose:
+  somebody looking up a serial off a piece of paper does not know which table it
+  came from.
+- **Visitor certificates** — for a camp attendee, a visiting speaker, a school
+  student. Name, father's or guardian's name, mobile, email, programme, template.
+  **No login is created**, which is the whole reason this is separate: the member
+  certificate table requires a user id, and issuing through it would mean making
+  an account for somebody who never asked for one, with a password nobody knows.
+  Visitor serials start `TKF-VC` and verify at `/verify` like everything else.
+
+### Donations and receipts
+
+**Record a donation taken offline** on the donations page: cash at an event, a
+bank transfer, UPI or a cheque. It becomes an ordinary donation — counted in
+every total, given a receipt number — with a row beside it saying how it arrived
+and who keyed it in. The **How** column is that distinction, and it is the column
+you reconcile against the cash book. As with membership fees, "online" cannot be
+entered by hand.
+
+**All receipts** is one hub over four lists: membership fees, member donations,
+visitor donations, and cash & offline. That last one is *not* a fifth kind of
+money — it is the subset of donations a person entered rather than the gateway
+confirming, so those rows also appear in one of the lists above it. The page says
+so, because a total that appears twice is confusing unless you know why.
+
+### People
+
+- **All users** — every account, whatever its state, searchable by name, email,
+  phone or Member ID. The member tabs answer "who has paid"; this answers "who
+  exists", which is the question you have when somebody rings up and you cannot
+  find them.
+- **Blocked** — deactivated accounts, with a Reinstate button. Deactivation is
+  enforced per request, so it takes effect on that person's very next click even
+  if they are already signed in.
+
+### Notices
+
+**Read this before using it.** Notices appear *inside the portal*, on the
+member's dashboard when they sign in. They are **not emailed and not sent by
+SMS** — this application has no mail sender and no SMS gateway connected. The
+screen states that plainly at the top, deliberately: a "Send Notice" button that
+quietly only posts to a dashboard, while letting you believe 508 members just got
+an email, is worse than no feature at all. Connecting a mail provider is separate
+work and we can quote for it.
+
+You can target everyone, paid members only, or unpaid registrations only, pin a
+notice to the top, and give it a date to stop showing.
+
+### Managers
+
+A manager works the queues — records payments, issues certificates, answers
+enquiries — **without full administrator rights**. Tick only the sections they
+need.
+
+`User.role` is `ENUM('member','admin')` on a live table and `sequelize.sync()`
+cannot extend an ENUM, so a manager is a member account with a grant rather than
+a third role. Practical consequence: a manager signs in at the normal sign-in
+page and lands in the admin area automatically.
+
+**The permission check is default-deny.** A route reaches a manager only if it is
+explicitly listed in `server/middleware/staff.js`. Anything unlisted is
+administrator-only — including every route added in future. That direction is
+deliberate: forgetting to think about permissions fails closed and produces a
+"no access" page somebody asks about, rather than a data leak nobody notices.
+
+**A manager can never**, at any section level, deactivate an account, issue a
+password or a volunteer login, edit the website, the media library or the board,
+delete anything, or reach the Managers page. Those stay with administrators. The
+test suite enumerates every admin route and asserts a manager with no sections is
+denied all of them, then asserts a manager holding *every* section still cannot
+reach any of the above.
+
+Suspending a grant (untick "access is active") locks them out on their next
+click.
+
+### Reports
+
+Every CSV export in one place, properly escaped — a name like `Nayak, Priya`
+stays in one column. Members, certificates (members and visitors, with status),
+membership fees, donations, volunteers, enquiries.
+
+### Nav counts
+
+The navigation carries live counts, like the reference. They come from one
+middleware and are wrapped in a try/catch that defaults to no badge: the
+navigation is decoration, and a failed count must never be able to break the page
+it decorates.
+
+### New tables from this batch
+
+`CertificateStyles`, `VisitorCertificates`, `OfflineDonations`, `Notices`,
+`ManagerAccesses`. All created by `sequelize.sync()` on the next start. Nothing to
+run by hand, and no existing table is altered.

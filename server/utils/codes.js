@@ -10,11 +10,30 @@ function serial(prefix) {
   return `${prefix}-${y}-${rand}`;
 }
 
-async function qrDataUrl(text) {
-  return QRCode.toDataURL(text, { margin: 1, width: 220 });
+/* QR options.
+
+   errorCorrectionLevel defaults to 'M' in the library. For anything that gets
+   PRINTED and then handled — a card in a lanyard, a certificate in a folder —
+   'Q' is the right level: it tolerates ~25% damage instead of ~15%, which is
+   the difference between a scuffed card that still scans and one that does not.
+   Screens get 'M', since a screen does not scuff.
+
+   `width` is the pixel size of the generated PNG, not the printed size. A card
+   QR is only ~20mm across, so it needs a high pixel count to survive being
+   scaled down into a PDF without the module edges going soft. */
+async function qrDataUrl(text, opts = {}) {
+  return QRCode.toDataURL(text, {
+    margin: opts.margin == null ? 1 : opts.margin,
+    width: opts.width || 260,
+    errorCorrectionLevel: opts.ec || 'M'
+  });
 }
-async function qrBuffer(text) {
-  return QRCode.toBuffer(text, { margin: 1, width: 220 });
+async function qrBuffer(text, opts = {}) {
+  return QRCode.toBuffer(text, {
+    margin: opts.margin == null ? 1 : opts.margin,
+    width: opts.width || 320,
+    errorCorrectionLevel: opts.ec || 'Q'
+  });
 }
 function barcodeBuffer(text) {
   return bwipjs.toBuffer({

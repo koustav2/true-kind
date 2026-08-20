@@ -1,0 +1,137 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<%#
+  Visitor certificates — for somebody with no account.
+
+  The reference admin has exactly this form (name, father's name, mobile, email,
+  programme, pick a template). It is a separate table rather than a
+  CertificateIssue because that one requires a userId, and issuing through it
+  would mean silently creating a login for a person who never asked for one.
+
+  The template thumbnails are drawn in CSS rather than shipped as images: three
+  small PNGs would be three more files to keep in step with the actual PDF
+  designs, and they would drift.
+%>
+<style>
+.vc-form{max-width:620px}
+.vc-row{display:grid;gap:12px}
+@media(min-width:560px){.vc-row.two{grid-template-columns:1fr 1fr}}
+.tpl-grid{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin-top:8px}
+.tpl{cursor:pointer;margin:0;display:block;position:relative}
+.tpl input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.tpl .card-mini{
+  border:2px solid var(--rule-strong);border-radius:9px;padding:8px;background:#fff;
+  aspect-ratio:1.414/1;display:flex;flex-direction:column;
+}
+.tpl:has(input:checked) .card-mini{border-color:var(--purple);box-shadow:0 0 0 3px rgba(125,74,177,.16)}
+.tpl:focus-within .card-mini{outline:2px solid var(--purple);outline-offset:2px}
+.tpl .frame{flex:1;border:2px solid;border-radius:3px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden}
+.tpl .bar{width:52%;height:3px;border-radius:2px}
+.tpl .bar.short{width:34%}
+.tpl .seal{width:10px;height:10px;border-radius:50%;position:absolute;right:6px;bottom:5px}
+.tpl .corner{position:absolute;width:0;height:0;border-style:solid}
+.tpl .name{font-size:.68rem;text-align:center;margin-top:6px;color:var(--text-soft)}
+.tpl:has(input:checked) .name{color:var(--purple);font-weight:500}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Certificates</p>
+<h1 style="margin-bottom:6px">Visitor certificates</h1>
+<div class="tabs">
+  <a href="/portal/admin/certificates">Certificate types</a>
+  <a href="/portal/admin/certificates/generate">Generate</a>
+  <a href="/portal/admin/certificates/issued">Issued register</a>
+  <a href="/portal/admin/visitor-certificates" class="on">Visitor certificates</a>
+</div>
+
+<% if (saved === 'revoked') { %><div class="alert ok">Withdrawn. The serial now verifies as withdrawn.</div>
+<% } else if (saved === 'restored') { %><div class="alert ok">Restored.</div>
+<% } else if (saved) { %><div class="alert ok">Issued — serial <span class="serial"><%= saved %></span>. Download the PDF from the list below.</div><% } %>
+<% if (error === 'name') { %><div class="alert err">A name is required.</div><% } %>
+
+<p class="muted" style="max-width:78ch">
+  For a camp attendee, a visiting speaker, a school student — anybody who took part but has
+  no portal account. It gets its own serial and verifies at
+  <a href="/verify" target="_blank" rel="noopener">/verify</a> exactly like a member's
+  certificate does. No login is created.
+</p>
+
+<div class="card">
+<h3 style="margin-top:0">Issue a certificate</h3>
+<form method="post" action="/portal/admin/visitor-certificates" class="vc-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="vc-row two">
+    <div><label for="name" style="margin-top:0">Name *</label><input id="name" name="name" required maxlength="120" placeholder="Full name"></div>
+    <div><label for="fatherName" style="margin-top:0">Father's / guardian's name</label><input id="fatherName" name="fatherName" maxlength="120"></div>
+  </div>
+  <div class="vc-row two">
+    <div><label for="mobile">Mobile</label><input id="mobile" name="mobile" type="tel" maxlength="30"></div>
+    <div><label for="email">Email</label><input id="email" name="email" type="email" maxlength="160"></div>
+  </div>
+  <label for="programme">Programme</label>
+  <input id="programme" name="programme" maxlength="120" list="prog-list"
+         placeholder="e.g. Digital Literacy Camp">
+  <datalist id="prog-list">
+    <% programmes.forEach(p => { %><option value="<%= p %>"></option><% }) %>
+  </datalist>
+  <p class="cms-hint">This becomes the certificate's title, so write it as it should read on the printed page.</p>
+
+  <label style="margin-top:18px">Select template</label>
+  <div class="tpl-grid">
+    <% Object.keys(templates).forEach(function(k, i){ var t = templates[k]; %>
+      <label class="tpl">
+        <input type="radio" name="template" value="<%= k %>" <%= i === 0 ? 'checked' : '' %>>
+        <div class="card-mini">
+          <div class="frame" style="border-color:<%= t.frame %>;background:<%= t.wash %>">
+            <span class="corner" style="top:0;left:0;border-width:9px 9px 0 0;border-color:<%= t.accent %> transparent transparent transparent"></span>
+            <span class="corner" style="top:0;right:0;border-width:0 9px 9px 0;border-color:transparent <%= t.accent %> transparent transparent"></span>
+            <span class="bar" style="background:<%= t.frame %>"></span>
+            <span class="bar short" style="background:<%= t.accent %>"></span>
+            <span class="seal" style="background:<%= t.accent %>"></span>
+          </div>
+        </div>
+        <span class="name"><%= t.label %></span>
+      </label>
+    <% }) %>
+  </div>
+
+  <button class="btn btn-purple btn-sm" style="margin-top:18px" type="submit">Issue certificate</button>
+</form>
+</div>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Serial</th><th>Name</th><th>Programme</th><th>Contact</th><th>Issued</th><th>Status</th><th></th></tr>
+<% if (!list.length) { %>
+  <tr><td colspan="7" class="muted" style="padding:18px">None issued yet.</td></tr>
+<% } %>
+<% list.forEach(v => { %>
+<tr>
+  <td class="serial"><%= v.serial %></td>
+  <td><%= v.name %><% if (v.fatherName) { %><br><span class="muted" style="font-size:.76rem">S/o, D/o <%= v.fatherName %></span><% } %></td>
+  <td><%= v.programme || '—' %></td>
+  <td><span class="muted" style="font-size:.78rem"><%= [v.mobile, v.email].filter(Boolean).join(' · ') || '—' %></span></td>
+  <td><%= v.issuedOn || v.createdAt.toISOString().slice(0,10) %></td>
+  <td><% if (revoked[v.serial]) { %><span class="pill warn">Withdrawn</span><% } else { %><span class="pill ok">Valid</span><% } %></td>
+  <td style="display:flex;gap:6px;flex-wrap:wrap">
+    <a class="btn btn-ghost btn-sm" href="/portal/admin/visitor-certificates/<%= v.id %>.pdf" target="_blank" rel="noopener">PDF</a>
+    <a class="btn btn-ghost btn-sm" href="/verify/<%= v.serial %>" target="_blank" rel="noopener">Verify</a>
+    <% if (revoked[v.serial]) { %>
+      <form method="post" action="/portal/admin/visitor-certificates/<%= v.id %>/restore">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Restore</button>
+      </form>
+    <% } else { %>
+      <form method="post" action="/portal/admin/visitor-certificates/<%= v.id %>/revoke"
+            onsubmit="return confirm('Withdraw <%= v.serial %>?')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="reason" value="Withdrawn by the Foundation">
+        <button class="btn btn-ghost btn-sm" type="submit">Withdraw</button>
+      </form>
+    <% } %>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

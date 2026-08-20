@@ -69,13 +69,23 @@ app.use('/portal/pay', require('./routes/payment'));
 app.use('/portal/member', require('./routes/member'));
 app.use('/portal/admin', require('./routes/admin'));
 app.use('/portal/admin/cms', require('./routes/cms'));
-app.get('/portal', (req, res) =>
-  res.redirect(req.session.userId ? (req.session.role === 'admin' ? '/portal/admin' : '/portal/member') : '/portal/signin'));
+app.get('/portal', async (req, res) => {
+  if (!req.session.userId) return res.redirect('/portal/signin');
+  if (req.session.role === 'admin') return res.redirect('/portal/admin');
+  // A manager is a member row with a grant, so the session role does not say so.
+  try {
+    const { ManagerAccess } = require('./models');
+    const grant = await ManagerAccess.findOne({ where: { userId: req.session.userId, active: true } });
+    if (grant && (grant.sections || []).length) return res.redirect('/portal/admin');
+  } catch (e) { /* fall through to the member area */ }
+  res.redirect('/portal/member');
+});
 
 // Guest donation + guest receipt
 const config = require('./config');
 const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember } = require('./models');
 const { qrDataUrl, barcodeDataUrl } = require('./utils/codes');
+const verify = require('./utils/verify');
 const { receiptPdf } = require('./utils/pdf');
 app.get('/portal/donate', async (req, res) => {
   let extraFields = [];
@@ -106,7 +116,7 @@ app.get('/portal/donate', async (req, res) => {
 app.get('/portal/receipt/:txnId', async (req, res) => {
   const d = await Donation.findOne({ where: { txnId: req.params.txnId, status: 'paid' } });
   if (!d) return res.status(404).render('error', { title: 'Not found', message: 'Receipt not found.' });
-  res.render('member/receipt', { title: 'Donation receipt', d, qr: await qrDataUrl(d.receiptNo), barcode: await barcodeDataUrl(d.receiptNo) });
+  res.render('member/receipt', { title: 'Donation receipt', d, qr: await qrDataUrl(verify.verifyUrl(d.receiptNo)), barcode: await barcodeDataUrl(d.receiptNo) });
 });
 app.get('/portal/receipt/:txnId/pdf', async (req, res) => {
   const d = await Donation.findOne({ where: { txnId: req.params.txnId, status: 'paid' } });
@@ -155,6 +165,103 @@ function rateLimited(req) {
 }
 const clean = (v, max) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+/* ==========================================================================
+   Document verification — the public end of the QR codes.
+
+   Every membership card, certificate and receipt carries a QR that now encodes
+   a link to /verify/<serial>. Scanning one with a phone camera lands here and
+   gets a plain answer: valid, expired, withdrawn, or not one of ours.
+
+   Rate limited separately from the forms, and more tightly than it looks: a
+   serial is PREFIX-YEAR-6HEX, so guessing one is a 16-million-attempt job, and
+   30 lookups an hour per address makes that pointless. This limiter — not the
+   URL signature — is what actually stops enumeration. (utils/verify.js explains
+   at length why the signature is advisory and must never be a gate.)
+   ========================================================================== */
+const { IdCardProfile, Revocation, VerificationScan, User: UserModel,
+        CertificateIssue, Certificate, MembershipPayment,
+        VisitorCertificate } = require('./models');
+
+const verifyHits = new Map();
+function verifyRateLimited(req) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  const now = Date.now();
+  const hits = (verifyHits.get(ip) || []).filter(t => now - t < 60 * 60 * 1000);
+  hits.push(now);
+  verifyHits.set(ip, hits);
+  if (verifyHits.size > 5000) verifyHits.clear();
+  return hits.length > 30;
+}
+
+const VERIFY_MODELS = () => ({
+  User: UserModel, CertificateIssue, Certificate, Donation, MembershipPayment,
+  VisitorCertificate, Revocation
+});
+
+/* Logging a scan must never be able to fail a verification. Fire and forget. */
+function logScan(req, result, signature) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || null;
+  VerificationScan.create({
+    code: result.code,
+    kind: result.kind || null,
+    result: result.status,
+    signature,
+    ipHash: verify.hashIp(ip),
+    userAgent: String(req.get('user-agent') || '').slice(0, 240)
+  }).catch(() => {});
+}
+
+// The typed-in form, and the landing page when someone strips the serial off.
+app.get('/verify', async (req, res) => {
+  const typed = req.query.code ? verify.normalise(req.query.code) : '';
+  if (!typed) return res.render('verify', { result: null, typed: '', org: config.org, signature: null });
+  // A recognised prefix goes straight to the canonical URL, so the address bar
+  // ends up with something shareable rather than a query string.
+  if (verify.kindOf(typed)) return res.redirect(`/verify/${encodeURIComponent(typed)}`);
+  // Unrecognised prefix: re-render the form and say so, without a database hit.
+  res.status(404).render('verify', { result: null, typed, org: config.org, signature: null });
+});
+
+app.get('/verify/:code', async (req, res) => {
+  if (verifyRateLimited(req)) {
+    return res.status(429).render('error', {
+      title: 'Too many checks',
+      message: 'Too many verification attempts from this connection. Wait a few minutes and try again, or call ' + config.org.phone + '.'
+    });
+  }
+  const code = verify.normalise(req.params.code);
+  const signature = verify.checkTag(code, req.query.k);
+  let result;
+  try {
+    result = await verify.resolve(VERIFY_MODELS(), code);
+  } catch (e) {
+    return res.status(500).render('error', {
+      title: 'Could not check that',
+      message: 'Something went wrong looking that up. Try again in a moment, or call ' + config.org.phone + '.'
+    });
+  }
+  logScan(req, result, signature);
+  res.set('Cache-Control', 'no-store');   // a revocation must take effect at once
+  res.status(result.found ? 200 : 404)
+     .render('verify', { result, typed: null, org: config.org, signature });
+});
+
+/* Machine-readable, for a scanner app or a gate device. Same resolution, same
+   rate limit, same narrow field set. */
+app.get('/api/verify/:code', async (req, res) => {
+  if (verifyRateLimited(req)) return res.status(429).json({ ok: false, error: 'rate_limited' });
+  const code = verify.normalise(req.params.code);
+  const signature = verify.checkTag(code, req.query.k);
+  try {
+    const result = await verify.resolve(VERIFY_MODELS(), code);
+    logScan(req, result, signature);
+    res.set('Cache-Control', 'no-store');
+    res.status(result.found ? 200 : 404).json({ ok: true, signature, ...result });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: 'lookup_failed' });
+  }
+});
 
 // Public form endpoints — volunteer registrations and contact enquiries
 // land in the portal database and show up in the admin.

@@ -1,18 +1,72 @@
+<%#
+  Admin navigation.
+
+  Two things worth knowing:
+
+  1. COUNTS. `navCounts` is filled by one middleware in routes/admin.js and is
+     optional everywhere — every reference is guarded, so a view rendered without
+     it (or a count that failed to load) shows the link with no badge rather than
+     throwing. A nav that can 500 the page it is on is not worth a badge.
+
+  2. MANAGERS. A manager is a member row with a grant (middleware/staff.js), so
+     `session.role` is 'member' for them and cannot be used to decide what to
+     show. `isManager` / `managerSections` come from the guard. A manager only
+     sees the sections they actually hold — showing a link that returns "no
+     access" teaches people to distrust the navigation.
+%>
+<%
+  var counts = (typeof navCounts !== 'undefined' && navCounts) ? navCounts : {};
+  var admin = (typeof isAdmin !== 'undefined') ? isAdmin : (session && session.role === 'admin');
+  var mgrSections = (typeof managerSections !== 'undefined' && managerSections) ? managerSections : [];
+  var manager = (typeof isManager !== 'undefined') ? isManager : false;
+  function may(section) { return admin || mgrSections.indexOf(section) !== -1; }
+  function on(key) { return (typeof active !== 'undefined' && active === key) ? 'on' : ''; }
+%>
 <nav class="topnav">
   <a href="/"><img src="/assets/img/logo.png" alt="True Kind Foundation"></a>
   <div class="links">
     <% if (session && session.userId) { %>
-      <% if (session.role === 'admin') { %>
-        <a href="/portal/admin" class="<%= (typeof active!=='undefined'&&active==='dash')?'on':'' %>">Dashboard</a>
-        <a href="/portal/admin/members" class="<%= (typeof active!=='undefined'&&active==='members')?'on':'' %>">Members</a>
-        <a href="/portal/admin/certificates" class="<%= (typeof active!=='undefined'&&active==='certs')?'on':'' %>">Certificates</a>
-        <a href="/portal/admin/donations" class="<%= (typeof active!=='undefined'&&active==='don')?'on':'' %>">Donations</a>
-        <a href="/portal/admin/volunteers" class="<%= (typeof active!=='undefined'&&active==='vols')?'on':'' %>">Volunteers</a>
-        <a href="/portal/admin/enquiries" class="<%= (typeof active!=='undefined'&&active==='enq')?'on':'' %>">Enquiries</a>
-        <a href="/portal/admin/cms" class="<%= (typeof active!=='undefined'&&active==='cms')?'on':'' %>">Website</a>
-        <a href="/portal/admin/cms/media" class="<%= (typeof active!=='undefined'&&active==='media')?'on':'' %>">Media</a>
-        <a href="/portal/admin/board" class="<%= (typeof active!=='undefined'&&active==='board')?'on':'' %>">Board</a>
-        <a href="/portal/admin/form" class="<%= (typeof active!=='undefined'&&active==='form')?'on':'' %>">Form fields</a>
+      <% if (admin || manager) { %>
+        <a href="/portal/admin" class="<%= on('dash') %>">Dashboard</a>
+
+        <% if (may('memberships')) { %>
+          <a href="/portal/admin/members?status=guest" class="<%= on('newmem') %>">New memberships<% if (counts.guests) { %> <span class="n"><%= counts.guests %></span><% } %></a>
+        <% } %>
+        <% if (may('members') || may('memberships')) { %>
+          <a href="/portal/admin/members" class="<%= on('members') %>">Members<% if (counts.active) { %> <span class="n"><%= counts.active %></span><% } %></a>
+        <% } %>
+        <% if (may('certificates')) { %>
+          <a href="/portal/admin/certificates/issued" class="<%= on('certs') %>">Certificates<% if (counts.certificates) { %> <span class="n"><%= counts.certificates %></span><% } %></a>
+        <% } %>
+        <% if (may('donations')) { %>
+          <a href="/portal/admin/donations" class="<%= on('don') %>">Donations<% if (counts.donations) { %> <span class="n"><%= counts.donations %></span><% } %></a>
+          <a href="/portal/admin/receipts" class="<%= on('receipts') %>">Receipts<% if (counts.receipts) { %> <span class="n"><%= counts.receipts %></span><% } %></a>
+        <% } %>
+        <% if (may('volunteers')) { %>
+          <a href="/portal/admin/volunteers" class="<%= on('vols') %>">Volunteers<% if (counts.newVolunteers) { %> <span class="n"><%= counts.newVolunteers %></span><% } %></a>
+        <% } %>
+        <% if (may('enquiries')) { %>
+          <a href="/portal/admin/enquiries" class="<%= on('enq') %>">Enquiries<% if (counts.newEnquiries) { %> <span class="n"><%= counts.newEnquiries %></span><% } %></a>
+        <% } %>
+        <% if (may('notices')) { %>
+          <a href="/portal/admin/notices" class="<%= on('notices') %>">Notices<% if (counts.notices) { %> <span class="n"><%= counts.notices %></span><% } %></a>
+        <% } %>
+        <% if (admin) { %>
+          <a href="/portal/admin/users" class="<%= on('users') %>">All users<% if (counts.users) { %> <span class="n"><%= counts.users %></span><% } %></a>
+          <a href="/portal/admin/blocked" class="<%= on('blocked') %>">Blocked<% if (counts.blocked) { %> <span class="n"><%= counts.blocked %></span><% } %></a>
+          <a href="/portal/admin/managers" class="<%= on('managers') %>">Managers<% if (counts.managers) { %> <span class="n"><%= counts.managers %></span><% } %></a>
+          <a href="/portal/admin/cms" class="<%= on('cms') %>">Website</a>
+          <a href="/portal/admin/cms/media" class="<%= on('media') %>">Media</a>
+          <a href="/portal/admin/board" class="<%= on('board') %>">Board</a>
+          <a href="/portal/admin/form" class="<%= on('form') %>">Form fields</a>
+        <% } %>
+        <% if (may('verification')) { %>
+          <a href="/portal/admin/verification-log" class="<%= on('verify') %>">Verification</a>
+        <% } %>
+        <% if (may('reports')) { %>
+          <a href="/portal/admin/reports" class="<%= on('reports') %>">Reports</a>
+        <% } %>
+        <% if (manager) { %><span class="nav-role">Manager</span><% } %>
       <% } else { %>
         <a href="/portal/member">Profile</a>
         <a href="/portal/member/donate">Add donation</a>
