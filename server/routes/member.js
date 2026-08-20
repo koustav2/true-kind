@@ -3,11 +3,12 @@ const bcrypt = require('bcryptjs');
 const config = require('../config');
 const { requireLogin } = require('../middleware/auth');
 const { User, Donation, Certificate, CertificateIssue, FormConfig, UserAccess,
-        MembershipPayment, Notice, CertificateStyle } = require('../models');
+        MembershipPayment, Notice, CertificateStyle, IdCardProfile } = require('../models');
 const { Op } = require('sequelize');
 const { qrDataUrl, barcodeDataUrl } = require('../utils/codes');
 const verify = require('../utils/verify');
-const { receiptPdf, membershipReceiptPdf, certificatePdf, cardPdf } = require('../utils/pdf');
+const { receiptPdf, membershipReceiptPdf, certificatePdf } = require('../utils/pdf');
+const { idCardPdf, cardContext } = require('../utils/idcard');
 
 router.use(requireLogin);
 router.use(async (req, res, next) => {
@@ -68,9 +69,17 @@ router.get('/card', async (req, res) => {
     barcode: await barcodeDataUrl(req.user.memberId)
   });
 });
+/* The member downloading their own card gets THE SAME DOCUMENT the office
+   prints. This route used to call a second, older generator, so the card a
+   member had on their phone did not match the card in their wallet — different
+   size, different layout, no photograph. Same helper as the admin route now. */
 router.get('/card/pdf', async (req, res) => {
   if (!req.user.membershipValid) return res.redirect('/portal/member');
-  await cardPdf(res, req.user);
+  const { profile, photoPath, code } = await cardContext(IdCardProfile, req.user);
+  // membershipValid already implies a Member ID, so `code` cannot realistically
+  // be empty here — but guard rather than print a card with a dead QR on it.
+  if (!code) return res.redirect('/portal/member/card');
+  await idCardPdf(res, req.user, profile, { photoPath, code });
 });
 
 // 2. Add donation

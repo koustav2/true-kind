@@ -365,7 +365,11 @@ const base = 'http://127.0.0.1:3993';
     ['GET', '/portal/admin/members.csv'], ['GET', '/portal/admin/donations.csv'],
     ['GET', '/portal/admin/certificates.csv'], ['GET', '/portal/admin/volunteers.csv'],
     ['GET', '/portal/admin/enquiries.csv'], ['GET', '/portal/admin/membership-receipts.csv'],
-    ['GET', `/portal/admin/members/${member.id}/card.pdf`],
+    /* card.pdf is deliberately NOT in this list. It is a redirect to
+       idcard.pdf, so it answers 302 unconditionally — including with
+       authorisation stripped out — and a "denied" assertion against it would be
+       vacuous. idcard.pdf is the route that serves the file, so that is the one
+       worth guarding. */
     ['GET', `/portal/admin/members/${member.id}/idcard.pdf`],
     ['GET', `/portal/admin/members/${member.id}/receipt.pdf`]
   ];

@@ -254,27 +254,18 @@ async function visitorCertificatePdf(res, vc) {
   doc.end();
 }
 
-async function cardPdf(res, user) {
-  // Membership card, credit-card-ish ratio
-  const doc = new PDFDocument({ size: [430, 270], margin: 24 });
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `inline; filename="card-${user.memberId}.pdf"`);
-  doc.pipe(res);
-  doc.rect(0, 0, 430, 64).fill(PURPLE);
-  doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(15).text(config.org.name, 24, 20);
-  doc.font('Helvetica').fontSize(8).text('MEMBERSHIP CARD', 24, 40, { characterSpacing: 2 });
-  doc.fillColor(INK).font('Helvetica-Bold').fontSize(14).text(user.name, 24, 84);
-  doc.font('Helvetica').fontSize(9).fillColor(SOFT)
-     .text(`Member ID  ${user.memberId}`, 24, 104)
-     // The plan NAME, not the raw key — the card used to read "Plan annual".
-     .text(`Plan  ${(config.plans[user.membership.plan] || {}).name || user.membership.plan}` +
-           `  ·  Valid till  ${user.membership.validTill.toDateString()}`, 24, 118)
-     .text(`${user.email}  ·  ${user.phone}`, 24, 132);
-  await codesRow(doc, user.memberId, 24, 158);
-  doc.end();
-}
+/* The membership card USED TO LIVE HERE — a 430x270 landscape rectangle, one
+   page, no photograph, no logo, generic purple band. It has been deleted.
+   The card is now `idCardPdf` in ./idcard.js: CR80 portrait, two pages
+   (front and back), drawn to the artwork the client supplied.
+
+   It is deleted rather than kept as a "simple" alternative on purpose. Both
+   existed side by side for a while, on two routes, behind two buttons that
+   were both labelled "ID card" — so which card a member got depended on which
+   button somebody happened to click, and the printed cards did not match each
+   other. One card, one generator, one route. */
 
 module.exports = {
-  receiptPdf, membershipReceiptPdf, certificatePdf, visitorCertificatePdf, cardPdf,
+  receiptPdf, membershipReceiptPdf, certificatePdf, visitorCertificatePdf,
   MODE_LABEL, CERT_TEMPLATES, CERT_TEMPLATE_KEYS
 };

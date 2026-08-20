@@ -12,9 +12,9 @@ const crypto = require('crypto');
 const config = require('../config');
 const membership = require('../utils/membership');
 const { serial } = require('../utils/codes');
-const { cardPdf, certificatePdf, visitorCertificatePdf, membershipReceiptPdf,
+const { certificatePdf, visitorCertificatePdf, membershipReceiptPdf,
         MODE_LABEL, CERT_TEMPLATES, CERT_TEMPLATE_KEYS } = require('../utils/pdf');
-const { idCardPdf } = require('../utils/idcard');
+const { idCardPdf, cardContext } = require('../utils/idcard');
 
 /* The eight real blood groups. A free-text blood group on a card that may be
    read in an emergency is worse than a blank one. */
@@ -197,18 +197,13 @@ router.get('/members/:id', async (req, res) => {
   });
 });
 
-/* The membership card, pulled by an admin rather than by the member.
-   cardPdf reads user.membership.plan and .validTill, so a member with no
-   membership would crash it — hence the guard. */
-router.get('/members/:id/card.pdf', async (req, res) => {
-  const user = await User.findByPk(req.params.id);
-  if (!user || user.role !== 'member') return res.status(404).send('No such member');
-  if (!user.memberId || !user.membership) return res.status(400).render('error', {
-    title: 'No card yet',
-    message: `${user.name} has no membership card because the membership fee has not been recorded yet. Record the payment first.`
-  });
-  await cardPdf(res, user);
-});
+/* card.pdf was the old one-page landscape card. There is one card now and it is
+   idcard.pdf, so this redirects rather than 404s: the old URL is sitting in
+   open tabs and browser history, and somebody has certainly pasted it into a
+   WhatsApp message. 302, not 301 — a permanent redirect is cached by the
+   browser forever and would be impossible to walk back. */
+router.get('/members/:id/card.pdf', (req, res) =>
+  res.redirect(302, `/portal/admin/members/${encodeURIComponent(req.params.id)}/idcard.pdf`));
 
 /* Their most recent membership receipt, straight from the row. */
 router.get('/members/:id/receipt.pdf', async (req, res) => {
@@ -364,30 +359,15 @@ router.post('/members/:id/idcard', cardPhoto, async (req, res) => {
   res.redirect(`/portal/admin/members/${user.id}?saved=card`);
 });
 
+/* The one ID card. cardContext gathers the profile, the photograph and the code
+   the QR carries, so this route and the member's own download produce the same
+   document byte for byte. */
 router.get('/members/:id/idcard.pdf', async (req, res) => {
   const user = await User.findByPk(req.params.id);
   if (!user) return res.status(404).send('No such member');
-  const profile = await IdCardProfile.findOne({ where: { userId: user.id } });
-  const p = profile || {};
-
-  /* The code the card's QR verifies. A member card verifies the Member ID,
-     because that is the code that resolves. A staff card with only a local
-     employee number has nothing to resolve against, so it falls back to the
-     Member ID if there is one and otherwise prints without a live QR target —
-     better than a QR that leads to "not recognised". */
-  const code = user.memberId || p.employeeCode || '';
-  if (!code) return res.status(400).render('error', {
-    title: 'No ID number yet',
-    message: `${user.name} has no Member ID and no employee code, so there is nothing for the card's QR code to verify. ` +
-             `Record the membership payment (which assigns a Member ID), or enter an employee code in the ID card panel first.`
-  });
-
-  let photoPath = null;
-  if (p.photoFile) {
-    const guess = require('path').join(UPLOAD_DIR, p.photoFile);
-    try { if (require('fs').statSync(guess).isFile()) photoPath = guess; } catch (e) {}
-  }
-  await idCardPdf(res, user, p, { photoPath, code });
+  const { profile, photoPath, code, reason } = await cardContext(IdCardProfile, user);
+  if (!code) return res.status(400).render('error', { title: 'No ID number yet', message: reason });
+  await idCardPdf(res, user, profile, { photoPath, code });
 });
 
 /* ==========================================================================

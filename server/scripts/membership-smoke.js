@@ -101,7 +101,7 @@ const base = 'http://127.0.0.1:3995';
     !/<option value="online"/.test(html));
 
   /* No card and no receipt before payment. */
-  r = await get(`/portal/admin/members/${cashUser.id}/card.pdf`);
+  r = await get(`/portal/admin/members/${cashUser.id}/idcard.pdf`);
   check('no ID card before the fee is recorded', r.status === 400, String(r.status));
   r = await get(`/portal/admin/members/${cashUser.id}/receipt.pdf`);
   check('no receipt before the fee is recorded', r.status === 404, String(r.status));
@@ -147,9 +147,26 @@ const base = 'http://127.0.0.1:3995';
   check('...showing the Member ID', html.includes(cashUser.memberId));
 
   /* Card + receipt now work. */
-  r = await get(`/portal/admin/members/${cashUser.id}/card.pdf`);
+  r = await get(`/portal/admin/members/${cashUser.id}/idcard.pdf`);
   check('the ID card PDF is served', r.status === 200 && r.headers.get('content-type') === 'application/pdf',
     r.status + ' ' + r.headers.get('content-type'));
+
+  /* THE CARD HAS TWO SIDES. This is the assertion that was missing while two
+     card generators coexisted: the old one emitted a single landscape page, and
+     because every test only checked "a PDF came back" nobody noticed that the
+     buttons in the admin were still serving it. Page count is the cheapest
+     signal that distinguishes the real card from the old one. */
+  const cardPdfBytes = Buffer.from(await r.arrayBuffer());
+  const pageCount = (cardPdfBytes.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+  check('the ID card has two pages — front and back', pageCount === 2, 'pages=' + pageCount);
+
+  /* The old URL still resolves, because it is in browser history and pasted
+     into messages, but it must land on the one real card. */
+  r = await get(`/portal/admin/members/${cashUser.id}/card.pdf`);
+  check('the retired card.pdf URL redirects to the real card',
+    [301, 302].includes(r.status) && /\/idcard\.pdf$/.test(r.headers.get('location') || ''),
+    r.status + ' -> ' + r.headers.get('location'));
+
   r = await get(`/portal/admin/members/${cashUser.id}/receipt.pdf`);
   check('the membership receipt PDF is served', r.status === 200 && r.headers.get('content-type') === 'application/pdf',
     r.status + ' ' + r.headers.get('content-type'));
@@ -339,7 +356,11 @@ const base = 'http://127.0.0.1:3995';
     [302, 303, 403].includes(r.status), String(r.status));
   r = await get('/portal/admin/membership-receipts', 'online');
   check('a member cannot open the receipts list', [302, 303, 403].includes(r.status), String(r.status));
-  r = await get(`/portal/admin/members/${cashUser.id}/card.pdf`, 'online');
+  /* idcard.pdf, not the retired card.pdf: that one answers 302 to everybody
+     because it is a redirect, so asserting "302 means denied" against it would
+     pass even with authorisation removed entirely. Point the check at the route
+     that actually serves the file. */
+  r = await get(`/portal/admin/members/${cashUser.id}/idcard.pdf`, 'online');
   check('a member cannot pull another member\'s ID card', [302, 303, 403].includes(r.status), String(r.status));
 
   /* Signed out entirely. */

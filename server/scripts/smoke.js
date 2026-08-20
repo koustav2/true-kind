@@ -91,6 +91,15 @@ process.env.ADMIN_PASSWORD = 'admin123';
   r = await call('GET', '/portal/member/card/pdf');
   check('card PDF', r.headers.get('content-type') === 'application/pdf');
 
+  /* The member's own download must be THE SAME CARD the office prints, not a
+     simpler one. It was a different document for a while — this route was still
+     calling the retired single-page generator — so a member's phone showed one
+     card and their wallet held another. Two pages is the fingerprint of the
+     real one. */
+  const myCard = Buffer.from(await r.arrayBuffer()).toString('latin1');
+  const myPages = (myCard.match(/\/Type\s*\/Page[^s]/g) || []).length;
+  check('the member\'s own card PDF has both sides', myPages === 2, 'pages=' + myPages);
+
   // member donation
   r = await call('POST', '/portal/pay/donation', { category: 'Environment', amount: '250' });
   const txn2 = r.headers.get('location').split('txnId=')[1];

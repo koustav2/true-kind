@@ -28,6 +28,7 @@ const PDFDocument = require('pdfkit');
 const config = require('../config');
 const { qrBuffer } = require('./codes');
 const verify = require('./verify');
+const { UPLOAD_DIR } = require('./media');
 
 /* Card geometry, in points. */
 const W = 153.07;          // 54 mm
@@ -42,6 +43,30 @@ const INK   = '#152238';
 const SOFT  = '#5B6870';
 const PAPER = '#FFFFFF';
 const WASH  = '#F4F7FB';
+
+/* Faded whites for rules and labels sitting ON the navy band.
+ *
+ * These are pre-blended solid hex, NOT transparent white, and that is the whole
+ * point. PDFKit does not understand a CSS `rgba(...)` string: _normalizeColor
+ * returns null for it, and a null colour makes strokeColor/fillColor a SILENT
+ * NO-OP — the drawing keeps whichever colour was set last. So the five
+ * `strokeColor('rgba(255,255,255,0.8)')`-style calls that used to be here faded
+ * nothing at all; each one silently inherited the previous stroke colour, which
+ * on the back happened to be a pale grey and on the front happened to be black.
+ * The signature rule printed as a hard black line across the front of every
+ * card, and it was luck, not intent, that the back looked right.
+ *
+ * The lesson generalises: a bad colour string in PDFKit does not throw, so it
+ * cannot be caught by a test that only asks whether a PDF was produced. Use the
+ * documented forms — hex, an [r,g,b] array, or a named colour.
+ *
+ * Pre-blending also avoids alpha in a file destined for a card printer, where
+ * transparency flattening is where colour surprises come from.
+ *
+ * 80%, 50% and 85% white over NAVY. Recompute all three if NAVY changes. */
+const ON_NAVY_80 = '#D0DBE9';
+const ON_NAVY_50 = '#87A6C9';
+const ON_NAVY_85 = '#DBE4EF';
 
 /* The brand mark. The repo ships assets/img/logo.png, which is the full
    lock-up. If higher-resolution or dark-background variants are dropped in
@@ -227,8 +252,11 @@ async function drawFront(doc, ctx) {
   const bandTop = H - FOOT_TOP;
   doc.fillColor('#FFFFFF').font('Helvetica-Oblique').fontSize(7.5)
      .text('Authorised', 9, bandTop + 5.5);
-  doc.moveTo(9, bandTop + 17).lineTo(55, bandTop + 17)
-     .lineWidth(0.55).strokeColor('rgba(255,255,255,0.8)').stroke();
+  /* Stops at 48, not 55. The green swoosh crosses this row at about 55pt, so a
+     55pt rule finished 0.3pt from the colour boundary — close enough that a
+     printer's bleed would land it on the green. */
+  doc.moveTo(9, bandTop + 17).lineTo(48, bandTop + 17)
+     .lineWidth(0.55).strokeColor(ON_NAVY_80).stroke();
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(3.7)
      .text('AUTHORISED SIGNATORY', 9, bandTop + 19.5, { characterSpacing: 0.35 });
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(4.6)
@@ -308,17 +336,17 @@ async function drawBack(doc, ctx) {
   doc.fillColor('#FFFFFF').font('Helvetica-Oblique').fontSize(7.5)
      .text('Authorised', 9, bandTop + 8);
   doc.moveTo(9, bandTop + 19.5).lineTo(58, bandTop + 19.5)
-     .lineWidth(0.55).strokeColor('rgba(255,255,255,0.8)').stroke();
+     .lineWidth(0.55).strokeColor(ON_NAVY_80).stroke();
   doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(3.7)
      .text('AUTHORISED SIGNATORY', 9, bandTop + 22, { characterSpacing: 0.35 });
 
   doc.moveTo(W / 2 + 2, bandTop + 6).lineTo(W / 2 + 2, bandTop + 27)
-     .lineWidth(0.55).strokeColor('rgba(255,255,255,0.5)').stroke();
-  doc.fillColor('rgba(255,255,255,0.85)').font('Helvetica-Bold').fontSize(3.7)
+     .lineWidth(0.55).strokeColor(ON_NAVY_50).stroke();
+  doc.fillColor(ON_NAVY_85).font('Helvetica-Bold').fontSize(3.7)
      .text('ISSUE DATE', W / 2 + 9, bandTop + 6.5, { characterSpacing: 0.3 });
   doc.fillColor('#FFFFFF').font('Helvetica').fontSize(4.6)
      .text(fmtDate(profile.issuedOn || new Date()), W / 2 + 9, bandTop + 11.5);
-  doc.fillColor('rgba(255,255,255,0.85)').font('Helvetica-Bold').fontSize(3.7)
+  doc.fillColor(ON_NAVY_85).font('Helvetica-Bold').fontSize(3.7)
      .text('VALID UNTIL', W / 2 + 9, bandTop + 18, { characterSpacing: 0.3 });
   doc.fillColor('#FFFFFF').font('Helvetica').fontSize(4.6)
      .text(fmtDate(profile.validUntil), W / 2 + 9, bandTop + 23);
@@ -367,4 +395,47 @@ async function idCardPdf(res, user, profile, opts = {}) {
   doc.end();
 }
 
-module.exports = { idCardPdf, CARD_W: W, CARD_H: H };
+/* Everything a card needs, gathered from the database in one place.
+ *
+ * This exists because the admin route and the member's own download route used
+ * to each assemble this themselves — look up the profile, join the photo
+ * filename onto the upload directory, stat it, work out which code the QR
+ * should carry. Two copies of that meant the member's card and the admin's card
+ * could drift apart, and they did: the member's route was still calling the old
+ * generator entirely, so a member downloading "their" card got a different
+ * document from the one the office printed for them.
+ *
+ * Takes the IdCardProfile model rather than the whole models object so it can
+ * be called from any router without one of them having to reach for a global.
+ *
+ * Returns { profile, photoPath, code, reason }. `code` empty means the card
+ * cannot be printed and `reason` says why, in words that name the fix — the
+ * caller renders it. It is a returned value rather than a thrown error because
+ * both callers want to show a page, not a stack trace.
+ */
+async function cardContext(IdCardProfile, user) {
+  const profile = await IdCardProfile.findOne({ where: { userId: user.id } }) || {};
+
+  /* A member card verifies the Member ID, because that is the code that
+     resolves in /verify. A staff card carrying only a local employee number has
+     nothing to resolve against, so the Member ID wins when both exist. */
+  const code = user.memberId || profile.employeeCode || '';
+
+  let photoPath = null;
+  if (profile.photoFile) {
+    const guess = path.join(UPLOAD_DIR, profile.photoFile);
+    // stat rather than trust the column: an upload directory restored from a
+    // backup that missed /uploads would otherwise crash every card at once.
+    try { if (fs.statSync(guess).isFile()) photoPath = guess; } catch (e) {}
+  }
+
+  return {
+    profile, photoPath, code,
+    reason: code ? null
+      : `${user.name} has no Member ID and no employee code, so there is nothing for `
+      + `the card's QR code to verify. Record the membership payment (which assigns a `
+      + `Member ID), or enter an employee code in the ID card panel first.`
+  };
+}
+
+module.exports = { idCardPdf, cardContext, CARD_W: W, CARD_H: H };

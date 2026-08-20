@@ -69,8 +69,15 @@
     <div><dt>PAN</dt><dd><%= member.pan || '—' %></dd></div>
   </dl>
   <div class="md-acts">
-    <% if (member.memberId && member.membership) { %>
-      <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= member.id %>/card.pdf" target="_blank" rel="noopener">ID card PDF</a>
+    <%#
+      This used to be a second "ID card PDF" button pointing at the old
+      generator, so this page offered two buttons that both said ID card and
+      produced two different documents. It is a jump link to the ID card panel
+      now: the card should be printed from there, where the photograph and the
+      designation are visible and can be checked first.
+    %>
+    <% if (member.memberId || (card && card.employeeCode)) { %>
+      <a class="btn btn-ghost btn-sm" href="#idcard">ID card</a>
     <% } %>
     <% if (payments.length) { %>
       <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= member.id %>/receipt.pdf" target="_blank" rel="noopener">Latest receipt PDF</a>
@@ -141,7 +148,7 @@
   </details>
 </div>
 
-<div class="card">
+<div class="card" id="idcard">
   <h3 style="margin-top:0">ID card</h3>
   <p class="muted" style="margin-top:-6px;max-width:74ch">
     The printed card. Its QR code links to
