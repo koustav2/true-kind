@@ -1,4 +1,4 @@
-<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'vcerts'}) %>
 <%#
   Visitor certificates — for somebody with no account.
 
@@ -37,12 +37,6 @@
 <div class="wrap">
 <p class="eyebrow">Certificates</p>
 <h1 style="margin-bottom:6px">Visitor certificates</h1>
-<div class="tabs">
-  <a href="/portal/admin/certificates">Certificate types</a>
-  <a href="/portal/admin/certificates/generate">Generate</a>
-  <a href="/portal/admin/certificates/issued">Issued register</a>
-  <a href="/portal/admin/visitor-certificates" class="on">Visitor certificates</a>
-</div>
 
 <% if (saved === 'revoked') { %><div class="alert ok">Withdrawn. The serial now verifies as withdrawn.</div>
 <% } else if (saved === 'restored') { %><div class="alert ok">Restored.</div>

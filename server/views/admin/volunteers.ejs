@@ -15,12 +15,14 @@
     </p>
   </div>
 <% } %>
-<div class="tabs">
+<%# Status filters — one queue, narrowed. Not navigation. %>
+<div class="filters">
+  <span class="filters-lbl">Show</span>
   <a href="/portal/admin/volunteers" class="<%= status==='all'?'on':'' %>">All</a>
   <% statuses.forEach(s => { %>
     <a href="/portal/admin/volunteers?status=<%= s %>" class="<%= status===s?'on':'' %>"><%= s.charAt(0).toUpperCase()+s.slice(1) %></a>
   <% }) %>
-  <a href="/portal/admin/volunteers.csv">⬇ CSV</a>
+  <a class="dl" href="/portal/admin/volunteers.csv">Download CSV</a>
 </div>
 <div class="card" style="padding:0;overflow-x:auto">
 <table>

@@ -1,12 +1,14 @@
 <%- include('../partials/head') %><%- include('../partials/nav', {active:'enq'}) %>
 <div class="wrap">
 <p class="eyebrow">Enquiries</p><h1>Contact form messages</h1>
-<div class="tabs">
+<%# Status filters — one queue, narrowed. Not navigation. %>
+<div class="filters">
+  <span class="filters-lbl">Show</span>
   <a href="/portal/admin/enquiries" class="<%= status==='all'?'on':'' %>">All</a>
   <% statuses.forEach(s => { %>
     <a href="/portal/admin/enquiries?status=<%= s %>" class="<%= status===s?'on':'' %>"><%= s.charAt(0).toUpperCase()+s.slice(1) %></a>
   <% }) %>
-  <a href="/portal/admin/enquiries.csv">⬇ CSV</a>
+  <a class="dl" href="/portal/admin/enquiries.csv">Download CSV</a>
 </div>
 <div class="card" style="padding:0;overflow-x:auto">
 <table>

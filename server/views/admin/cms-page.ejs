@@ -97,7 +97,7 @@
                 <input type="hidden" name="<%= f.id %>[src]"      id="<%= f.id %>_src"   value="<%= vd.src || '' %>">
                 <input type="hidden" name="<%= f.id %>[embedUrl]" id="<%= f.id %>_embed" value="<%= vd.embedUrl || '' %>">
                 <input type="hidden" name="<%= f.id %>[provider]" id="<%= f.id %>_prov"  value="<%= vd.provider || '' %>">
-                <div class="tabs" style="margin-bottom:12px">
+                <div class="segmented" style="margin-bottom:12px">
                   <a href="#" data-vmode="upload" class="<%= vd.mode === 'upload' ? 'on' : '' %>">Uploaded file</a>
                   <a href="#" data-vmode="embed"  class="<%= vd.mode === 'embed'  ? 'on' : '' %>">YouTube / Vimeo link</a>
                   <a href="#" data-vmode=""       class="<%= !vd.mode ? 'on' : '' %>">No video</a>

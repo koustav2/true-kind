@@ -1,4 +1,4 @@
-<%- include('../partials/head') %><%- include('../partials/nav', {active:'members'}) %>
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'memreceipts'}) %>
 <%#
   Every membership fee received, gateway and by-hand together in one list.
 
@@ -10,11 +10,6 @@
 <div class="wrap">
 <p class="eyebrow">Members</p>
 <h1>Membership receipts</h1>
-<div class="tabs">
-  <a href="/portal/admin/members?status=guest">New memberships</a>
-  <a href="/portal/admin/members">Active members</a>
-  <a href="/portal/admin/membership-receipts" class="on">Membership receipts</a>
-</div>
 
 <div class="grid g2" style="margin-bottom:18px">
   <div class="card stat" style="margin:0"><b><%= payments.length %></b><span>membership payments recorded</span></div>

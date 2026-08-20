@@ -21,11 +21,18 @@
 
 <div class="wrap">
 <p class="eyebrow">Donations</p><h1 style="margin-bottom:6px">Donations</h1>
-<div class="tabs">
+<%#
+  These are FILTERS, not pages — the same list, narrowed. They used to be
+  .tabs, which was also what the section navigation used, so "Visitor
+  donations" and "All receipts" looked like the same kind of control while one
+  narrowed the list in place and the other left for a different screen. Filters
+  have their own mark now, and the page link moved to the section strip.
+%>
+<div class="filters">
+  <span class="filters-lbl">Show</span>
   <a href="/portal/admin/donations" class="<%= kind==='member'?'on':'' %>">Member donations</a>
   <a href="/portal/admin/donations?kind=guest" class="<%= kind==='guest'?'on':'' %>">Visitor donations</a>
-  <a href="/portal/admin/receipts">All receipts</a>
-  <a href="/portal/admin/donations.csv">⬇ CSV</a>
+  <a class="dl" href="/portal/admin/donations.csv">Download CSV</a>
 </div>
 
 <% if (saved) { %><div class="alert ok">Recorded — receipt <span class="serial"><%= saved %></span>.</div><% } %>

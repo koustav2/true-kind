@@ -1,82 +1,191 @@
 <%#
-  Admin navigation.
+  Admin navigation — two levels, driven by one table.
 
-  Two things worth knowing:
+  WHY IT IS SHAPED THIS WAY
+  -------------------------
+  This was a single flat row of eighteen links. At eighteen it wrapped onto two
+  lines, every link carried the same visual weight, and nine of them carried a
+  red badge — so nothing stood out, which is the same as nothing being
+  navigable. The bar had stopped being navigation and become a list.
+
+  Now: nine SECTIONS in the bar, and the pages of whichever section you are in
+  on a strip below it. You see where you are and what is next to it, and never
+  more than about nine choices at once.
+
+  ONE TABLE, BOTH ROWS. The NAV array below is the only description of the
+  admin's structure. Both rows, the gating, the badges and the highlighting all
+  read from it, so a new page is one line here and cannot end up in the bar but
+  missing from its section, or gated in one row and open in the other.
+
+  BADGES MEAN "SOMEBODY HAS TO DO SOMETHING".
+  Only three counts qualify: unpaid registrations, new volunteer applications
+  and new enquiries. Everything else navCounts knows — active members, total
+  donations, receipts, users — is a row count, and a red pill on a row count
+  reads as an alarm about nothing. Those appear as a quiet number on the section
+  strip instead, where "how many are there" is the actual question. That single
+  change takes the bar from nine red pills to at most three.
 
   1. COUNTS. `navCounts` is filled by one middleware in routes/admin.js and is
-     optional everywhere — every reference is guarded, so a view rendered without
-     it (or a count that failed to load) shows the link with no badge rather than
-     throwing. A nav that can 500 the page it is on is not worth a badge.
+     optional everywhere — every reference is guarded, so a view rendered
+     without it (or a count that failed to load) shows the link with no badge
+     rather than throwing. A nav that can 500 the page it is on is not worth a
+     badge.
 
   2. MANAGERS. A manager is a member row with a grant (middleware/staff.js), so
      `session.role` is 'member' for them and cannot be used to decide what to
      show. `isManager` / `managerSections` come from the guard. A manager only
      sees the sections they actually hold — showing a link that returns "no
-     access" teaches people to distrust the navigation.
+     access" teaches people to distrust the navigation. A section disappears
+     entirely when a manager holds none of its pages, so nobody is ever offered
+     an empty section.
 %>
 <%
   var counts = (typeof navCounts !== 'undefined' && navCounts) ? navCounts : {};
   var admin = (typeof isAdmin !== 'undefined') ? isAdmin : (session && session.role === 'admin');
   var mgrSections = (typeof managerSections !== 'undefined' && managerSections) ? managerSections : [];
   var manager = (typeof isManager !== 'undefined') ? isManager : false;
-  function may(section) { return admin || mgrSections.indexOf(section) !== -1; }
-  function on(key) { return (typeof active !== 'undefined' && active === key) ? 'on' : ''; }
-%>
-<nav class="topnav">
-  <a href="/"><img src="/assets/img/logo.png" alt="True Kind Foundation"></a>
-  <div class="links">
-    <% if (session && session.userId) { %>
-      <% if (admin || manager) { %>
-        <a href="/portal/admin" class="<%= on('dash') %>">Dashboard</a>
+  var here = (typeof active !== 'undefined') ? active : '';
 
-        <% if (may('memberships')) { %>
-          <a href="/portal/admin/members?status=guest" class="<%= on('newmem') %>">New memberships<% if (counts.guests) { %> <span class="n"><%= counts.guests %></span><% } %></a>
-        <% } %>
-        <% if (may('members') || may('memberships')) { %>
-          <a href="/portal/admin/members" class="<%= on('members') %>">Members<% if (counts.active) { %> <span class="n"><%= counts.active %></span><% } %></a>
-        <% } %>
-        <% if (may('certificates')) { %>
-          <a href="/portal/admin/certificates/issued" class="<%= on('certs') %>">Certificates<% if (counts.certificates) { %> <span class="n"><%= counts.certificates %></span><% } %></a>
-        <% } %>
-        <% if (may('donations')) { %>
-          <a href="/portal/admin/donations" class="<%= on('don') %>">Donations<% if (counts.donations) { %> <span class="n"><%= counts.donations %></span><% } %></a>
-          <a href="/portal/admin/receipts" class="<%= on('receipts') %>">Receipts<% if (counts.receipts) { %> <span class="n"><%= counts.receipts %></span><% } %></a>
-        <% } %>
-        <% if (may('volunteers')) { %>
-          <a href="/portal/admin/volunteers" class="<%= on('vols') %>">Volunteers<% if (counts.newVolunteers) { %> <span class="n"><%= counts.newVolunteers %></span><% } %></a>
-        <% } %>
-        <% if (may('enquiries')) { %>
-          <a href="/portal/admin/enquiries" class="<%= on('enq') %>">Enquiries<% if (counts.newEnquiries) { %> <span class="n"><%= counts.newEnquiries %></span><% } %></a>
-        <% } %>
-        <% if (may('notices')) { %>
-          <a href="/portal/admin/notices" class="<%= on('notices') %>">Notices<% if (counts.notices) { %> <span class="n"><%= counts.notices %></span><% } %></a>
-        <% } %>
-        <% if (admin) { %>
-          <a href="/portal/admin/users" class="<%= on('users') %>">All users<% if (counts.users) { %> <span class="n"><%= counts.users %></span><% } %></a>
-          <a href="/portal/admin/blocked" class="<%= on('blocked') %>">Blocked<% if (counts.blocked) { %> <span class="n"><%= counts.blocked %></span><% } %></a>
-          <a href="/portal/admin/managers" class="<%= on('managers') %>">Managers<% if (counts.managers) { %> <span class="n"><%= counts.managers %></span><% } %></a>
-          <a href="/portal/admin/cms" class="<%= on('cms') %>">Website</a>
-          <a href="/portal/admin/cms/media" class="<%= on('media') %>">Media</a>
-          <a href="/portal/admin/board" class="<%= on('board') %>">Board</a>
-          <a href="/portal/admin/form" class="<%= on('form') %>">Form fields</a>
-        <% } %>
-        <% if (may('verification')) { %>
-          <a href="/portal/admin/verification-log" class="<%= on('verify') %>">Verification</a>
-        <% } %>
-        <% if (may('reports')) { %>
-          <a href="/portal/admin/reports" class="<%= on('reports') %>">Reports</a>
-        <% } %>
-        <% if (manager) { %><span class="nav-role">Manager</span><% } %>
-      <% } else { %>
-        <a href="/portal/member">Profile</a>
-        <a href="/portal/member/donate">Add donation</a>
-        <a href="/portal/member/donations">Your donations</a>
-        <a href="/portal/member/profile">Edit profile</a>
-      <% } %>
-      <form method="post" action="/portal/signout" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Sign out</button></form>
+  /* gate: true = any signed-in admin or manager
+           'admin' = admins only, never grantable
+           'x' or ['x','y'] = holders of that manager section (admins always) */
+  function may(gate) {
+    if (gate === true) return true;
+    if (gate === 'admin') return admin;
+    if (admin) return true;
+    return [].concat(gate).some(function (g) { return mgrSections.indexOf(g) !== -1; });
+  }
+
+  var A = '/portal/admin';
+  var NAV = [
+    { key: 'dash', label: 'Dashboard', href: A, gate: true },
+
+    { key: 'members', label: 'Members', pages: [
+      { key: 'newmem',      label: 'New memberships',     href: A + '/members?status=guest', gate: 'memberships', alert: 'guests' },
+      { key: 'members',     label: 'Active members',      href: A + '/members',              gate: ['members', 'memberships'], total: 'active' },
+      { key: 'memreceipts', label: 'Membership receipts', href: A + '/membership-receipts',  gate: 'memberships' }
+    ]},
+
+    { key: 'certs', label: 'Certificates', pages: [
+      { key: 'certtypes',  label: 'Certificate types',   href: A + '/certificates',           gate: 'certificates' },
+      { key: 'certgen',    label: 'Generate',            href: A + '/certificates/generate',  gate: 'certificates' },
+      { key: 'certissued', label: 'Issued register',     href: A + '/certificates/issued',    gate: 'certificates', total: 'certificates' },
+      { key: 'vcerts',     label: 'Visitor certificates', href: A + '/visitor-certificates',  gate: 'certificates' }
+    ]},
+
+    { key: 'money', label: 'Donations', pages: [
+      { key: 'don',      label: 'Donations', href: A + '/donations', gate: 'donations', total: 'donations' },
+      { key: 'receipts', label: 'Receipts',  href: A + '/receipts',  gate: 'donations', total: 'receipts' }
+    ]},
+
+    /* Volunteer applications and contact enquiries are both queues of inbound
+       requests from strangers, and both are worked the same way — read it, set a
+       status. They are the only two things in the admin with a genuine unread
+       state, which is why this is where the alert badges live. */
+    { key: 'requests', label: 'Requests', pages: [
+      { key: 'vols', label: 'Volunteers', href: A + '/volunteers', gate: 'volunteers', alert: 'newVolunteers' },
+      { key: 'enq',  label: 'Enquiries',  href: A + '/enquiries',  gate: 'enquiries',  alert: 'newEnquiries' }
+    ]},
+
+    { key: 'notices', label: 'Notices', href: A + '/notices', gate: 'notices', total: 'notices' },
+
+    /* Never grantable — the CMS, the media library and the board are separate
+       routers with no manager entry in the allow table (middleware/staff.js).
+       'Text content' is listed here because the page existed and nothing linked
+       to it: an editor reachable only by typing the URL is not a feature. */
+    { key: 'website', label: 'Website', pages: [
+      { key: 'cms',     label: 'Pages',        href: A + '/cms',        gate: 'admin' },
+      { key: 'media',   label: 'Media',        href: A + '/cms/media',  gate: 'admin' },
+      { key: 'content', label: 'Text content', href: A + '/content',    gate: 'admin' },
+      { key: 'board',   label: 'Board',        href: A + '/board',      gate: 'admin' },
+      { key: 'form',    label: 'Form fields',  href: A + '/form',       gate: 'admin' }
+    ]},
+
+    /* Accounts and who may do what. Blocked sits here rather than under Members
+       because blocking is an access decision, not a membership one. */
+    { key: 'users', label: 'Users', pages: [
+      { key: 'users',    label: 'All users', href: A + '/users',    gate: 'admin', total: 'users' },
+      { key: 'blocked',  label: 'Blocked',   href: A + '/blocked',  gate: 'admin', total: 'blocked' },
+      { key: 'managers', label: 'Managers',  href: A + '/managers', gate: 'admin', total: 'managers' }
+    ]},
+
+    { key: 'reports', label: 'Reports', pages: [
+      { key: 'reports', label: 'Downloads',        href: A + '/reports',           gate: 'reports' },
+      { key: 'verify',  label: 'Verification log', href: A + '/verification-log',  gate: 'verification' }
+    ]}
+  ];
+
+  /* Resolve once: which sections are visible, which pages within them, which
+     section we are in. Doing this before any markup means the strip below can
+     never disagree with the bar above it. */
+  var sections = [];
+  var current = null;
+  NAV.forEach(function (s) {
+    var pages = (s.pages || []).filter(function (p) { return may(p.gate); });
+    if (s.pages ? !pages.length : !may(s.gate)) return;      // nothing to show
+    var alerts = pages.reduce(function (n, p) { return n + (p.alert ? (counts[p.alert] || 0) : 0); }, 0);
+    var mine = s.key === here || pages.some(function (p) { return p.key === here; });
+    var item = { key: s.key, label: s.label, pages: pages, alerts: alerts, mine: mine,
+                 href: s.pages ? pages[0].href : s.href };
+    sections.push(item);
+    if (mine) current = item;
+  });
+%>
+<div class="navwrap">
+<nav class="topnav" aria-label="Admin">
+  <a class="brand" href="/"><img src="/assets/img/logo.png" alt="True Kind Foundation"></a>
+  <% if (session && session.userId) { %>
+    <% if (admin || manager) { %>
+      <ul class="secs">
+        <% sections.forEach(function (s) { %>
+          <%# The badge says what it means out loud for a screen reader — "Members 3"
+              on its own does not distinguish a queue of three from a total of three. %>
+          <%# aria-current is written with the RAW output tag, not the escaping
+              one: the escaping tag turns the attribute's quotes into &quot; and
+              emits aria-current as visible text instead of an attribute. Caught
+              by sections:smoke, which is why it asserts on aria-current at all.
+              The label and the count keep the escaping tag. %>
+          <li><a href="<%= s.href %>" class="<%= s.mine ? 'on' : '' %>"<%- s.mine ? ' aria-current="true"' : '' %>><%= s.label %><% if (s.alerts) { %> <span class="n"><%= s.alerts %><span class="sr-only"> needing attention</span></span><% } %></a></li>
+        <% }) %>
+      </ul>
     <% } else { %>
-      <a href="/portal/signin">Sign in</a>
-      <a href="/portal/signup">Create account</a>
+      <ul class="secs">
+        <li><a href="/portal/member" class="<%= here === 'profile' ? 'on' : '' %>">Profile</a></li>
+        <li><a href="/portal/member/donate" class="<%= here === 'donate' ? 'on' : '' %>">Add donation</a></li>
+        <li><a href="/portal/member/donations" class="<%= here === 'mydonations' ? 'on' : '' %>">Your donations</a></li>
+        <li><a href="/portal/member/profile" class="<%= here === 'editprofile' ? 'on' : '' %>">Edit profile</a></li>
+      </ul>
     <% } %>
+    <div class="navend">
+      <% if (manager) { %><span class="nav-role">Manager</span><% } %>
+      <form method="post" action="/portal/signout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm" type="submit">Sign out</button></form>
+    </div>
+  <% } else { %>
+    <ul class="secs">
+      <li><a href="/portal/signin">Sign in</a></li>
+      <li><a href="/portal/signup">Create account</a></li>
+    </ul>
+  <% } %>
+</nav>
+<%#
+  The section strip. Only rendered when the section we are in has more than one
+  page — a one-page section would show a strip containing a single tab pointing
+  at the page you are already on, which is furniture, not navigation.
+%>
+<% if (current && current.pages.length > 1) { %>
+<nav class="subnav" aria-label="<%= current.label %>">
+  <%#
+    No section name repeated here. It was in the first draft, and on every page
+    it sat directly above that page's own .eyebrow, which says the same word —
+    "MEMBERS" twice, two lines apart. The highlighted pill in the bar above is
+    already the label; the strip does not need to say it again.
+  %>
+  <div class="subnav-in">
+    <% current.pages.forEach(function (p) { %>
+      <a href="<%= p.href %>" class="<%= p.key === here ? 'on' : '' %>"<%- p.key === here ? ' aria-current="page"' : '' %>><%= p.label
+        %><% if (p.alert && counts[p.alert]) { %> <span class="n"><%= counts[p.alert] %><span class="sr-only"> needing attention</span></span><% } else if (p.total && counts[p.total]) { %> <span class="t"><%= counts[p.total] %><span class="sr-only"> in total</span></span><% } %></a>
+    <% }) %>
   </div>
 </nav>
+<% } %>
+</div>

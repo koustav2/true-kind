@@ -44,12 +44,6 @@
 <div class="wrap">
 <p class="eyebrow">Members</p>
 <h1><%= status === 'guest' ? 'New membership requests' : 'Active members' %></h1>
-<div class="tabs">
-  <a href="/portal/admin/members?status=guest" class="<%= status==='guest'?'on':'' %>">New memberships</a>
-  <a href="/portal/admin/members" class="<%= status==='active'?'on':'' %>">Active members</a>
-  <a href="/portal/admin/membership-receipts">Membership receipts</a>
-</div>
-
 <% if (error === 'mode') { %><div class="alert err">Pick how the fee was paid. A payment cannot be recorded as "online" by hand — that mode is only ever set by the payment gateway.</div><% } %>
 <% if (error === 'amount') { %><div class="alert err">That amount is not a number. Leave it blank to use the plan price.</div><% } %>
 

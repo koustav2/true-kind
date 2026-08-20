@@ -25,24 +25,78 @@
 *{box-sizing:border-box} body{margin:0;background:var(--paper-2);color:var(--text);font:400 15px/1.65 'Work Sans',system-ui,sans-serif}
 h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:var(--ink);font-weight:500;letter-spacing:-.02em;margin:0 0 .5em;text-wrap:balance}
 a{color:inherit}
-.topnav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:10}
-.topnav::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:linear-gradient(90deg,var(--brand-blue),var(--brand-purple) 33%,var(--brand-green) 66%,var(--brand-red))}
-.topnav img{height:38px}
-.topnav .links{display:flex;gap:4px;flex-wrap:wrap}
-.topnav .links a{padding:8px 13px;border-radius:100px;font-size:.85rem;text-decoration:none;color:var(--text-soft)}
-.topnav .links a.on,.topnav .links a:hover{background:rgba(125,74,177,.1);color:var(--purple)}
-/* Count badges on the nav links. Sized to sit on the baseline of an .85rem
-   label without changing the link's height, so adding a badge never reflows the
-   navigation. */
-.topnav .links a .n{
-  display:inline-block;min-width:17px;padding:1px 5px;margin-left:5px;
+/* ---------- navigation ----------------------------------------------------
+   Two rows: sections in .topnav, the current section's pages in .subnav.
+
+   The WRAPPER is what sticks, not the two rows individually. Sticking them
+   separately would mean giving .subnav a `top` equal to .topnav's height — a
+   hardcoded pixel value that is wrong the moment the section list wraps to two
+   lines on a narrow window, and the strip then slides underneath the bar. One
+   sticky parent has no number in it to get wrong. */
+.navwrap{position:sticky;top:0;z-index:20}
+.topnav{display:flex;align-items:center;gap:20px;padding:11px 24px;
+  border-bottom:1px solid var(--rule);background:var(--paper)}
+.topnav .brand{flex:none;display:flex;align-items:center}
+.topnav img{height:34px}
+.topnav .secs{flex:1 1 auto;display:flex;gap:2px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.topnav .secs a{display:block;padding:8px 14px;border-radius:100px;font-size:.87rem;
+  font-weight:500;text-decoration:none;color:var(--text-soft);white-space:nowrap}
+.topnav .secs a:hover{background:var(--paper-3);color:var(--ink)}
+/* The current section is the only filled thing in the bar. When nine links all
+   had a hover-coloured tint there was no "you are here" — just nine equals. */
+.topnav .secs a.on,.topnav .secs a.on:hover{background:var(--purple);color:#fff}
+.navend{flex:none;display:flex;align-items:center;gap:10px}
+
+/* Alert badge — "somebody has to do something". Deliberately rare: only unpaid
+   registrations, new volunteers and new enquiries earn one. Sized to sit on the
+   baseline of the label without changing the link's height, so a badge
+   appearing never reflows the bar. */
+.n{display:inline-block;min-width:17px;padding:1px 5px;margin-left:5px;
   border-radius:100px;background:var(--clay);color:#fff;
   font:500 .64rem/1.5 'Work Sans',sans-serif;text-align:center;vertical-align:1px}
-.topnav .links a.on .n{background:var(--purple)}
+/* On the filled pill the badge inverts: solid white, purple figure. A
+   translucent-white backing was the obvious move and it measured 3.49:1 for
+   white text at .64rem — under the 4.5 that 10px type owes. Inverting gets
+   6.02:1 and reads more sharply besides. */
+.topnav .secs a.on .n{background:#fff;color:var(--purple)}
+/* Totals. Not an alert, so not a colour — just a count, in the muted weight of
+   a caption. 4.7:1 on the strip's background. */
+.t{display:inline-block;margin-left:6px;color:var(--text-mute);
+  font:400 .74rem/1 'IBM Plex Mono',monospace;vertical-align:1px}
+
+.subnav{background:var(--paper-2);border-bottom:1px solid var(--rule)}
+/* The brand rule is the bottom edge of the header, wherever the header ends —
+   under the strip when there is one, under the bar when there is not. Two
+   rainbow lines would read as two separate headers. */
+.navwrap>:last-child{position:relative}
+.navwrap>:last-child::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;
+  background:linear-gradient(90deg,var(--brand-blue),var(--brand-purple) 33%,var(--brand-green) 66%,var(--brand-red))}
+/* Same 24px gutter as .topnav, so the strip's first item lines up with the logo
+   above it rather than floating off to one side. */
+.subnav-in{padding:0 24px;display:flex;align-items:center;
+  gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.subnav-in::-webkit-scrollbar{display:none}
+.subnav-in a{flex:none;white-space:nowrap;padding:11px 13px;font-size:.84rem;
+  text-decoration:none;color:var(--text-soft);border-bottom:2px solid transparent;
+  margin-bottom:-1px}
+.subnav-in a:hover{color:var(--ink)}
+/* An underline, not a pill. The bar above uses filled pills for sections, so
+   reusing them here would make a page look like a section. Different level,
+   different mark. */
+.subnav-in a.on{color:var(--purple);border-bottom-color:var(--purple);font-weight:500}
+/* --blue on this tint is 4.36:1 at .7rem — the same near-miss that .pill.info
+   had, and fixed the same way: one step deeper for 5.17:1. The tint is
+   unchanged, so nothing moves except the text getting slightly darker. */
+/* The portal does not load the public stylesheet, so this is declared here too
+   (same reason as the colour tokens at the top of this file). */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .nav-role{
-  align-self:center;padding:4px 11px;border-radius:100px;
-  background:rgba(3,146,212,.12);color:var(--blue);
+  padding:4px 11px;border-radius:100px;
+  background:rgba(3,146,212,.12);color:#026A9B;
   font:500 .7rem 'Work Sans',sans-serif;white-space:nowrap}
+:where(.topnav,.subnav) a:focus-visible,.topnav button:focus-visible{
+  outline:2px solid var(--purple);outline-offset:2px}
 .wrap{max-width:1060px;margin:0 auto;padding:34px 24px 80px}
 .card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);padding:26px;margin-bottom:20px;overflow-x:auto}
 .grid{display:grid;gap:18px}
@@ -74,29 +128,71 @@ td{padding:12px;border-bottom:1px solid var(--rule);vertical-align:top}
 .alert.ok{background:rgba(89,179,6,.08);border-color:rgba(89,179,6,.3);color:var(--green)}
 .stat b{display:block;font:500 2rem 'Fraunces',serif;color:var(--ink)}
 .stat span{font-size:.8rem;color:var(--text-soft)}
-.tabs{display:flex;gap:8px;margin-bottom:18px}
-.tabs a{padding:9px 18px;border-radius:100px;border:1px solid var(--rule-strong);font-size:.85rem;text-decoration:none}
-.tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* ---------- filters, actions, segmented controls --------------------------
+   These three replace a single `.tabs` class that had come to mean all of them
+   plus the site navigation. Four different jobs wearing one uniform: a status
+   filter that narrows a list in place looked exactly like a link to another
+   page, which looked exactly like a CSV download, which looked exactly like the
+   video-source radio buttons on the CMS page. They are told apart by shape now,
+   and page navigation has moved out of the page body entirely and into the
+   section strip in the header. */
+
+/* FILTERS — narrow the list you are already looking at. Square-ish and quiet,
+   so they never read as somewhere to go. */
+.filters{display:flex;align-items:center;gap:6px;margin-bottom:18px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.filters-lbl{flex:none;margin-right:4px;font-family:'IBM Plex Mono',monospace;
+  font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-mute)}
+.filters a{flex:none;white-space:nowrap;padding:6px 12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-flat);background:var(--paper);
+  font-size:.82rem;text-decoration:none;color:var(--text-soft)}
+.filters a:hover{border-color:var(--rule-strong);color:var(--ink)}
+.filters a.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* A download is an action, not a filter — pushed to the end and marked with an
+   arrow so it is not mistaken for another way to slice the list. */
+.filters a.dl{margin-left:auto;border-style:dashed;color:var(--text-mute)}
+.filters a.dl::before{content:"\2193\00a0"}
+.filters a.dl:hover{border-style:solid;border-color:var(--purple);color:var(--purple)}
+
+/* ACTIONS — a row of things to do, not places to go. */
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.actions a{padding:6px 12px;border-radius:var(--radius-sm);border:1px dashed var(--border-flat);
+  font-size:.82rem;text-decoration:none;color:var(--text-mute)}
+.actions a:hover{border-style:solid;border-color:var(--purple);color:var(--purple)}
+
+/* SEGMENTED — pick exactly one; a radio group that happens to look like a
+   switch. Joined into one block so it reads as a single control with one
+   selection, which is what it is. */
+.segmented{display:inline-flex;border:1px solid var(--border-flat);
+  border-radius:var(--radius-sm);overflow:hidden}
+.segmented a{padding:7px 14px;font-size:.82rem;text-decoration:none;color:var(--text-soft);
+  border-left:1px solid var(--border-flat);background:var(--paper)}
+.segmented a:first-child{border-left:0}
+.segmented a:hover{background:var(--paper-3);color:var(--ink)}
+.segmented a.on{background:var(--purple);color:#fff;border-left-color:var(--purple)}
+
 .codebox{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:16px;border:1px dashed var(--rule-strong);border-radius:var(--radius-sm);margin-top:16px}
 .codebox img{max-height:90px}
 .serial{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--purple)}
 .muted{color:var(--text-soft);font-size:.88rem}
 .auth-wrap{max-width:420px;margin:60px auto;padding:0 20px}
 img{max-width:100%;height:auto}
-.tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.tabs::-webkit-scrollbar{display:none}
-.tabs a{white-space:nowrap;flex:none}
 
 /* ---------- mobile ---------- */
 @media(max-width:880px){
   .topnav{flex-wrap:wrap;gap:10px;padding:10px 16px}
-  .topnav img{height:34px}
-  /* nav links become one horizontally-scrollable row under the logo */
-  .topnav .links{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;
+  .topnav img{height:30px}
+  /* Logo and Sign out share the first line; the sections become one
+     horizontally-scrollable row beneath them. Wrapping nine section pills into
+     four stacked rows would push the page content off a phone screen. */
+  .topnav .brand{order:1}
+  .navend{order:2;margin-left:auto}
+  .topnav .secs{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;
     -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
-  .topnav .links::-webkit-scrollbar{display:none}
-  .topnav .links a{white-space:nowrap;flex:none}
-  .topnav .links form{flex:none}
+  .topnav .secs::-webkit-scrollbar{display:none}
+  .topnav .secs a{flex:none}
+  .subnav-in{padding:0 16px}
   .wrap{padding:22px 16px 60px}
   .card{padding:18px 16px}
   h1{font-size:1.55rem}

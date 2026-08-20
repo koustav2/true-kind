@@ -337,10 +337,49 @@ const base = 'http://127.0.0.1:3993';
   check('CSV escapes commas and quotes in a name',
     csv2.includes('"Nayak, Priya ""PN"""'), (csv2.split('\n').find(l => l.includes('Nayak')) || '').slice(0, 80));
 
-  /* ---- nav counts ------------------------------------------------------ */
+  /* ---- the navigation --------------------------------------------------
+     This block used to be one assertion, /class="n">\d+<\/span>/, and it broke
+     the moment a nested <span> was added inside the badge — it was matching the
+     markup rather than the behaviour. What actually matters is structural:
+     sections in the bar, the current section's pages beneath it, and a badge
+     that only ever means "somebody has to do something".
+     ---------------------------------------------------------------------- */
 
   html = await (await get('/portal/admin')).text();
-  check('the nav carries count badges', /class="n">\d+<\/span>/.test(html));
+
+  /* The bar is SECTIONS, and there are far fewer of them than there are pages.
+     The whole point of the rebuild was that a flat list of every page had grown
+     unusable, so a ceiling here is the thing worth defending against drift. */
+  var secCount = (html.match(/<li><a href="[^"]*"[^>]*>/g) || []).length;
+  check('the bar holds a handful of sections, not every page',
+    secCount > 3 && secCount <= 12, 'sections=' + secCount);
+
+  check('the section you are on is marked, exactly once',
+    (html.match(/class="on"[^>]*aria-current="true"/g) || []).length === 1);
+
+  /* Unpaid registrations are seeded, so this count is real and actionable. */
+  check('an actionable count shows as an alert badge',
+    /<span class="n">\d+<span class="sr-only"> needing attention<\/span><\/span>/.test(html));
+
+  /* The dashboard is a one-page section, so it must NOT print a strip
+     containing a single tab pointing at the page you are already on. */
+  check('a one-page section renders no section strip', !/class="subnav"/.test(html));
+
+  /* A multi-page section does, and it lists that section's pages. */
+  html = await (await get('/portal/admin/members')).text();
+  check('a multi-page section renders its strip', /class="subnav"/.test(html));
+  ['New memberships', 'Active members', 'Membership receipts'].forEach(function (p) {
+    check('...listing ' + p, html.includes('>' + p));
+  });
+  check('...with the current page marked',
+    /aria-current="page"/.test(html));
+
+  /* Totals are NOT alerts. A red pill on "you have 3 users" is an alarm about
+     nothing, and nine of them was most of why the old bar was unreadable. */
+  html = await (await get('/portal/admin/users')).text();
+  check('a plain total is not dressed as an alert',
+    /<span class="t">\d+<span class="sr-only"> in total<\/span><\/span>/.test(html)
+    && !/class="n"/.test(html.split('class="subnav"')[1] || ''));
 
   /* ==================================================================== */
   /* ---- THE PERMISSION SWEEP ------------------------------------------ */

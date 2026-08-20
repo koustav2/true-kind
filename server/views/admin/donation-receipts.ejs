@@ -2,13 +2,15 @@
 <div class="wrap">
 <p class="eyebrow">Receipts</p>
 <h1 style="margin-bottom:6px"><%= title %></h1>
-<div class="tabs">
-  <a href="/portal/admin/receipts">All receipts</a>
+<%# One list of receipts, narrowed five ways. Filters, not pages. %>
+<div class="filters">
+  <span class="filters-lbl">Show</span>
+  <a href="/portal/admin/receipts" class="<%= !kind?'on':'' %>">All</a>
   <a href="/portal/admin/receipts/membership" class="<%= kind==='membership'?'on':'' %>">Membership</a>
   <a href="/portal/admin/receipts/member" class="<%= kind==='member'?'on':'' %>">Member donations</a>
   <a href="/portal/admin/receipts/visitor" class="<%= kind==='visitor'?'on':'' %>">Visitor donations</a>
   <a href="/portal/admin/receipts/offline" class="<%= kind==='offline'?'on':'' %>">Cash &amp; offline</a>
-  <a href="/portal/admin/donations.csv">⬇ CSV</a>
+  <a class="dl" href="/portal/admin/donations.csv">Download CSV</a>
 </div>
 
 <% if (kind === 'offline') { %>

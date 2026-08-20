@@ -1,4 +1,4 @@
-<%- include('../partials/head') %><%- include('../partials/nav', {active:'certs'}) %>
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'certissued'}) %>
 <%#
   The issued register — every certificate that exists, member and visitor
   together in one list sorted by date.
@@ -11,11 +11,7 @@
 <div class="wrap">
 <p class="eyebrow">Certificates</p>
 <h1 style="margin-bottom:6px">Issued certificates</h1>
-<div class="tabs">
-  <a href="/portal/admin/certificates">Certificate types</a>
-  <a href="/portal/admin/certificates/generate">Generate</a>
-  <a href="/portal/admin/certificates/issued" class="on">Issued register</a>
-  <a href="/portal/admin/visitor-certificates">Visitor certificates</a>
+<div class="actions">
   <a href="/portal/admin/certificates.csv">⬇ CSV</a>
 </div>
 

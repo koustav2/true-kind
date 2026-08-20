@@ -80,7 +80,9 @@ const ALLOW = [
   ['members',      'GET',  /^\/members$/],
   ['members',      'GET',  /^\/members\/\d+$/],
   ['members',      'GET',  /^\/users$/],
-  ['members',      'GET',  /^\/members\/\d+\/card\.pdf$/],
+  /* card.pdf was listed here. It is a redirect to idcard.pdf now, and printing a
+     card is the `idcards` grant — so leaving it would have let a members-only
+     manager follow a link into a 403 instead of simply not being offered it. */
 
   ['certificates', 'GET',  /^\/certificates$/],
   ['certificates', 'GET',  /^\/certificates\/\d+$/],
