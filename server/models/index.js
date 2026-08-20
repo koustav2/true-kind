@@ -162,6 +162,39 @@ const CertificateFile = sequelize.define('CertificateFile', {
   uploadedBy:    DataTypes.INTEGER
 });
 
+/* ---------------------------------------------------------------------------
+   The board of trustees, as data.
+
+   about.html used to carry four hardcoded cards — Chairperson, Vice
+   Chairperson, Secretary, Treasurer — with four matching photo slots in the
+   CMS registry. That could never satisfy "add more people": the registry is a
+   fixed list of fields generated from the HTML, so a fifth trustee meant a code
+   change and a redeploy.
+
+   A table can hold any number of rows, so this is a table. The four cards stay
+   in the HTML as the fallback: if this list is empty, or the request for it
+   fails, the page shows the original four rather than an empty section.
+
+   `visible` rather than deleting: a trustee who steps down usually comes off the
+   website before the paperwork is settled, and an accidental delete of someone's
+   photograph and details is not recoverable.
+   --------------------------------------------------------------------------- */
+const BoardMember = sequelize.define('BoardMember', {
+  _id:  { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  name: { type: DataTypes.STRING, allowNull: false },
+  designation: { type: DataTypes.STRING },        // Chairperson, Treasurer, ...
+  email:    { type: DataTypes.STRING },
+  photoUrl: { type: DataTypes.STRING },           // /uploads/<file>
+  photoFile:{ type: DataTypes.STRING },           // on-disk name, so a replace can unlink
+  bio:      { type: DataTypes.TEXT },
+  facebook: { type: DataTypes.STRING },
+  linkedin: { type: DataTypes.STRING },
+  twitter:  { type: DataTypes.STRING },           // X / Twitter
+  instagram:{ type: DataTypes.STRING },
+  sortOrder:{ type: DataTypes.INTEGER, defaultValue: 0 },
+  visible:  { type: DataTypes.BOOLEAN, defaultValue: true }
+});
+
 // Associations
 Donation.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(Donation, { as: 'donations', foreignKey: 'userId' });
@@ -172,5 +205,6 @@ CertificateIssue.belongsTo(Donation, { as: 'donation', foreignKey: 'donationId' 
 
 module.exports = {
   sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig,
-  Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile
+  Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
+  BoardMember
 };

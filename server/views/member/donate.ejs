@@ -1,22 +1,88 @@
 <%- include('../partials/head') %><%- include('../partials/nav') %>
-<div class="wrap" style="max-width:640px">
-<p class="eyebrow">Add donation</p><h1>Support a program</h1>
-<div class="card">
-<form method="post" action="/portal/pay/donation"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
-  <label>Program</label>
-  <select name="category"><% categories.forEach(c => { %><option><%= c %></option><% }) %></select>
-  <label>Amount (₹)</label><input type="number" name="amount" min="1" step="1" required placeholder="e.g. 500">
-  <% extraFields.forEach(f => { %>
-    <label><%= f.label %><%= f.required ? ' *' : '' %></label>
-    <% if (f.type === 'select') { %>
-      <select name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
-    <% } else if (f.type === 'textarea') { %>
-      <textarea name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
-    <% } else { %>
-      <input type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+<%#
+  Signed-in member donation. Same programme cards, amount cards and running
+  summary as the guest page (shared partials), minus the donor-details step —
+  we already hold those on the account and the receipt is built from them.
+%>
+<%- include('../partials/donate-css') %>
+
+<div class="don-wrap">
+<p class="eyebrow">Add donation</p>
+<h1 style="margin-bottom:6px">Support a programme</h1>
+<p class="muted" style="margin:0 0 22px">Your receipt details come from your profile, so there is nothing to retype.</p>
+
+<form method="post" action="/portal/pay/donation" class="don-grid" id="donform">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <div>
+    <section class="don-step">
+      <h2><span class="don-num" aria-hidden="true">1</span> Choose a programme</h2>
+      <p class="muted">Pick where this should go, or leave it to us.</p>
+      <div class="cause-grid">
+        <% categories.forEach((c, i) => { %>
+          <label class="cause">
+            <input type="radio" name="category" value="<%= c %>" <%= i === 0 ? 'checked' : '' %>>
+            <b><%= c %></b>
+            <% if (blurbs[c]) { %><span><%= blurbs[c] %></span><% } %>
+          </label>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="don-step">
+      <h2><span class="don-num" aria-hidden="true">2</span> Choose an amount</h2>
+      <p class="muted">Tap a figure or type your own.</p>
+      <div class="amt-grid">
+        <% presets.forEach(a => { %>
+          <button type="button" class="amt-card" data-amt="<%= a %>" aria-pressed="false">
+            <b>₹<%= a.toLocaleString('en-IN') %></b>
+            <% if (impact[a]) { %><span><%= impact[a] %></span><% } %>
+          </button>
+        <% }) %>
+      </div>
+      <div class="amt-custom">
+        <label for="amount">Amount in ₹ *</label>
+        <input type="number" name="amount" id="amount" min="1" step="1" required
+               inputmode="numeric" placeholder="Any amount">
+      </div>
+      <p class="amt-note">Cost figures above are indicative — they are how these programmes are currently budgeted, not a claim about where one particular donation ends up.</p>
+    </section>
+
+    <% if (extraFields.length) { %>
+      <section class="don-step">
+        <h2><span class="don-num" aria-hidden="true">3</span> A few more questions</h2>
+        <% extraFields.forEach((f, i) => { %>
+          <label for="x-<%= i %>"><%= f.label %><%= f.required ? ' *' : '' %></label>
+          <% if (f.type === 'select') { %>
+            <select id="x-<%= i %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
+          <% } else if (f.type === 'textarea') { %>
+            <textarea id="x-<%= i %>" name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
+          <% } else { %>
+            <input id="x-<%= i %>" type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+          <% } %>
+        <% }) %>
+      </section>
     <% } %>
-  <% }) %>
-  <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue to payment</button></div>
+  </div>
+
+  <aside class="don-side">
+    <div class="don-sum">
+      <h3>Your donation</h3>
+      <dl>
+        <div><dt>Programme</dt><dd data-sum="cause">—</dd></div>
+        <div><dt>Amount</dt><dd class="big" data-sum="amount">₹—</dd></div>
+      </dl>
+      <hr>
+      <button class="btn btn-primary" type="submit">Proceed to payment</button>
+      <p class="don-secure">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 018 0v3"></path></svg>
+        Card, UPI and netbanking via PhonePe. We never see your card details.
+      </p>
+      <p class="fine">The receipt is issued the moment the payment clears and is filed under <a href="/portal/member/donations">Your donations</a>.</p>
+    </div>
+  </aside>
 </form>
 </div>
-</div></body></html>
+
+<%- include('../partials/donate-js') %>
+</body></html>

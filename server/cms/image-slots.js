@@ -44,16 +44,44 @@ for (const page of ['index', 'work']) {
   });
 }
 
-/* Board members. The circles currently hold initials. */
-['Chairperson', 'Vice Chairperson', 'Secretary', 'Treasurer'].forEach((role, i) => {
+/* NOTE — the board used to have four fixed photo slots here, keyed to
+   .board-card:nth-child(n). They are gone on purpose.
+
+   The board is now a real admin-managed list (the BoardMember table, edited at
+   /portal/admin/board) so the client can add and remove people rather than
+   filling four permanent boxes. A fixed-field registry cannot express "add
+   another person", and leaving both mechanisms in place would have given the
+   client two different screens that each half-edit the same four cards. The
+   photograph is uploaded with the rest of that person's details instead. */
+
+/* The About page photograph — a wide picture under the "Why we exist" story.
+   Empty by default: the outline drawing in the HTML stands in until a real
+   photograph is uploaded, so the page never shows a hole. */
+slots.push({
+  id: 'about.photo.story',
+  page: 'about',
+  label: 'About Us — photograph',
+  help: 'Landscape, ideally 1600x900 or wider. Replaces the outline drawing under the story.',
+  container: '.about-figure-media',
+  fit: 'cover'
+});
+
+/* The three "what guides us" marks — Mission, Vision, How We Earn Trust.
+   The client asked to be able to change these, so each is a slot. Fitted with
+   object-fit:contain rather than cover (see style.css): a logo that gets
+   cropped to a square is a broken logo. */
+[
+  ['mission', 'Our Mission'],
+  ['vision',  'Our Vision'],
+  ['trust',   'How We Earn Trust']
+].forEach(([key, name], i) => {
   slots.push({
-    id: `about.photo.board${i + 1}`,
+    id: `about.icon.${key}`,
     page: 'about',
-    label: `${role} — photograph`,
-    help: 'A square headshot. Shown as a circle, so keep the face centred.',
-    container: `.board-card:nth-child(${i + 1}) .board-avatar`,
-    fit: 'cover',
-    round: true
+    label: `${name} — icon / logo`,
+    help: 'Square PNG with a transparent background works best. Shown at 46px, so keep it simple. Leave empty for the current line drawing.',
+    container: `.mvv-card:nth-child(${i + 1}) .mvv-icon`,
+    fit: 'contain'
   });
 });
 

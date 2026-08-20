@@ -89,6 +89,38 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
   })();
 
   /* ----------------------------------------------------------------------
+     Portal links on a host that has no portal
+
+     /portal/* is served by our Express app. Open the same HTML from anywhere
+     else — the old Vercel deployment, a file:// copy, a preview host — and a
+     relative /portal/donate resolves against that host and 404s. That is the
+     bug the client reported: the Donate button dead-ending on
+     true-kind-psi.vercel.app.
+
+     vercel.json now redirects that host wholesale, which fixes it without any
+     JavaScript. This is the belt to that braces: on ANY origin that is not the
+     app and not a local dev server, portal links are rewritten to the canonical
+     origin so the button still works. Same-origin is left completely alone, so
+     on the real site this code changes nothing.
+     ---------------------------------------------------------------------- */
+  (function portalLinks() {
+    var CANONICAL = "https://truekind.truehr.co.in";
+    var host = location.hostname;
+
+    // The app itself, and the usual local development hosts.
+    if (/(^|\.)truehr\.co\.in$/i.test(host)) return;
+    if (host === "localhost" || host === "[::1]" || host === "0.0.0.0") return;
+    if (/^127\./.test(host)) return;
+    if (/^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(host)) return;
+    // A bare file:// copy has no hostname at all — that one DOES need rewriting,
+    // so an empty host deliberately falls through.
+
+    document.querySelectorAll('a[href^="/portal"]').forEach(function (a) {
+      a.setAttribute("href", CANONICAL + a.getAttribute("href"));
+    });
+  })();
+
+  /* ----------------------------------------------------------------------
      Header donate button — the attention pulse
 
      Fires once per page view, 1.4s after load so it does not compete with the
@@ -221,6 +253,145 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
     // the case where cms.js is absent or its request never resolves.
     document.addEventListener("cms:hydrated", build);
     setTimeout(build, 1200);
+  })();
+
+  /* ----------------------------------------------------------------------
+     Our Board (About page)
+
+     The board is admin-managed data now (the BoardMember table, edited at
+     /portal/admin/board), because "add another trustee" is not something a
+     fixed set of CMS fields can express.
+
+     Three rules, in this order:
+
+     1. The four cards already in about.html are the fallback and they are NEVER
+        removed speculatively. They are replaced only once we hold at least one
+        real person. A failed request, an empty list, a server that is down — all
+        leave the page exactly as it shipped.
+     2. Everything the admin typed is written with textContent, and every link is
+        re-checked for an http(s) scheme here even though the server already
+        validated it. An admin is trusted, an admin's typo is not.
+     3. Photograph optional: without one the card shows initials in the ring,
+        which is what the placeholder cards do, so a half-filled board still
+        looks deliberate.
+     ---------------------------------------------------------------------- */
+  (function board() {
+    var grid = document.querySelector(".board-grid");
+    if (!grid) return;
+
+    var ICONS = {
+      facebook:  '<svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M15 8h-1.5A1.5 1.5 0 0012 9.5V21M9.5 13h5"></path></svg>',
+      linkedin:  '<svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M7 10v7M7 7v.01M11 17v-4.5a2 2 0 014 0V17"></path></svg>',
+      // The X mark sits in a rounded square like the other three: on its own, a
+      // bare diagonal cross in a circle reads as a "close" button.
+      twitter:   '<svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"></rect><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"></path></svg>',
+      instagram: '<svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg>'
+    };
+    var LABEL = { facebook: "Facebook", linkedin: "LinkedIn", twitter: "X", instagram: "Instagram" };
+
+    function initials(name) {
+      return String(name || "").trim().split(/\s+/).slice(0, 2)
+        .map(function (w) { return w.charAt(0).toUpperCase(); }).join("") || "?";
+    }
+
+    /* Only http(s) may become an href. Anything else is dropped silently — a
+       link that does not work is better than a javascript: URL that does. */
+    function safeHref(url) {
+      if (!url) return null;
+      try {
+        var u = new URL(url, location.href);
+        return (u.protocol === "http:" || u.protocol === "https:") ? u.href : null;
+      } catch (e) { return null; }
+    }
+
+    function card(m) {
+      var el = document.createElement("div");
+      el.className = "board-card";
+
+      var ring = document.createElement("div");
+      ring.className = "board-avatar cms-photo-slot cms-photo-round";
+      if (m.photo) {
+        var img = document.createElement("img");
+        img.className = "cms-photo";
+        img.src = m.photo;
+        img.alt = m.name ? m.name + " — photograph" : "";
+        img.loading = "lazy";
+        ring.classList.add("has-photo");
+        ring.appendChild(img);
+      } else {
+        ring.textContent = initials(m.name);
+        ring.setAttribute("aria-hidden", "true");
+      }
+      el.appendChild(ring);
+
+      var h = document.createElement("h3");
+      h.textContent = m.name || "";
+      el.appendChild(h);
+
+      if (m.designation) {
+        var role = document.createElement("p");
+        role.className = "role";
+        role.textContent = m.designation;
+        el.appendChild(role);
+      }
+
+      if (m.email) {
+        var mail = document.createElement("p");
+        mail.className = "board-mail";
+        var a = document.createElement("a");
+        // encodeURIComponent, not the raw string: an address with a space or a
+        // stray quote must not be able to shape the mailto: URL.
+        a.href = "mailto:" + encodeURIComponent(m.email).replace(/%40/g, "@");
+        a.textContent = m.email;
+        mail.appendChild(a);
+        el.appendChild(mail);
+      }
+
+      if (m.bio) {
+        var bio = document.createElement("p");
+        bio.className = "board-bio";
+        bio.textContent = m.bio;
+        el.appendChild(bio);
+      }
+
+      var links = [];
+      Object.keys(ICONS).forEach(function (k) {
+        var href = safeHref(m.social && m.social[k]);
+        if (!href) return;
+        var s = document.createElement("a");
+        s.href = href;
+        s.target = "_blank";
+        s.rel = "noopener";
+        s.setAttribute("aria-label", (m.name ? m.name + " on " : "") + LABEL[k]);
+        s.innerHTML = ICONS[k];      // a literal from this file, never user data
+        links.push(s);
+      });
+      if (links.length) {
+        var row = document.createElement("div");
+        row.className = "board-social";
+        links.forEach(function (s) { row.appendChild(s); });
+        el.appendChild(row);
+      }
+      return el;
+    }
+
+    fetch(API_BASE + "/board", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var list = data && data.members;
+        if (!list || !list.length) return;          // keep the shipped cards
+        var frag = document.createDocumentFragment();
+        list.forEach(function (m) { if (m && m.name) frag.appendChild(card(m)); });
+        if (!frag.childNodes.length) return;
+        grid.textContent = "";
+        grid.appendChild(frag);
+        /* These cards did not exist when the scroll-reveal observer bound, so
+           they would otherwise be the only section on the page that appears
+           without the fade-and-lift everything else has. reveal() below listens
+           for this and registers them. */
+        document.dispatchEvent(new CustomEvent("board:rendered"));
+      })
+      .catch(function () { /* the shipped cards stay */ });
   })();
 
   /* ----------------------------------------------------------------------
@@ -386,11 +557,12 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
     var fade = ".work-card";
 
     var i = 0;
-    document.querySelectorAll(lift).forEach(function (el) {
+    function markLift(el) {
       el.classList.add("reveal");
       el.style.transitionDelay = Math.min(i % 4, 3) * 0.07 + "s";
       i++;
-    });
+    }
+    document.querySelectorAll(lift).forEach(markLift);
     document.querySelectorAll(fade).forEach(function (el) {
       el.classList.add("reveal-fade");
     });
@@ -405,6 +577,17 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
     }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
 
     document.querySelectorAll(".reveal, .reveal-fade").forEach(function (el) { io.observe(el); });
+
+    /* The board cards are built from the API after this ran, so they have to be
+       enrolled when they arrive or they would be the one section that appears
+       with no animation. Note this only fires when reveal() got this far — under
+       prefers-reduced-motion the function returned at the top and the new cards
+       simply stay visible, which is the correct behaviour, not a missed case. */
+    document.addEventListener("board:rendered", function () {
+      var fresh = document.querySelectorAll(".board-card:not(.reveal)");
+      i = 0;                                   // restart the stagger for the row
+      fresh.forEach(function (el) { markLift(el); io.observe(el); });
+    });
   })();
 
   /* ----------------------------------------------------------------------

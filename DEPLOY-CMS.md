@@ -41,15 +41,29 @@ npm install
 **Check:** no errors. This adds `cheerio` (devDependency — used only by the
 registry generator, never at runtime).
 
-### 3. Run both test suites
+### 3. Run the test suites
 
 ```bash
-npm run smoke
-npm run cms:smoke
+npm run smoke          # 30 — portal end to end
+npm run cms:smoke      # 40 — the content editor
+npm run board:smoke    # 50 — board CRUD + the donation form's server-side checks
+npm run ui:smoke       # 27 — admin screens, real browser
+npm run donate:smoke   # 23 — the header Donate button on all 9 pages
+npm run board:render   # 26 — the About page's board section, real browser
 ```
 
-**Check:** `ALL PASS` at the end of each. 30 assertions then 40.
-If either fails, do not deploy — send me the output.
+**Check:** `ALL PASS` or `n/n passed` at the end of each. If any of them fails,
+do not deploy — send me the output.
+
+The last three drive a real browser. If Chromium is not installed yet:
+
+```bash
+npm i -D playwright && npx playwright install chromium
+```
+
+They skip cleanly (exit 0, with a note) when playwright is absent, so a missing
+browser will not block a deploy — but those 76 assertions then simply do not
+run.
 
 ### 4. Commit and push
 
@@ -305,7 +319,34 @@ tar czf ~/truekind-uploads-$(date +%F).tar.gz -C /opt/truekind uploads
 every play. A pasted YouTube/Vimeo link costs you nothing. For anything longer
 than about a minute, or anything you expect real traffic on, use the link.
 
-**`.vercelignore` is dead** and can be deleted — Vercel is no longer a target.
+**The Vercel deployment now redirects here.** `.vercelignore` excluded
+`server/`, so that host could only ever serve the static HTML — `/portal/*`,
+`/api/*` and `/uploads/*` all returned Vercel's 404 page. That is what the
+header Donate button hit: `true-kind-psi.vercel.app/portal/donate` 404'd while
+the same button worked on this domain.
+
+`vercel.json` now redirects **every** path on that host to
+`https://truekind.truehr.co.in/<same path>` with a temporary (307) redirect, so
+anyone holding an old link lands in the right place. Temporary, not permanent,
+so browsers do not cache it forever if you ever want that project back.
+
+If you would rather be rid of it entirely, delete the project in the Vercel
+dashboard. Nothing here depends on it. `assets/js/main.js` also rewrites
+`/portal/*` links to this domain on any host that is not this one — belt to the
+redirect's braces, and it covers a `file://` copy too.
+
+**The board is data now, not markup.** "Our Board" on the About page is edited
+at **Website → Board** in the admin: photo upload, name, designation, email, four
+social links, an order number and a show/hide tick per person. Add as many people
+as you like.
+
+The four cards in `about.html` (Chairperson / Vice Chairperson / Secretary /
+Treasurer) are the fallback: they stay on the page until the first real trustee
+is added, and they come back if `/api/board` ever fails. So the section is never
+empty and never broken.
+
+This added one table, `BoardMembers`. Like the others it is created by
+`sequelize.sync()` on the next start — nothing to run by hand.
 
 **Rollback**, if something is wrong:
 

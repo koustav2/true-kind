@@ -21,4 +21,15 @@ const slots = [];
   });
 });
 
+/* Caption under the About-page photograph. Starts empty and hidden, so an
+   uncaptioned picture leaves no blank line under itself. */
+slots.push({
+  id: 'about.story.caption',
+  page: 'about',
+  label: 'About Us photograph — caption',
+  help: 'Optional. Names the place, the programme or the date. Leave empty for no caption.',
+  selector: '[data-cms-figcaption="about.story"]',
+  group: 'Photographs'
+});
+
 module.exports = slots;

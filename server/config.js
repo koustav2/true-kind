@@ -20,5 +20,31 @@ module.exports = {
   donationCategories: [
     'Skill Development', "Women's Empowerment", 'Digital Education',
     'Health & Safety', 'Environment', 'Where it is needed most'
-  ]
+  ],
+
+  /* One line per category, shown on the cause cards of the donation page so the
+     donor picks a programme rather than a word off a dropdown. Keyed by the
+     exact category string above — a category with no entry here simply renders
+     without a description, so adding to the list above can never break the
+     page. */
+  donationCategoryBlurbs: {
+    'Skill Development':       'Trade and digital-skills training for young people, through to a first job.',
+    "Women's Empowerment":     'Savings-and-enterprise collectives: training, materials and market access.',
+    'Digital Education':       'Devices, connectivity and teaching time for students without either.',
+    'Health & Safety':         'Preventive-care camps, screening and follow-up for the cases that need it.',
+    'Environment':             'Plantation drives, waste segregation and water-body restoration.',
+    'Where it is needed most': 'We assign it to whichever programme is furthest from its budget this quarter.'
+  },
+
+  /* What each preset amount is costed against. INDICATIVE: these mirror the
+     three published tiers on donate.html and are budget figures, not a promise
+     that one specific donation bought one specific thing. The page says exactly
+     that under the chips. A preset with no entry renders as a plain chip. */
+  donationImpact: {
+    500:   'Learning materials for one participant',
+    1500:  'One trainee, one month of skills training',
+    3000:  'A week of digital-literacy classes for a batch',
+    6000:  'One full community health camp',
+    25000: 'Seed support for a women’s enterprise collective'
+  }
 };

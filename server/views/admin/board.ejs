@@ -1,0 +1,155 @@
+<%- include('../partials/head') %><%- include('../partials/nav', { active: 'board' }) %>
+<%#
+  Board of trustees.
+
+  One form per person rather than one big form for all of them. Two reasons:
+  a photograph upload is multipart and cannot be batched with the others without
+  posting every file on every save, and a mistake in one row should not be able
+  to discard the edits in another.
+
+  Every form's action carries ?_csrf= as well as the hidden field. The CSRF guard
+  runs before multer, so on a multipart POST the hidden field has not been parsed
+  yet — the query string is the only copy it can see. Do not remove it.
+%>
+<style>
+.bm-grid{display:grid;gap:16px}
+@media(min-width:820px){.bm-grid{grid-template-columns:1fr 1fr}}
+.bm-card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);padding:20px 22px}
+.bm-card.add{border-style:dashed;border-color:var(--rule-strong)}
+.bm-head{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.bm-shot{
+  width:58px;height:58px;border-radius:50%;flex:none;overflow:hidden;
+  border:1.5px solid var(--brand-blue);background:var(--paper-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--blue);
+}
+.bm-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.bm-head h3{margin:0;font-size:1rem}
+.bm-head .muted{margin:2px 0 0}
+.bm-row{display:grid;gap:10px}
+@media(min-width:520px){.bm-row.two{grid-template-columns:1fr 1fr}}
+.bm-check{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:.85rem}
+.bm-check input{width:auto;margin:0;accent-color:var(--purple)}
+.bm-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px;
+  padding-top:14px;border-top:1px solid var(--rule)}
+.bm-acts .grow{flex:1}
+.bm-hint{font-size:.76rem;color:var(--text-soft);margin:5px 0 0}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Website</p>
+<h1 style="margin-bottom:6px">Our Board</h1>
+<p class="muted" style="margin:0 0 20px;max-width:70ch">
+  These are the cards under <b>Governance → Our Board</b> on the About Us page. Add as many
+  people as you need; they appear in the order below. Untick <i>Show on the website</i> to
+  take someone off the page without deleting their details.
+  <br>
+  <b>While this list is empty</b> the About page keeps showing the four placeholder cards
+  (Chairperson, Vice Chairperson, Secretary, Treasurer). Adding the first real person replaces
+  all four.
+</p>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'name') { %><div class="alert err">A name is required — nothing else is.</div><% } %>
+
+<div class="bm-grid">
+  <% members.forEach(m => { %>
+    <div class="bm-card">
+      <form method="post" action="/portal/admin/board/<%= m.id %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="bm-head">
+          <div class="bm-shot">
+            <% if (m.photoUrl) { %>
+              <img src="<%= m.photoUrl %>" alt="">
+            <% } else { %>
+              <%= (m.name || '?').split(/\s+/).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('') %>
+            <% } %>
+          </div>
+          <div>
+            <h3><%= m.name %></h3>
+            <p class="muted"><%= m.designation || 'No designation' %><%= m.visible ? '' : ' · hidden' %></p>
+          </div>
+        </div>
+
+        <div class="bm-row two">
+          <div><label>Name *</label><input name="name" value="<%= m.name %>" required maxlength="120"></div>
+          <div><label>Designation</label><input name="designation" value="<%= m.designation || '' %>" maxlength="120" placeholder="Chairperson"></div>
+        </div>
+        <label>Email</label><input type="email" name="email" value="<%= m.email || '' %>" maxlength="160" placeholder="name@truekindfoundation.org">
+        <label>Photograph</label><input type="file" name="photo" accept="image/*">
+        <p class="bm-hint">A square headshot. Shown as a circle, so keep the face centred. Leave empty to keep the current one.</p>
+        <% if (m.photoUrl) { %>
+          <label class="bm-check"><input type="checkbox" name="removePhoto"> Remove the current photograph</label>
+        <% } %>
+
+        <label>Short note (optional)</label>
+        <textarea name="bio" rows="2" maxlength="600"><%= m.bio || '' %></textarea>
+
+        <div class="bm-row two">
+          <div><label>Facebook</label><input name="facebook" value="<%= m.facebook || '' %>" placeholder="handle or full link"></div>
+          <div><label>LinkedIn</label><input name="linkedin" value="<%= m.linkedin || '' %>" placeholder="handle or full link"></div>
+        </div>
+        <div class="bm-row two">
+          <div><label>X (Twitter)</label><input name="twitter" value="<%= m.twitter || '' %>" placeholder="handle or full link"></div>
+          <div><label>Instagram</label><input name="instagram" value="<%= m.instagram || '' %>" placeholder="handle or full link"></div>
+        </div>
+
+        <div class="bm-row two">
+          <div><label>Order</label><input type="number" name="sortOrder" value="<%= m.sortOrder %>" min="0" max="999"></div>
+          <div><label>&nbsp;</label>
+            <label class="bm-check" style="margin:0;padding:12px 0">
+              <input type="checkbox" name="visible" <%= m.visible ? 'checked' : '' %>> Show on the website
+            </label>
+          </div>
+        </div>
+
+        <div class="bm-acts">
+          <button class="btn btn-primary btn-sm" type="submit">Save changes</button>
+          <span class="grow"></span>
+        </div>
+      </form>
+      <%# Delete is its own form: a submit button inside the edit form would post
+          the edits to the delete route. %>
+      <form method="post" action="/portal/admin/board/<%= m.id %>/delete" style="margin-top:10px">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Delete <%= m.name %></button>
+      </form>
+    </div>
+  <% }) %>
+
+  <div class="bm-card add">
+    <form method="post" action="/portal/admin/board?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <h3 style="margin:0 0 4px">Add a board member</h3>
+      <p class="muted" style="margin:0 0 8px">Only the name is required.</p>
+
+      <div class="bm-row two">
+        <div><label>Name *</label><input name="name" required maxlength="120" placeholder="Full name"></div>
+        <div><label>Designation</label><input name="designation" maxlength="120" placeholder="Chairperson"></div>
+      </div>
+      <label>Email</label><input type="email" name="email" maxlength="160" placeholder="name@truekindfoundation.org">
+      <label>Photograph</label><input type="file" name="photo" accept="image/*">
+      <p class="bm-hint">A square headshot, up to 6 MB. JPG, PNG or WebP.</p>
+
+      <label>Short note (optional)</label>
+      <textarea name="bio" rows="2" maxlength="600" placeholder="One line on what they do on the board."></textarea>
+
+      <div class="bm-row two">
+        <div><label>Facebook</label><input name="facebook" placeholder="handle or full link"></div>
+        <div><label>LinkedIn</label><input name="linkedin" placeholder="handle or full link"></div>
+      </div>
+      <div class="bm-row two">
+        <div><label>X (Twitter)</label><input name="twitter" placeholder="handle or full link"></div>
+        <div><label>Instagram</label><input name="instagram" placeholder="handle or full link"></div>
+      </div>
+
+      <label class="bm-check"><input type="checkbox" name="visible" checked> Show on the website</label>
+
+      <div class="bm-acts">
+        <button class="btn btn-purple btn-sm" type="submit">Add to the board</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+</body></html>

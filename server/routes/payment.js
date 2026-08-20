@@ -23,13 +23,37 @@ router.post('/membership', async (req, res) => {
 
 router.post('/donation', async (req, res) => {
   const { category, amount, ...rest } = req.body;
-  const paise = Math.round(parseFloat(amount) * 100);
-  if (!paise || paise < 100) return res.status(400).send('Enter a valid amount (min ₹1).');
-  const txnId = txn();
   const isMember = !!req.session.userId;
+
+  /* Server-side validation.
+     The form marks these fields required, but `required` is a browser courtesy —
+     anything can POST straight here. Without this check a guest donation could
+     be created with no name and no email, and the receipt built from it would
+     have nobody to send it to. A rejected guest submission goes back to the form
+     with a message instead of a bare 400 page. */
+  const reject = () => isMember
+    ? res.status(400).send('Enter a valid amount (min ₹1).')
+    : res.redirect('/portal/donate?error=invalid');
+
+  const rupees = parseFloat(amount);
+  const paise = Number.isFinite(rupees) ? Math.round(rupees * 100) : 0;
+  if (!paise || paise < 100 || paise > 100000000) return reject();
+
+  const str = v => String(v == null ? '' : v).trim();
+  if (!isMember) {
+    if (str(rest.name).length < 2) return reject();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(str(rest.email))) return reject();
+    if (str(rest.phone).replace(/\D/g, '').length < 8) return reject();
+  }
+
+  /* The category lands on a receipt and in the admin's reporting, so it is
+     matched against the configured list rather than trusted as free text. */
+  const cat = config.donationCategories.includes(category) ? category : 'Where it is needed most';
+
+  const txnId = txn();
   const doc = {
     kind: isMember ? 'member' : 'guest',
-    category: category || 'Where it is needed most',
+    category: cat,
     amount: paise, txnId, status: 'initiated', extra: {}
   };
   if (isMember) doc.userId = req.session.userId;

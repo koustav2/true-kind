@@ -3168,6 +3168,19 @@
    "default": "The board sets strategy, approves budgets and reviews every program twice a year."
   },
   {
+   "id": "about.div.1",
+   "page": "about",
+   "scope": "about",
+   "group": "Chairperson",
+   "label": "Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "CP"
+  },
+  {
    "id": "about.h3.5",
    "page": "about",
    "scope": "about",
@@ -3192,6 +3205,19 @@
     "self": true
    },
    "default": "Sets strategic direction and represents the Foundation publicly."
+  },
+  {
+   "id": "about.div.2",
+   "page": "about",
+   "scope": "about",
+   "group": "Vice Chairperson",
+   "label": "Vice Chairperson — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "VC"
   },
   {
    "id": "about.h3.6",
@@ -3220,6 +3246,19 @@
    "default": "Supports governance and deputises for the Chairperson when needed."
   },
   {
+   "id": "about.div.3",
+   "page": "about",
+   "scope": "about",
+   "group": "Secretary",
+   "label": "Secretary — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "SE"
+  },
+  {
    "id": "about.h3.7",
    "page": "about",
    "scope": "about",
@@ -3244,6 +3283,19 @@
     "self": true
    },
    "default": "Oversees compliance, board records and day-to-day organisational matters."
+  },
+  {
+   "id": "about.div.4",
+   "page": "about",
+   "scope": "about",
+   "group": "Treasurer",
+   "label": "Treasurer — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "TR"
   },
   {
    "id": "about.h3.8",
@@ -3342,16 +3394,16 @@
    }
   },
   {
-   "id": "about.photo.board1",
+   "id": "about.photo.story",
    "page": "about",
    "scope": "about",
    "group": "Photographs",
-   "label": "Chairperson — photograph",
-   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "label": "About Us — photograph",
+   "help": "Landscape, ideally 1600x900 or wider. Replaces the outline drawing under the story.",
    "role": "photograph",
    "type": "image",
    "target": {
-    "selector": "[data-cms-image=\"about.photo.board1\"]"
+    "selector": "[data-cms-image=\"about.photo.story\"]"
    },
    "default": {
     "src": "",
@@ -3359,16 +3411,16 @@
    }
   },
   {
-   "id": "about.photo.board2",
+   "id": "about.icon.mission",
    "page": "about",
    "scope": "about",
    "group": "Photographs",
-   "label": "Vice Chairperson — photograph",
-   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "label": "Our Mission — icon / logo",
+   "help": "Square PNG with a transparent background works best. Shown at 46px, so keep it simple. Leave empty for the current line drawing.",
    "role": "photograph",
    "type": "image",
    "target": {
-    "selector": "[data-cms-image=\"about.photo.board2\"]"
+    "selector": "[data-cms-image=\"about.icon.mission\"]"
    },
    "default": {
     "src": "",
@@ -3376,16 +3428,16 @@
    }
   },
   {
-   "id": "about.photo.board3",
+   "id": "about.icon.vision",
    "page": "about",
    "scope": "about",
    "group": "Photographs",
-   "label": "Secretary — photograph",
-   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "label": "Our Vision — icon / logo",
+   "help": "Square PNG with a transparent background works best. Shown at 46px, so keep it simple. Leave empty for the current line drawing.",
    "role": "photograph",
    "type": "image",
    "target": {
-    "selector": "[data-cms-image=\"about.photo.board3\"]"
+    "selector": "[data-cms-image=\"about.icon.vision\"]"
    },
    "default": {
     "src": "",
@@ -3393,21 +3445,35 @@
    }
   },
   {
-   "id": "about.photo.board4",
+   "id": "about.icon.trust",
    "page": "about",
    "scope": "about",
    "group": "Photographs",
-   "label": "Treasurer — photograph",
-   "help": "A square headshot. Shown as a circle, so keep the face centred.",
+   "label": "How We Earn Trust — icon / logo",
+   "help": "Square PNG with a transparent background works best. Shown at 46px, so keep it simple. Leave empty for the current line drawing.",
    "role": "photograph",
    "type": "image",
    "target": {
-    "selector": "[data-cms-image=\"about.photo.board4\"]"
+    "selector": "[data-cms-image=\"about.icon.trust\"]"
    },
    "default": {
     "src": "",
     "alt": ""
    }
+  },
+  {
+   "id": "about.story.caption",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "About Us photograph — caption",
+   "help": "Optional. Names the place, the programme or the date. Leave empty for no caption.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-figcaption=\"about.story\"]"
+   },
+   "default": ""
   },
   {
    "id": "about.video.story",

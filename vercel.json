@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "//": [
+    "This project is NOT hosted on Vercel any more. The live site is the Express",
+    "app on our own VPS at https://truekind.truehr.co.in.",
+    "",
+    "The Vercel deployment could only ever serve the static HTML: .vercelignore",
+    "excludes server/, so /portal/*, /api/* and /uploads/* have no handler there",
+    "and return Vercel's own 404 NOT_FOUND page. That is exactly what the header",
+    "Donate button hit — /portal/donate 404'd on true-kind-psi.vercel.app while",
+    "working correctly on the real domain.",
+    "",
+    "Patching only /portal would leave the same trap for the content API and the",
+    "uploaded media, so the whole host is redirected instead. Anything that still",
+    "reaches the old Vercel URL lands on the real site at the matching path.",
+    "",
+    "A temporary redirect (307) on purpose: a permanent one would be cached by",
+    "browsers indefinitely, and we would not be able to take the redirect back",
+    "if the deployment is ever repurposed."
+  ],
+
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://truekind.truehr.co.in/$1",
+      "permanent": false
+    }
+  ]
+}

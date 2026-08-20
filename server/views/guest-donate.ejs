@@ -1,70 +1,164 @@
 <%- include('partials/head') %><%- include('partials/nav') %>
-<div class="wrap" style="max-width:680px">
-<p class="eyebrow">Donate</p><h1>Guest donation</h1>
-<p class="muted">Donating without an account — we'll take your full details for the receipt. <a href="/portal/signup">Create an account</a> to track your donations and certificates.</p>
-<div class="card">
-<form method="post" action="/portal/pay/donation"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
-  <div class="grid g2">
-    <div><label>Full name *</label><input name="name" required></div>
-    <div><label>Email *</label><input type="email" name="email" required></div>
-    <div><label>Mobile *</label><input type="tel" name="phone" required></div>
-    <div><label>City</label><input name="city"></div>
-  </div>
-  <label>Address</label><input name="address">
-  <label>Program</label>
-  <select name="category"><% categories.forEach(c => { %><option <%= c === preset.category ? 'selected' : '' %>><%= c %></option><% }) %></select>
+<%#
+  ==========================================================================
+  Donation page.
 
-  <label>Amount (₹) *</label>
-  <%# Preset chips, so the common amounts are one tap on a phone rather than a
-      typed number. The custom box stays — it is the field that actually submits,
-      and the chips only write into it. %>
-  <div class="amt-row">
-    <% presets.forEach(a => { %>
-      <button type="button" class="amt<%= String(a) === String(preset.amount) ? ' on' : '' %>" data-amt="<%= a %>">₹<%= a.toLocaleString('en-IN') %></button>
-    <% }) %>
+  Rebuilt to the shape the client asked for (the Akshaya Patra online-donations
+  page): a banded hero carrying the registration numbers, then one visible form
+  broken into numbered steps — programme, amount, your details — with a sticky
+  running summary beside it.
+
+  Two deliberate omissions from that reference page:
+
+  1. NO optional add-on band. Their page offers a second, pre-ticked programme
+     with its own amount, added on top of what you chose. The client said it is
+     not wanted, and a pre-ticked charge nobody asked for is a dark pattern
+     anyway.
+  2. NO monthly/one-time toggle. There is no recurring-billing anything behind
+     this form — one PhonePe transaction per submission — so a "monthly" tab
+     would be a control that lies. When standing instructions exist, it belongs
+     here; not before.
+
+  Works with JavaScript switched off. The programme is a radio group and the
+  amount is a number input, so both submit on their own. The amount cards and
+  the live summary are accelerators layered on top, never the input itself.
+  ==========================================================================
+%>
+<%- include('partials/donate-css') %>
+
+<div class="don-hero">
+  <div class="don-hero-in">
+    <p class="eyebrow">Donate</p>
+    <h1>Give once. Ask us any time where it went.</h1>
+    <p>Every contribution is assigned to a named programme with a published budget line. You get a receipt with a reference number you can quote back to us.</p>
+    <ul class="don-trust">
+      <li class="on">80G tax deduction eligible</li>
+      <li>Reg. No <%= org.regNo %></li>
+      <li>NGO Darpan <%= org.darpan %></li>
+      <li>PAN <%= org.pan %></li>
+    </ul>
   </div>
-  <input type="number" name="amount" id="amount" min="1" required
-         value="<%= preset.amount || '' %>" placeholder="Or enter any amount">
-  <h3 style="margin-top:26px;font-size:1rem">For tax deduction (optional)</h3>
-  <div class="grid g3">
-    <div><label>PAN</label><input name="pan"></div>
-    <div><label>Bank name</label><input name="bankName"></div>
-    <div><label>Branch</label><input name="branchName"></div>
-  </div>
-  <% extraFields.forEach(f => { %>
-    <label><%= f.label %><%= f.required ? ' *' : '' %></label>
-    <% if (f.type === 'select') { %>
-      <select name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
-    <% } else if (f.type === 'textarea') { %>
-      <textarea name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
-    <% } else { %>
-      <input type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+</div>
+
+<div class="don-wrap">
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert err"><%= error %></div>
+<% } %>
+
+<%# No `novalidate` here on purpose: with JavaScript blocked the browser's own
+    required/email checks are the only ones between the donor and a broken
+    submission. The script sets novalidate once it is certainly running, and
+    takes the checks over so it can scroll to the offending field. %>
+<form method="post" action="/portal/pay/donation" class="don-grid" id="donform">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <div>
+    <%# ---- step 1: programme ------------------------------------------- %>
+    <section class="don-step">
+      <h2><span class="don-num" aria-hidden="true">1</span> Choose a programme</h2>
+      <p class="muted">Pick where this should go, or leave it to us.</p>
+      <div class="cause-grid">
+        <% categories.forEach((c, i) => {
+             const checked = preset.category ? c === preset.category : i === 0; %>
+          <label class="cause">
+            <input type="radio" name="category" value="<%= c %>" <%= checked ? 'checked' : '' %>>
+            <b><%= c %></b>
+            <% if (blurbs[c]) { %><span><%= blurbs[c] %></span><% } %>
+          </label>
+        <% }) %>
+      </div>
+    </section>
+
+    <%# ---- step 2: amount ---------------------------------------------- %>
+    <section class="don-step">
+      <h2><span class="don-num" aria-hidden="true">2</span> Choose an amount</h2>
+      <p class="muted">Tap a figure or type your own.</p>
+      <div class="amt-grid">
+        <% presets.forEach(a => { %>
+          <button type="button" class="amt-card" data-amt="<%= a %>"
+                  aria-pressed="<%= String(a) === String(preset.amount) ? 'true' : 'false' %>">
+            <b>₹<%= a.toLocaleString('en-IN') %></b>
+            <% if (impact[a]) { %><span><%= impact[a] %></span><% } %>
+          </button>
+        <% }) %>
+      </div>
+      <div class="amt-custom">
+        <label for="amount">Amount in ₹ *</label>
+        <input type="number" name="amount" id="amount" min="1" step="1" required
+               inputmode="numeric" value="<%= preset.amount || '' %>"
+               placeholder="Any amount">
+      </div>
+      <p class="amt-note">Cost figures above are indicative — they are how these programmes are currently budgeted, not a claim about where one particular donation ends up.</p>
+    </section>
+
+    <%# ---- step 3: donor details --------------------------------------- %>
+    <section class="don-step">
+      <h2><span class="don-num" aria-hidden="true">3</span> Your details</h2>
+      <p class="muted">Needed for the receipt. <a href="/portal/signup">Create an account</a> if you would like your donations and certificates kept in one place.</p>
+      <div class="grid g2">
+        <div><label for="d-name">Full name *</label><input id="d-name" name="name" autocomplete="name" required></div>
+        <div><label for="d-email">Email *</label><input id="d-email" type="email" name="email" autocomplete="email" required></div>
+        <div><label for="d-phone">Mobile *</label><input id="d-phone" type="tel" name="phone" autocomplete="tel" required></div>
+        <div><label for="d-city">City</label><input id="d-city" name="city" autocomplete="address-level2"></div>
+      </div>
+      <label for="d-addr">Address</label>
+      <input id="d-addr" name="address" autocomplete="street-address">
+    </section>
+
+    <%# ---- tax details, folded away ------------------------------------ %>
+    <details class="don-tax">
+      <summary>Claim 80G tax deduction (optional)</summary>
+      <div class="don-tax-body">
+        <p class="muted">Give us your PAN and the receipt will carry the details your accountant needs.</p>
+        <div class="grid g3">
+          <div><label for="d-pan">PAN</label><input id="d-pan" name="pan" autocomplete="off" spellcheck="false"></div>
+          <div><label for="d-bank">Bank name</label><input id="d-bank" name="bankName"></div>
+          <div><label for="d-branch">Branch</label><input id="d-branch" name="branchName"></div>
+        </div>
+      </div>
+    </details>
+
+    <% if (extraFields.length) { %>
+      <section class="don-step">
+        <h2><span class="don-num" aria-hidden="true">4</span> A few more questions</h2>
+        <% extraFields.forEach((f, i) => { %>
+          <label for="x-<%= i %>"><%= f.label %><%= f.required ? ' *' : '' %></label>
+          <% if (f.type === 'select') { %>
+            <select id="x-<%= i %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>><% f.options.forEach(o => { %><option><%= o %></option><% }) %></select>
+          <% } else if (f.type === 'textarea') { %>
+            <textarea id="x-<%= i %>" name="x_<%= f.name %>" rows="3" <%= f.required?'required':'' %>></textarea>
+          <% } else { %>
+            <input id="x-<%= i %>" type="<%= f.type %>" name="x_<%= f.name %>" <%= f.required?'required':'' %>>
+          <% } %>
+        <% }) %>
+      </section>
     <% } %>
-  <% }) %>
-  <div style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue to payment</button></div>
+  </div>
+
+  <%# ---- running summary --------------------------------------------- %>
+  <aside class="don-side">
+    <div class="don-sum">
+      <h3>Your donation</h3>
+      <dl>
+        <div><dt>Programme</dt><dd data-sum="cause">—</dd></div>
+        <div><dt>Amount</dt><dd class="big" data-sum="amount">₹—</dd></div>
+      </dl>
+      <hr>
+      <button class="btn btn-primary" type="submit">Proceed to payment</button>
+      <p class="don-secure">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 018 0v3"></path></svg>
+        Card, UPI and netbanking via PhonePe. We never see your card details.
+      </p>
+      <%# Deliberately does NOT say "emailed": there is no mail sender in this
+          application. The receipt is rendered on the return page with a
+          permanent link and a PDF, which is what actually happens. %>
+      <p class="fine">Your receipt is issued the moment the payment clears — shown on screen, downloadable as a PDF, and kept at its own permanent link.</p>
+    </div>
+  </aside>
 </form>
+
+<p class="don-foot">Donations to <%= org.name %> are eligible for tax deduction where our 80G registration applies. Prefer a bank transfer? Account details are published on the <a href="/donate.html#bank">Donate page</a>. Questions: <a href="mailto:<%= org.email %>"><%= org.email %></a>.</p>
 </div>
-<p class="muted">Donations to True Kind Foundation are eligible for tax deduction where our 80G registration applies. Enter your PAN above and the receipt will carry the details.</p>
-</div>
-<script>
-/* Amount chips write into the number field. The field is what submits, so if
-   this script never runs the form is still fully usable — the chips are an
-   accelerator, not the input. */
-(function () {
-  var box = document.getElementById('amount');
-  var chips = [].slice.call(document.querySelectorAll('.amt'));
-  chips.forEach(function (c) {
-    c.addEventListener('click', function () {
-      box.value = c.getAttribute('data-amt');
-      chips.forEach(function (o) { o.classList.toggle('on', o === c); });
-      box.focus();
-    });
-  });
-  /* Typing a custom amount clears the chip selection, so the highlight never
-     contradicts the value in the box. */
-  box.addEventListener('input', function () {
-    chips.forEach(function (o) { o.classList.toggle('on', o.getAttribute('data-amt') === box.value); });
-  });
-})();
-</script>
+
+<%- include('partials/donate-js') %>
 </body></html>

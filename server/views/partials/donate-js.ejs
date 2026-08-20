@@ -1,0 +1,63 @@
+<%# Shared behaviour for the two donation forms. Included by guest-donate.ejs
+    and member/donate.ejs so the amount cards, the live summary and the
+    validation handoff behave identically on both. %>
+<script>
+/* Progressive enhancement only.
+
+   - The amount cards write into #amount. That number field is what submits, so
+     with this script blocked the page is still a working donation form.
+   - The summary mirrors the two fields; it is display, never input.
+   - novalidate is set from HERE, not in the markup: it must only take effect
+     once we know this script is running, otherwise blocking JS would strip the
+     form of native validation as well.
+*/
+(function () {
+  var form  = document.getElementById('donform');
+  var box   = document.getElementById('amount');
+  var cards = [].slice.call(document.querySelectorAll('.amt-card'));
+  var sumC  = document.querySelector('[data-sum="cause"]');
+  var sumA  = document.querySelector('[data-sum="amount"]');
+  if (!form || !box) return;
+
+  var fmt = new Intl.NumberFormat('en-IN');
+
+  function paint() {
+    var v = parseInt(box.value, 10);
+    if (sumA) sumA.textContent = (Number.isFinite(v) && v > 0) ? '₹' + fmt.format(v) : '₹—';
+    cards.forEach(function (c) {
+      c.setAttribute('aria-pressed', c.getAttribute('data-amt') === box.value ? 'true' : 'false');
+    });
+    var picked = form.querySelector('input[name="category"]:checked');
+    if (sumC) sumC.textContent = picked ? picked.value : '—';
+  }
+
+  cards.forEach(function (c) {
+    c.addEventListener('click', function () {
+      box.value = c.getAttribute('data-amt');
+      paint();
+    });
+  });
+  box.addEventListener('input', paint);
+  form.addEventListener('change', paint);
+  paint();
+
+  /* Take over validation now that we are certainly running, so an invalid field
+     is scrolled to and focused rather than reported in a bubble beside a button
+     that may be pinned off-screen. */
+  form.setAttribute('novalidate', '');
+  form.addEventListener('submit', function (e) {
+    var bad = null;
+    [].slice.call(form.elements).forEach(function (el) {
+      if (bad || !el.willValidate) return;
+      if (!el.checkValidity()) bad = el;
+    });
+    var v = parseInt(box.value, 10);
+    if (!bad && (!Number.isFinite(v) || v < 1)) bad = box;
+    if (bad) {
+      e.preventDefault();
+      bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      bad.focus({ preventScroll: true });
+    }
+  });
+})();
+</script>

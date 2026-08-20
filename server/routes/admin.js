@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { fn, col } = require('sequelize');
 const { requireAdmin } = require('../middleware/auth');
 const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, Volunteer, Enquiry,
-        UserAccess, VolunteerLogin, CertificateFile } = require('../models');
+        UserAccess, VolunteerLogin, CertificateFile, BoardMember } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { serial } = require('../utils/codes');
@@ -364,6 +364,140 @@ router.post('/certificates/:id/file/delete', async (req, res) => {
     require('fs').promises.unlink(require('path').join(UPLOAD_DIR, name)).catch(() => {});
   }
   res.redirect(`/portal/admin/certificates/${req.params.id}`);
+});
+
+/* ==========================================================================
+   Board of trustees — the admin side of the About page's "Our Board" section.
+
+   Photo upload, name, designation, email, an optional short note and the four
+   social handles the client asked for. Order and visibility are per-person, so
+   a trustee can be taken off the website without deleting the record.
+   ========================================================================== */
+
+const BOARD_ORDER = [['sortOrder', 'ASC'], ['id', 'ASC']];
+
+/* A social field accepts a full URL or a bare handle. Handles are far more
+   likely to be what someone types, and "koustav" is not a link — so it is
+   expanded against the right host. Anything that is a URL but not http(s) is
+   dropped: a javascript: or data: value here would end up in an href on the
+   public page. */
+const SOCIAL_HOSTS = {
+  facebook:  'https://www.facebook.com/',
+  linkedin:  'https://www.linkedin.com/in/',
+  twitter:   'https://x.com/',
+  instagram: 'https://www.instagram.com/'
+};
+function socialUrl(kind, raw) {
+  const v = String(raw == null ? '' : raw).trim();
+  if (!v) return null;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(v) || v.startsWith('//')) {
+    // Looks like a URL (or a protocol-relative one) — only http(s) may pass.
+    let u;
+    try { u = new URL(v.startsWith('//') ? 'https:' + v : v); } catch (e) { return null; }
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : null;
+  }
+  if (v.includes('/') || v.includes('.')) {
+    // A bare domain path like "facebook.com/someone" — assume https.
+    try { return new URL('https://' + v).href; } catch (e) { return null; }
+  }
+  return SOCIAL_HOSTS[kind] + encodeURIComponent(v.replace(/^@/, ''));
+}
+
+function boardFields(body) {
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+  const order = parseInt(body.sortOrder, 10);
+  return {
+    name:        s(body.name, 120),
+    designation: s(body.designation, 120),
+    // Not validated as strictly as the donor email: this is an admin typing a
+    // colleague's address, and a mailto: with a typo is a smaller problem than
+    // a form that refuses a valid unusual address.
+    email:       s(body.email, 160),
+    bio:         s(body.bio, 600),
+    facebook:    socialUrl('facebook',  body.facebook),
+    linkedin:    socialUrl('linkedin',  body.linkedin),
+    twitter:     socialUrl('twitter',   body.twitter),
+    instagram:   socialUrl('instagram', body.instagram),
+    sortOrder:   Number.isFinite(order) ? Math.max(0, Math.min(999, order)) : 0,
+    visible:     body.visible === 'on' || body.visible === 'true' || body.visible === '1'
+  };
+}
+
+/* Photographs live in the same uploads directory as everything else. Dropping a
+   row's old file on replace keeps the directory from growing with every edit;
+   the unlink is best-effort because a missing file must never fail the save. */
+function dropPhoto(name) {
+  if (!name) return;
+  require('fs').promises.unlink(require('path').join(UPLOAD_DIR, name)).catch(() => {});
+}
+
+router.get('/board', async (req, res) => {
+  const members = await BoardMember.findAll({ order: BOARD_ORDER });
+  res.render('admin/board', {
+    title: 'Board', members,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+const boardPhoto = (req, res, next) => {
+  uploadImage.single('photo')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error',
+      { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+};
+
+router.post('/board', boardPhoto, async (req, res) => {
+  const data = boardFields(req.body);
+  if (!data.name) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/board?error=name');
+  }
+  if (req.file) {
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  }
+  // A new person goes to the end of the list unless an order was typed.
+  if (!req.body.sortOrder) {
+    const last = await BoardMember.max('sortOrder');
+    data.sortOrder = (Number.isFinite(last) ? last : 0) + 10;
+  }
+  await BoardMember.create(data);
+  res.redirect('/portal/admin/board?saved=1');
+});
+
+router.post('/board/:id', boardPhoto, async (req, res) => {
+  const m = await BoardMember.findByPk(req.params.id);
+  if (!m) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.status(404).send('No such board member');
+  }
+  const data = boardFields(req.body);
+  if (!data.name) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/board?error=name');
+  }
+  if (req.file) {
+    dropPhoto(m.photoFile);
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  } else if (req.body.removePhoto === 'on') {
+    dropPhoto(m.photoFile);
+    data.photoUrl = null;
+    data.photoFile = null;
+  }
+  await m.update(data);
+  res.redirect('/portal/admin/board?saved=1');
+});
+
+router.post('/board/:id/delete', async (req, res) => {
+  const m = await BoardMember.findByPk(req.params.id);
+  if (m) {
+    const file = m.photoFile;
+    await m.destroy();
+    dropPhoto(file);
+  }
+  res.redirect('/portal/admin/board?saved=1');
 });
 
 module.exports = router;

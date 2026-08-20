@@ -1,7 +1,7 @@
 {
   "name": "true-kind-portal",
   "version": "1.0.0",
-  "description": "True Kind Foundation \u2014 public site + member/admin portal",
+  "description": "True Kind Foundation — public site + member/admin portal",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
@@ -11,7 +11,9 @@
     "smoke": "node server/scripts/smoke.js",
     "cms:smoke": "node server/scripts/cms-smoke.js",
     "ui:smoke": "node server/scripts/admin-ui-smoke.js",
-    "donate:smoke": "node server/scripts/donate-btn-smoke.js"
+    "donate:smoke": "node server/scripts/donate-btn-smoke.js",
+    "board:smoke": "node server/scripts/board-smoke.js",
+    "board:render": "node server/scripts/board-render-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",

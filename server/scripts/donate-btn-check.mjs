@@ -95,6 +95,50 @@ for (const w of [1440, 900, 390]) {
   await rc.close();
 }
 
+// ---- the reported bug: the button on a host that has no /portal ------------
+//
+// The client hit /portal/donate 404ing on true-kind-psi.vercel.app, where
+// .vercelignore excludes server/ so nothing can serve it. vercel.json now
+// redirects that whole host, and main.js rewrites portal links on ANY foreign
+// origin as a second line of defence. This serves the real pages under the
+// Vercel hostname to prove the rewrite fires there and NOT on the app itself.
+{
+  const FOREIGN='http://true-kind-psi.vercel.app';
+  const ctx=await b.newContext({viewport:{width:1440,height:900}});
+  await ctx.route('**/*', async r=>{
+    const u=r.request().url();
+    if(u.startsWith(FOREIGN)){
+      // Serve the genuine file from the app, under the foreign hostname.
+      const res=await fetch(B+u.slice(FOREIGN.length));
+      return r.fulfill({status:res.status,
+        contentType:res.headers.get('content-type')||'text/html',
+        body:Buffer.from(await res.arrayBuffer())});
+    }
+    return u.startsWith(B)?r.continue():r.abort();
+  });
+  const p=await ctx.newPage();
+  await p.goto(FOREIGN+'/index.html',{waitUntil:'domcontentloaded'});
+  const href=await p.getAttribute('[data-nav-donate]','href');
+  ck('on a foreign host the donate link becomes absolute',
+     href==='https://truekind.truehr.co.in/portal/donate', String(href));
+  await p.goto(FOREIGN+'/donate.html',{waitUntil:'domcontentloaded'});
+  const tiers=await p.locator('a[href*="/portal/donate?"]').evaluateAll(
+    els=>els.map(e=>e.getAttribute('href')));
+  ck('cost-tier links are rewritten too, query string intact',
+     tiers.length===3 && tiers.every(h=>h.startsWith('https://truekind.truehr.co.in/portal/donate?amount=')),
+     tiers.join(' '));
+  await ctx.close();
+}
+{
+  const ctx=await b.newContext({viewport:{width:1440,height:900}});
+  await ctx.route('**/*',r=>r.request().url().startsWith(B)?r.continue():r.abort());
+  const p=await ctx.newPage();
+  await p.goto(B+'/index.html',{waitUntil:'domcontentloaded'});
+  ck('on the app itself the link is left relative',
+     (await p.getAttribute('[data-nav-donate]','href'))==='/portal/donate');
+  await ctx.close();
+}
+
 // ---- it actually works: click through to a completed donation -------------
 {
   const ctx=await b.newContext({viewport:{width:1440,height:900}});
@@ -108,8 +152,16 @@ for (const w of [1440, 900, 390]) {
   await p.fill('input[name="name"]','Header Donor');
   await p.fill('input[name="email"]','hd@test.org');
   await p.fill('input[name="phone"]','9876543210');
-  await p.locator('.amt', {hasText:'₹1,500'}).click();
-  ck('preset chip fills the amount', (await p.inputValue('#amount'))==='1500');
+  // The chips are amount CARDS now — the ₹ figure plus the line it is costed
+  // against — so the selector follows the rebuilt page.
+  await p.locator('.amt-card', {hasText:'₹1,500'}).click();
+  ck('amount card fills the amount', (await p.inputValue('#amount'))==='1500');
+  ck('amount card marks itself pressed',
+     (await p.locator('.amt-card[aria-pressed="true"]').count())===1);
+  ck('running summary follows the amount',
+     (await p.locator('[data-sum="amount"]').innerText()).replace(/\s/g,'')==='₹1,500');
+  ck('running summary follows the programme',
+     (await p.locator('[data-sum="cause"]').innerText()).trim()==='Skill Development');
   await p.click('button[type="submit"]');
   await p.waitForLoadState('domcontentloaded');
   ck('reaches the payment step', /pay\/mock/.test(p.url()), p.url());

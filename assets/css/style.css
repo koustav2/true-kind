@@ -1002,6 +1002,12 @@ header.site::after{
   object-fit:cover; object-position:center;
   display:block;
 }
+/* An unfilled slot ships its <img> with the `hidden` attribute, and the browser's
+   own [hidden]{display:none} is a type selector — so `display:block` above beat
+   it, and all 26 empty slots were laying a full-size src-less <img> over their
+   illustration. Invisible, but it sat on top of the artwork and could swallow a
+   click. This puts `hidden` back in charge. */
+.cms-photo[hidden]{ display:none; }
 /* Hide whatever the container was showing before — a line drawing, or the
    initials in an avatar circle. The tag label on a programme card stays: it
    still needs to sit over the photograph. */
@@ -1014,6 +1020,36 @@ header.site::after{
 /* Circular slots (board and participant avatars) keep their ring. */
 .cms-photo-round{ border-radius:50%; }
 .cms-photo-round .cms-photo{ border-radius:50%; }
+
+/* The three "what guides us" marks are the one place an admin uploads a LOGO
+   rather than a photograph, and a logo cropped to fill a square is a broken
+   logo — so these fit inside the box instead of covering it. The box also grows
+   a little once real artwork is in it: 38px suits a 1.4px line drawing and is
+   too tight for a mark that carries its own padding. */
+.mvv-icon .cms-photo{ object-fit:contain; }
+.mvv-icon.has-photo{ width:46px; height:46px; }
+
+/* About-page photograph — a wide picture under the "why we exist" story.
+   Empty is a legitimate state, so the container is never blank: it shows an
+   outline drawing until a real photograph replaces it. */
+.about-figure{ margin:var(--sp-6) 0 0; }
+.about-figure-media{
+  position:relative; aspect-ratio:16/9;
+  border:1px solid var(--rule); border-radius:var(--radius);
+  background:var(--paper-3); overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.about-figure-media > svg{
+  /* 0.8, not 0.5: at half opacity the outline was 2.0:1 against the panel and
+     read as a smudge rather than a drawing. 0.8 puts it at 3.4:1. */
+  width:54%; max-width:270px; height:auto; opacity:0.8;
+  stroke:var(--text-mute); fill:none; stroke-width:1.1;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.about-figure figcaption{
+  margin:var(--sp-3) 0 0;
+  font-size:var(--fs-xs); color:var(--text-soft); line-height:1.6;
+}
 
 /* Program cards — quiet tinted panels, brand colour in the linework only */
 .work-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-5); }
@@ -1103,6 +1139,36 @@ header.site::after{
   color:var(--text-mute); margin:0 0 var(--sp-2);
 }
 .board-card p:last-child{ margin:0; font-size:var(--fs-xs); color:var(--text-soft); }
+
+/* An admin-managed board card carries an email address and up to four social
+   links; the four placeholder cards in about.html carry neither, so these rules
+   only ever apply to real people. */
+/* The placeholder cards get their description styled by `p:last-child`; on a
+   real trustee the last child is the social row, so the note needs its own
+   rule to match. */
+.board-bio{ margin:0; font-size:var(--fs-xs); color:var(--text-soft); }
+.board-mail{ margin:0; font-size:var(--fs-xs); }
+.board-mail a{
+  color:var(--blue); text-decoration:none;
+  border-bottom:1px solid rgba(2,118,172,0.32);
+}
+.board-mail a:hover, .board-mail a:focus-visible{ border-bottom-color:currentColor; }
+.board-social{ display:flex; gap:9px; margin-top:var(--sp-2); }
+.board-social a{
+  display:inline-flex; width:27px; height:27px;
+  align-items:center; justify-content:center;
+  border:1px solid var(--rule-strong); border-radius:50%;
+  color:var(--text-mute);
+}
+.board-social a:hover, .board-social a:focus-visible{
+  border-color:var(--brand-blue); color:var(--blue);
+}
+.board-social svg{
+  width:14px; height:14px;
+  stroke:currentColor; fill:none;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+
 @media (max-width:900px){ .board-grid{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:520px){ .board-grid{ grid-template-columns:1fr; } }
 

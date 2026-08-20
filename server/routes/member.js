@@ -40,7 +40,14 @@ router.get('/card/pdf', async (req, res) => {
 // 2. Add donation
 router.get('/donate', async (req, res) => {
   const form = await FormConfig.findOne({ where: { formKey: 'donation' } });
-  res.render('member/donate', { title: 'Add donation', categories: config.donationCategories, extraFields: form ? form.fields : [] });
+  res.render('member/donate', {
+    title: 'Add donation',
+    categories: config.donationCategories,
+    extraFields: form ? form.fields : [],
+    presets: config.donationPresets,
+    blurbs: config.donationCategoryBlurbs || {},
+    impact: config.donationImpact || {}
+  });
 });
 
 // 3. Donation list → certificate per donation

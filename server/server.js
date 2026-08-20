@@ -74,7 +74,7 @@ app.get('/portal', (req, res) =>
 
 // Guest donation + guest receipt
 const config = require('./config');
-const { Donation, FormConfig, SiteContent, Volunteer, Enquiry } = require('./models');
+const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember } = require('./models');
 const { qrDataUrl, barcodeDataUrl } = require('./utils/codes');
 const { receiptPdf } = require('./utils/pdf');
 app.get('/portal/donate', async (req, res) => {
@@ -91,7 +91,16 @@ app.get('/portal/donate', async (req, res) => {
   };
   res.render('guest-donate', {
     title: 'Donate', categories: config.donationCategories, extraFields, preset,
-    presets: config.donationPresets
+    presets: config.donationPresets,
+    blurbs: config.donationCategoryBlurbs || {},
+    impact: config.donationImpact || {},
+    org: config.org,
+    // Set when the server rejected a submission (see routes/payment.js), so the
+    // donor comes back to a form that says what went wrong rather than a bare
+    // 400 page.
+    error: req.query.error === 'invalid'
+      ? 'Please check your details — we need a name, a working email address, a mobile number and an amount of at least ₹1.'
+      : null
   });
 });
 app.get('/portal/receipt/:txnId', async (req, res) => {
@@ -204,6 +213,33 @@ app.get('/api/cms/:page', async (req, res) => {
     res.set('Cache-Control', 'no-cache');
     res.json(bundle);
   } catch (e) { res.status(500).json({ page: req.params.page, fields: {} }); }
+});
+
+/* The board of trustees, for the About page.
+   A separate endpoint rather than part of the CMS bundle because it is a LIST of
+   unknown length, and the CMS bundle is a map of known field ids. Only visible
+   rows are exposed, and only the fields the page renders — no internal ids, no
+   on-disk filenames. On any failure this returns an empty list, and about.html
+   keeps the four cards already in its markup. */
+app.get('/api/board', async (req, res) => {
+  try {
+    const rows = await BoardMember.findAll({
+      where: { visible: true },
+      order: [['sortOrder', 'ASC'], ['id', 'ASC']]
+    });
+    res.set('Cache-Control', 'no-cache');
+    res.json({ ok: true, members: rows.map(m => ({
+      name: m.name,
+      designation: m.designation || '',
+      email: m.email || '',
+      photo: m.photoUrl || '',
+      bio: m.bio || '',
+      social: {
+        facebook: m.facebook || '', linkedin: m.linkedin || '',
+        twitter: m.twitter || '', instagram: m.instagram || ''
+      }
+    })) });
+  } catch (e) { res.status(500).json({ ok: false, members: [] }); }
 });
 
 // --------------------------------------------------------------------------

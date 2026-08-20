@@ -1,0 +1,138 @@
+<%# Shared styles for the two donation forms — the guest page (/portal/donate)
+    and the signed-in member page (/portal/member/donate). One copy so the two
+    cannot drift apart visually. %>
+<style>
+/* Page-scoped: nothing else in the portal uses these. */
+.don-hero{
+  background:linear-gradient(150deg,#1B2A38 0%,#2A1B3D 55%,#3B1420 100%);
+  color:#fff; padding:44px 24px 40px; margin-bottom:0;
+}
+.don-hero-in{max-width:1060px;margin:0 auto}
+.don-hero .eyebrow{color:#F0B9C2;margin-bottom:10px}
+.don-hero h1{color:#fff;margin:0 0 10px;font-size:clamp(1.7rem,3.4vw,2.5rem)}
+.don-hero p{margin:0;max-width:60ch;color:rgba(255,255,255,.82);font-size:.95rem}
+.don-trust{
+  list-style:none;display:flex;flex-wrap:wrap;gap:8px;
+  margin:20px 0 0;padding:0;
+}
+/* .34 alpha lands exactly on 3.00:1 over the hero's darkest stop; .42 gives
+   3.8:1 and clears it without argument. */
+.don-trust li{
+  font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:6px 12px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.42);color:rgba(255,255,255,.92);
+}
+.don-trust li.on{background:rgba(89,179,6,.28);border-color:rgba(139,220,60,.6)}
+
+.don-wrap{max-width:1060px;margin:0 auto;padding:30px 24px 80px}
+.don-grid{display:grid;gap:30px;align-items:start}
+@media(min-width:960px){.don-grid{grid-template-columns:minmax(0,1fr) 322px}}
+
+.don-step{
+  background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:22px 24px 26px;margin:0 0 18px;
+}
+.don-step > h2{
+  display:flex;align-items:center;gap:11px;
+  font-size:1.08rem;margin:0 0 4px;
+}
+.don-num{
+  flex:none;width:26px;height:26px;border-radius:50%;
+  background:var(--purple);color:#fff;
+  font:500 .8rem 'Work Sans',sans-serif;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.don-step > .muted{margin:0 0 16px}
+
+/* ---- programme cards ---- */
+.cause-grid{display:grid;gap:10px}
+@media(min-width:620px){.cause-grid{grid-template-columns:1fr 1fr}}
+.cause{
+  display:block;position:relative;cursor:pointer;
+  border:1px solid var(--rule-strong);border-radius:var(--radius-sm);
+  padding:14px 16px 14px 44px;margin:0;
+  font-weight:400;font-size:inherit;color:inherit;
+}
+.cause:hover{border-color:var(--purple)}
+.cause input{
+  position:absolute;left:16px;top:16px;width:16px;height:16px;
+  accent-color:var(--purple);margin:0;padding:0;
+}
+.cause b{display:block;font-weight:500;font-size:.93rem;color:var(--ink)}
+.cause span{display:block;font-size:.79rem;color:var(--text-soft);margin-top:3px;line-height:1.5}
+.cause:has(input:checked){border-color:var(--purple);background:rgba(125,74,177,.055);box-shadow:inset 0 0 0 1px var(--purple)}
+.cause:focus-within{outline:2px solid var(--purple);outline-offset:2px}
+
+/* ---- amount cards ---- */
+.amt-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+/* Border at rgba(17,24,39,.5) = 3.38:1 against white, not the site's usual
+   hairline. WCAG 1.4.11 wants 3:1 for anything needed to identify a control,
+   and on these cards the outline IS the affordance — there is nothing else
+   saying "button". The programme cards below keep the lighter hairline because
+   each one contains a real radio input, which identifies it on its own. */
+.amt-card{
+  text-align:left;cursor:pointer;width:auto;
+  border:1px solid rgba(17,24,39,.5);border-radius:var(--radius-sm);
+  background:var(--paper);padding:14px 16px;font:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:4px;
+}
+.amt-card:hover{border-color:var(--purple)}
+.amt-card b{font:500 1.15rem 'Fraunces',Georgia,serif;color:var(--ink);letter-spacing:-.01em}
+.amt-card span{font-size:.75rem;color:var(--text-soft);line-height:1.45}
+.amt-card[aria-pressed="true"]{
+  border-color:var(--purple);background:rgba(125,74,177,.06);
+  box-shadow:inset 0 0 0 1px var(--purple);
+}
+.amt-custom{margin-top:16px;max-width:280px}
+.amt-note{font-size:.78rem;color:var(--text-soft);margin:12px 0 0}
+
+/* ---- tax block ---- */
+.don-tax{
+  background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:0;margin:0 0 18px;
+}
+.don-tax > summary{
+  padding:18px 24px;cursor:pointer;font-weight:500;font-size:.95rem;
+  list-style:none;display:flex;align-items:center;gap:10px;
+}
+.don-tax > summary::-webkit-details-marker{display:none}
+.don-tax > summary::before{content:'\25B8';color:var(--purple);font-size:.8rem;transition:transform .15s}
+.don-tax[open] > summary::before{transform:rotate(90deg)}
+.don-tax-body{padding:0 24px 24px;border-top:1px solid var(--rule);margin-top:-1px}
+
+/* ---- sticky summary ---- */
+.don-side{display:flex;flex-direction:column;gap:14px}
+@media(min-width:960px){.don-side{position:sticky;top:84px}}
+.don-sum{
+  background:var(--paper);border:1px solid var(--rule-strong);
+  border-radius:var(--radius);padding:20px 22px 22px;
+}
+.don-sum h3{font-size:1rem;margin:0 0 14px}
+.don-sum dl{margin:0;display:grid;gap:11px}
+.don-sum dt{
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-soft);margin:0 0 2px;
+}
+.don-sum dd{margin:0;font-size:.9rem;color:var(--ink)}
+.don-sum dd.big{font:500 1.6rem 'Fraunces',Georgia,serif;letter-spacing:-.02em;
+  font-variant-numeric:proportional-nums}
+.don-sum hr{border:0;border-top:1px solid var(--rule);margin:16px 0}
+.don-sum .btn{width:100%}
+.don-sum .fine{font-size:.74rem;color:var(--text-soft);margin:12px 0 0;line-height:1.55}
+.don-secure{
+  display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--text-soft);
+  margin:12px 0 0;
+}
+.don-secure svg{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:1.8;flex:none}
+
+.don-foot{font-size:.8rem;color:var(--text-soft);margin:22px 0 0;max-width:70ch;line-height:1.65}
+
+@media(max-width:600px){
+  .don-hero{padding:30px 16px 28px}
+  .don-wrap{padding:22px 16px 60px}
+  .don-step{padding:18px 16px 22px}
+  .don-tax > summary{padding:15px 16px}
+  .don-tax-body{padding:0 16px 18px}
+  .don-sum{padding:17px 17px 19px}
+}
+</style>
