@@ -117,7 +117,9 @@ to step 4 and push this one.
 ### 7. Fix two values in `.env`
 
 ```bash
-# The Vercel CORS grant is dead — the site is served by this server now
+# ALLOWED_ORIGINS must be EMPTY. This server serves the site, so /api is
+# same-origin and needs no CORS grant at all. Anything listed here is a
+# cross-origin read grant on the public content API — don't hand one out.
 sed -i 's|^ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=|' .env
 
 # APP_BASE_URL must match the scheme people actually reach the site on.
@@ -322,21 +324,19 @@ tar czf ~/truekind-uploads-$(date +%F).tar.gz -C /opt/truekind uploads
 every play. A pasted YouTube/Vimeo link costs you nothing. For anything longer
 than about a minute, or anything you expect real traffic on, use the link.
 
-**The Vercel deployment now redirects here.** `.vercelignore` excluded
-`server/`, so that host could only ever serve the static HTML — `/portal/*`,
-`/api/*` and `/uploads/*` all returned Vercel's 404 page. That is what the
-header Donate button hit: `true-kind-psi.vercel.app/portal/donate` 404'd while
-the same button worked on this domain.
+**There is one host, and it is this VPS.** The static pages, `/api`, `/uploads`
+and the whole `/portal` admin are one Express process behind nginx. No
+third-party static host, no separate API gateway, no second deployment target.
 
-`vercel.json` now redirects **every** path on that host to
-`https://truekind.truehr.co.in/<same path>` with a temporary (307) redirect, so
-anyone holding an old link lands in the right place. Temporary, not permanent,
-so browsers do not cache it forever if you ever want that project back.
+This is a design requirement, not a preference. Click-to-edit authenticates with
+the session cookie, and a cross-origin `fetch` never receives it — so splitting
+the static pages onto another host cannot work regardless of CORS settings. That
+is why nothing in the front-end hardcodes a domain: every path is relative, so
+moving the site is a DNS change and nothing else.
 
-If you would rather be rid of it entirely, delete the project in the Vercel
-dashboard. Nothing here depends on it. `assets/js/main.js` also rewrites
-`/portal/*` links to this domain on any host that is not this one — belt to the
-redirect's braces, and it covers a `file://` copy too.
+If an old link on some other host is still reaching people, the fix is at that
+host: delete the deployment or point its DNS here. Nothing in this repo
+configures it, and nothing here depends on it.
 
 **The board is data now, not markup.** "Our Board" on the About page is edited
 at **Website → Board** in the admin: photo upload, name, designation, email, four

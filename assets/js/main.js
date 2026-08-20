@@ -5,13 +5,14 @@
    contact enquiries land in the portal database and show up in the admin
    (Volunteers / Enquiries tabs).
 
-   The site is served by our own Express server, so the API is ALWAYS
-   same-origin. The previous build also shipped to Vercel and fell back to a
-   separate api.truehr.co.in gateway whenever the hostname was unrecognised.
-   That path is gone: it failed silently on any host not in the allowlist (a
-   staging domain, a bare IP, a preview URL) by posting to a gateway that was
-   never configured, and it made cookie-authenticated requests impossible,
-   which is what blocked click-to-edit.
+   The site and the portal are served by the SAME Express server on our own
+   VPS, so /api and /portal are always same-origin. There is no second host and
+   no external gateway: an earlier build fell back to a separate
+   api.truehr.co.in whenever the hostname was unrecognised, which failed
+   silently on any host not in its allowlist and made cookie-authenticated
+   requests impossible. Every path here is relative, deliberately — nothing in
+   this file hardcodes a domain, so moving the site is a DNS change and nothing
+   more.
 
    FORM_ENDPOINT is an optional override — set it to a Formspree-style URL
    and ALL forms post there instead. Leave it "" to use the portal API.
@@ -86,38 +87,6 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
     }, { passive: true });
     update();
-  })();
-
-  /* ----------------------------------------------------------------------
-     Portal links on a host that has no portal
-
-     /portal/* is served by our Express app. Open the same HTML from anywhere
-     else — the old Vercel deployment, a file:// copy, a preview host — and a
-     relative /portal/donate resolves against that host and 404s. That is the
-     bug the client reported: the Donate button dead-ending on
-     true-kind-psi.vercel.app.
-
-     vercel.json now redirects that host wholesale, which fixes it without any
-     JavaScript. This is the belt to that braces: on ANY origin that is not the
-     app and not a local dev server, portal links are rewritten to the canonical
-     origin so the button still works. Same-origin is left completely alone, so
-     on the real site this code changes nothing.
-     ---------------------------------------------------------------------- */
-  (function portalLinks() {
-    var CANONICAL = "https://truekind.truehr.co.in";
-    var host = location.hostname;
-
-    // The app itself, and the usual local development hosts.
-    if (/(^|\.)truehr\.co\.in$/i.test(host)) return;
-    if (host === "localhost" || host === "[::1]" || host === "0.0.0.0") return;
-    if (/^127\./.test(host)) return;
-    if (/^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(host)) return;
-    // A bare file:// copy has no hostname at all — that one DOES need rewriting,
-    // so an empty host deliberately falls through.
-
-    document.querySelectorAll('a[href^="/portal"]').forEach(function (a) {
-      a.setAttribute("href", CANONICAL + a.getAttribute("href"));
-    });
   })();
 
   /* ----------------------------------------------------------------------

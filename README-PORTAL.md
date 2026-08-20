@@ -137,11 +137,20 @@ Fixed because write endpoints could not safely be added without it:
 
 ## Deployment
 
-**Own server only.** The Vercel path is gone — `assets/js/main.js` no longer
-falls back to an `api.truehr.co.in` gateway, and CORS defaults to an empty
-allowlist. Everything is same-origin, which is what makes click-to-edit possible
-at all (a cross-origin fetch never receives the session cookie).
-`.vercelignore` is now dead and can be deleted.
+**Our own server. One Express app, one domain.** The nine static pages, the
+`/api` content endpoints and the whole `/portal` admin are served by the same
+process, so every path in the front-end is relative and everything is
+same-origin.
+
+That is not a detail — it is what makes click-to-edit work at all. A
+cross-origin `fetch` never receives the session cookie, so a split deployment
+(static pages on one host, API on another) cannot authenticate an editor no
+matter how the CORS headers are set. Which is why there is no second host, no
+external API gateway, and no third-party static host in this project. CORS
+defaults to an empty allowlist for the same reason.
+
+Deploy is `git pull` + `docker compose up -d --build` on the VPS, behind nginx
+with certbot. See `DEPLOY-CMS.md`.
 
 ## Test
 ```bash

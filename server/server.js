@@ -55,10 +55,11 @@ app.use(session(sessionOpts));
 
 app.use((req, res, next) => { res.locals.session = req.session; res.locals.user = null; next(); });
 
-// CSRF. Exempt only the two public JSON endpoints (called cross-origin from the
-// Vercel-hosted site, where there is no session cookie to bind a token to — they
-// are guarded by the rate limiter and honeypot instead) and the PhonePe callback,
-// which is a server-to-server POST carrying its own signature.
+// CSRF. Exempt only the two public JSON endpoints — a visitor filling in the
+// volunteer or contact form has no session, so there is nothing for a
+// session-bound token to bind to; they are guarded by the rate limiter and
+// honeypot instead — and the PhonePe callback, which is a server-to-server POST
+// carrying its own signature.
 const { csrfContext, csrfGuard } = require('./middleware/csrf');
 app.use(csrfContext);
 app.use(csrfGuard(['/api/volunteer', '/api/contact']));
@@ -127,10 +128,11 @@ app.get('/portal/receipt/:txnId/pdf', async (req, res) => {
 // CORS for the /api routes.
 //
 // The site is served by this server, so /api is same-origin and no CORS is
-// needed at all — the default is now an EMPTY allowlist. It used to default to
-// the Vercel origin, which meant any deployment inherited a cross-origin grant
-// nobody asked for. Set ALLOWED_ORIGINS explicitly (comma-separated) only if
-// some other origin genuinely has to read the public content API.
+// needed at all — the default is an EMPTY allowlist. It used to default to a
+// hardcoded external origin, which meant every install inherited a cross-origin
+// read grant nobody had asked for. Set ALLOWED_ORIGINS explicitly
+// (comma-separated) only if some other origin genuinely has to read the public
+// content API.
 //
 // Note this grant can never carry credentials: there is no
 // Access-Control-Allow-Credentials header, so a cross-origin caller gets the
@@ -364,7 +366,7 @@ const PRIVATE_PREFIXES = ['/server', '/deploy', '/node_modules', '/.git', '/.cla
 // like macOS would otherwise serve the file under a spelling the list missed).
 const PRIVATE_FILES = new Set([
   '/package.json', '/package-lock.json', '/docker-compose.yml', '/dockerfile',
-  '/readme-portal.md', '/readme.md', '/.dockerignore', '/.vercelignore',
+  '/readme-portal.md', '/readme.md', '/.dockerignore',
   '/.gitignore', '/.env.example', '/.ds_store'
 ]);
 app.use((req, res, next) => {

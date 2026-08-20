@@ -7,12 +7,17 @@
 (function () {
   "use strict";
 
-  // Same-origin when the portal server itself serves these pages;
-  // the public API host when served from Vercel (or anywhere else).
-  var SAME_ORIGIN_HOSTS = ["truekind.truehr.co.in", "localhost", "127.0.0.1"];
-  var API = SAME_ORIGIN_HOSTS.indexOf(location.hostname) !== -1
-    ? "/api"
-    : "https://api.truehr.co.in/truekind/v1";
+  // Always same-origin. These pages are served by the same Express app that
+  // serves /api, on our own VPS, so a relative path is correct by construction
+  // and stays correct if the domain ever changes.
+  //
+  // This used to branch on location.hostname against a hardcoded allowlist and
+  // fall back to a separate api host for anything it did not recognise. That
+  // was wrong twice over: the fallback host does not serve this content, and
+  // any hostname the list had not been told about — a staging domain, a new
+  // subdomain, a bare IP during a migration — silently lost every piece of
+  // admin-edited content, with no error visible anywhere.
+  var API = "/api";
 
   function get(key) {
     return fetch(API + "/content/" + key, { signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined })
