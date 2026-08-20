@@ -338,6 +338,19 @@
    }
   },
   {
+   "id": "global.header.span.1",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Donate"
+  },
+  {
    "id": "index.p.1",
    "page": "index",
    "scope": "index",

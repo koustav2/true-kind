@@ -89,6 +89,37 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
   })();
 
   /* ----------------------------------------------------------------------
+     Header donate button — the attention pulse
+
+     Fires once per page view, 1.4s after load so it does not compete with the
+     page painting, and runs a FIXED three times. The class is removed on
+     animationend, which is what guarantees it can never become an endless loop:
+     even if something re-adds it, each run is finite.
+
+     Skipped entirely under prefers-reduced-motion, and skipped on the donation
+     pages themselves — pulsing a button at someone who is already on their way
+     to donating is noise, not encouragement.
+     ---------------------------------------------------------------------- */
+  (function donatePulse() {
+    var btn = document.querySelector("[data-nav-donate]");
+    if (!btn || reduceMotion) return;
+
+    var here = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "");
+    if (here === "donate") return;
+
+    var fired = false;
+    function pulse() {
+      if (fired) return;
+      fired = true;
+      btn.classList.add("pulse");
+      btn.addEventListener("animationend", function () {
+        btn.classList.remove("pulse");
+      }, { once: true });
+    }
+    setTimeout(pulse, 1400);
+  })();
+
+  /* ----------------------------------------------------------------------
      Homepage slider
 
      Reveals itself ONLY if the CMS has put a photograph in at least one slide;

@@ -423,6 +423,83 @@ header.site::after{
 .navlinks a.navcta::after{ display:none; }
 .navlinks a.navcta:hover{ background:var(--clay-deep); color:var(--paper); }
 
+/* --------------------------------------------------------------------------
+   Header donate button.
+
+   Sits outside .navlinks on purpose: under 980px that list becomes an
+   off-canvas panel, and a primary action hidden behind a hamburger is not a
+   primary action. This stays in the bar at every width.
+
+   On the animation — three deliberate constraints:
+
+   1. It PULSES A FIXED NUMBER OF TIMES and then stops for good. An infinitely
+      pulsing button is both irritating and an accessibility failure: WCAG 2.2.2
+      requires moving content lasting more than five seconds to be pausable.
+      Three pulses at 1.5s is 4.5s, under that ceiling, with no control needed.
+   2. The pulse is a box-shadow ring, NOT a transform: scale. Scaling a header
+      element nudges its neighbours and makes the whole bar feel unstable; a ring
+      radiates outward and costs no layout.
+   3. prefers-reduced-motion removes the pulse and the sheen entirely, leaving a
+      plain colour change. The button is just as usable; it simply stops moving.
+   -------------------------------------------------------------------------- */
+.nav-donate{
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center;
+  flex:none;
+  padding:11px 26px;
+  border-radius:var(--radius-pill);
+  background:var(--action); color:var(--paper);
+  font-family:var(--font-body); font-weight:500; font-size:0.85rem; line-height:1.15;
+  letter-spacing:0.01em; text-decoration:none;
+  box-shadow:0 1px 2px rgba(17,24,39,0.16);
+  transition:background var(--dur) var(--ease),
+             transform var(--dur) var(--ease),
+             box-shadow var(--dur) var(--ease);
+}
+.nav-donate-label{ position:relative; z-index:2; }
+
+.nav-donate:hover{
+  background:var(--action-hover); color:var(--paper);
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(206,36,56,0.34);
+}
+.nav-donate:active{ transform:translateY(0); box-shadow:0 1px 2px rgba(17,24,39,0.2); }
+.nav-donate:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
+
+/* A sheen that crosses the button on hover. Pure transform on a pseudo-element,
+   so it composites on the GPU and never triggers layout. */
+.nav-donate::before{
+  content:""; position:absolute; top:0; bottom:0; left:0; width:45%;
+  z-index:1; pointer-events:none;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,0.38), transparent);
+  transform:translateX(-180%) skewX(-18deg);
+  transition:transform .62s var(--ease);
+}
+.nav-donate:hover::before{ transform:translateX(320%) skewX(-18deg); }
+
+/* The finite attention pulse. main.js adds .pulse a moment after load and the
+   animationend handler removes it, so it can never become a permanent loop. */
+.nav-donate.pulse{ animation:navDonatePulse 1.5s var(--ease) 3; }
+@keyframes navDonatePulse{
+  0%   { box-shadow:0 1px 2px rgba(17,24,39,0.16), 0 0 0 0 rgba(206,36,56,0.55); }
+  55%  { box-shadow:0 1px 2px rgba(17,24,39,0.16), 0 0 0 12px rgba(206,36,56,0); }
+  100% { box-shadow:0 1px 2px rgba(17,24,39,0.16), 0 0 0 0 rgba(206,36,56,0); }
+}
+
+@media (max-width:980px){
+  /* Tighter, and it moves left of the hamburger rather than wrapping. */
+  .nav-donate{ padding:10px 18px; font-size:0.82rem; margin-left:auto; }
+}
+@media (max-width:420px){
+  .nav-donate{ padding:9px 15px; font-size:0.8rem; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .nav-donate, .nav-donate::before{ transition:none; animation:none; }
+  .nav-donate:hover{ transform:none; box-shadow:0 1px 2px rgba(17,24,39,0.16); }
+  .nav-donate:hover::before{ transform:translateX(-180%) skewX(-18deg); }
+}
+
 .menubtn{
   display:none; background:none; border:none; cursor:pointer;
   width:44px; height:44px; align-items:center; justify-content:center;

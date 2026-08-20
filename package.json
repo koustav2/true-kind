@@ -10,7 +10,8 @@
     "cms:build": "node server/cms/build-registry.js",
     "smoke": "node server/scripts/smoke.js",
     "cms:smoke": "node server/scripts/cms-smoke.js",
-    "ui:smoke": "node server/scripts/admin-ui-smoke.js"
+    "ui:smoke": "node server/scripts/admin-ui-smoke.js",
+    "donate:smoke": "node server/scripts/donate-btn-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",
