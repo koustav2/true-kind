@@ -218,13 +218,27 @@ const base = 'http://127.0.0.1:3995';
   check('...marked online', onlinePay && onlinePay.mode === 'online', onlinePay && onlinePay.mode);
   check('...and NOT stamped as entered by hand', onlinePay && !onlinePay.recordedBy);
 
-  /* ---- certificates from the member row ------------------------------- */
+  /* ---- issuing a certificate ------------------------------------------
+     There is ONE place to issue one, and it is Certificates -> Generate. The
+     member table used to carry a second copy of the same control, which made
+     every action cell two rows taller on every row whether or not anybody was
+     issuing anything, and which could not grey out a certificate the person
+     already held. These assertions pin the decision down in both directions.
+     -------------------------------------------------------------------- */
 
-  html = await grabToken('admin', '/portal/admin/members');
-  check('the active-members table has a certificate control',
+  html = await grabToken('admin', '/portal/admin/certificates/generate');
+  check('the Generate page carries the issue control',
     html.includes(`action="/portal/admin/members/${cashUser.id}/certificate"`));
   check('...listing the certificates that exist',
     html.includes('Volunteer of the Year') && html.includes('Training Completion'));
+
+  const memberList = await (await get('/portal/admin/members')).text();
+  check('the member table does NOT duplicate it',
+    !memberList.includes(`action="/portal/admin/members/${cashUser.id}/certificate"`));
+
+  /* The token came from the Generate page above; re-grab it against the member
+     list so the POST below still carries a valid one. */
+  await grabToken('admin', '/portal/admin/members');
 
   r = await post(`/portal/admin/members/${cashUser.id}/certificate`, { certificateId: String(cert.id) });
   check('a certificate issues from the member row',

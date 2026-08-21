@@ -6,26 +6,91 @@
     New memberships  — registered, fee NOT received. Every row's job is to
                        become paid, so the row carries the payment form.
     Active members   — fee received. Every row's job is day-to-day admin, so the
-                       row carries card / receipt / certificate / access.
+                       row carries the ID card, the receipt, and renewal.
+
+  Issuing a certificate is NOT here, deliberately — Certificates -> Generate is
+  the same list of people with a one-click issue per row, and it can grey out
+  what somebody already holds.
 
   The payment form is a <details> per row rather than a modal: it needs a plan,
   an amount, a mode, a date and a reference, which is too much for an inline
   cell and not worth a second page load.
 %>
+<%
+  /* Dates were printed with toDateString(), which gives "Mon Oct 19 2026". The
+     weekday is noise in a table — nobody scans a member list by day of the week
+     — and it made the column wrap onto three lines. "19 Oct 2026" says the same
+     thing in one. */
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function d(v) {
+    if (!v) return '—';
+    var t = v instanceof Date ? v : new Date(v);
+    if (isNaN(t)) return '—';
+    /* Hand-rolled rather than toLocaleDateString('en-GB', {month:'short'}),
+       which returns "Sept" for September and three letters for every other
+       month — so one row in twelve is a character wider than the rest. */
+    return ('0' + t.getDate()).slice(-2) + ' ' + MONTHS[t.getMonth()] + ' ' + t.getFullYear();
+  }
+%>
 <style>
-.mem-id{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--purple)}
-.mem-who b{display:block;font-weight:500}
+/* A serial is one token. Letting it break gave "TKF-M-2026-" / "D5AE0C" on two
+   lines: unreadable, and impossible to select in one go. */
+.mem-id{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--purple);
+  white-space:nowrap}
+.mem-who b{display:block;font-weight:500;line-height:1.5}
+.mem-who b .pill{margin-left:6px;vertical-align:1px}
 .mem-who span{font-size:.78rem;color:var(--text-soft)}
+.mem-plan{white-space:nowrap}
+.mem-fee{white-space:nowrap}
+/* Explicit widths. Left to the browser, Name took a third of the table and Fee —
+   the column with two pills in it — was squeezed until they wrapped, while the
+   action column was too narrow to put two buttons side by side so every one of
+   them stacked vertically. The action column is the widest thing here because it
+   holds the most, which is the opposite of how it was. */
+.mem-tbl th:nth-child(1){width:24%}
+.mem-tbl th:nth-child(2),.mem-tbl th:nth-child(3){width:13%}
+.mem-tbl th:nth-child(4){width:12%}
+.mem-tbl th:nth-child(5){width:9%}
+.mem-tbl th:last-child{width:25%}
+
+/* ROW ACTIONS.
+   Was: five pills of identical weight, wrapping into three ragged lines, with
+   the rarest action (Record renewal) as the loudest filled purple button and the
+   destructive one (Deactivate) indistinguishable from the harmless View.
+
+   Now there is a hierarchy, and it is two lines deep at most. The documents you
+   actually print sit on the first line as quiet outlined buttons; the two rare
+   actions — renewal, deactivation — drop to a small second line where
+   deactivation is the only thing that turns red. */
 .mem-acts{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .mem-acts form{display:inline}
-.pay-panel{margin:0}
+.mem-minor{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.mem-minor form{display:inline}
+/* Text buttons, not pills — these are the things you reach for least. */
+.lnk{background:none;border:0;padding:0;cursor:pointer;font:400 .78rem 'Work Sans',sans-serif;
+  color:var(--text-mute);text-decoration:underline;text-underline-offset:2px}
+.lnk:hover{color:var(--ink)}
+/* The one destructive control on the row, and the only one that goes red. */
+.lnk-danger:hover{color:var(--clay-deep)}
+
+.pay-panel{margin:0;display:inline}
 .pay-panel > summary{
-  list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
-  padding:8px 15px;border-radius:100px;background:var(--purple);color:#fff;
-  font:500 .82rem 'Work Sans',sans-serif;white-space:nowrap;
+  list-style:none;cursor:pointer;display:inline;
+  font:400 .78rem 'Work Sans',sans-serif;color:var(--text-mute);
+  text-decoration:underline;text-underline-offset:2px;white-space:nowrap;
 }
+.pay-panel > summary:hover{color:var(--purple)}
 .pay-panel > summary::-webkit-details-marker{display:none}
-.pay-panel[open] > summary{background:var(--purple-deep)}
+.pay-panel[open] > summary{color:var(--purple);font-weight:500}
+/* On the New memberships tab, recording the payment is the entire purpose of the
+   row, so there it stays a real button. Same markup, same form — only the
+   emphasis changes with the tab. */
+.pay-primary > summary{
+  display:inline-flex;align-items:center;padding:8px 15px;border-radius:100px;
+  background:var(--purple);color:#fff;font:500 .82rem 'Work Sans',sans-serif;
+  text-decoration:none}
+.pay-primary > summary:hover{background:var(--purple-deep);color:#fff}
+.pay-primary[open] > summary{background:var(--purple-deep);color:#fff}
 .pay-body{
   margin-top:10px;padding:14px 16px;border:1px solid var(--rule-strong);
   border-radius:var(--radius-sm);background:var(--paper-2);min-width:420px;
@@ -33,8 +98,6 @@
 .pay-body .row{display:grid;gap:10px;grid-template-columns:1fr 1fr}
 .pay-body label{margin-top:10px}
 .pay-hint{font-size:.75rem;color:var(--text-soft);margin:8px 0 0}
-.cert-inline{display:flex;gap:5px;align-items:center}
-.cert-inline select{width:auto;min-width:150px;padding:7px 10px;font-size:.8rem}
 @media(max-width:880px){
   .pay-body{min-width:0}
   .pay-body .row{grid-template-columns:1fr}
@@ -61,18 +124,33 @@
     deactivating an account blocks sign-in immediately, even for someone already logged in, and
     paying again does not undo it.
   </p>
+  <% if (members.some(function (u) { return !lastPayment[u.id]; })) { %>
+    <p class="muted" style="max-width:78ch">
+      <span class="pill info">No receipt</span> means the fee was received — that is what made them
+      a member — but it was recorded before this portal kept receipt rows, so there is no numbered
+      receipt to print. Recording a renewal for them creates one from that point on.
+    </p>
+  <% } %>
 <% } %>
 
 <div class="card" style="padding:0;overflow-x:auto">
-<table>
+<table class="mem-tbl">
 <% if (status === 'guest') { %>
-  <tr><th>Name / contact</th><th>Registered</th><th>Fee</th><th>Access</th><th>Action</th></tr>
+  <%#
+    No Access column. It held a green "Active" pill on every row — no
+    information, and a second green pill beside the green "Paid" one — and a red
+    "Deactivated" pill on the rare row that mattered. That one case is now a pill
+    beside the person's name, where it belongs: being locked out is a fact about
+    the person, not a column you scan. It also gave a whole column's width back
+    to the actions, which needed it.
+  %>
+  <tr><th>Name / contact</th><th>Registered</th><th>Fee</th><th>Action</th></tr>
 <% } else { %>
-  <tr><th>Name / contact</th><th>Member ID</th><th>Plan / valid till</th><th>Fee</th><th>Certificates</th><th>Access</th><th>Action</th></tr>
+  <tr><th>Name / contact</th><th>Member ID</th><th>Plan / valid till</th><th>Fee</th><th>Certificates</th><th>Action</th></tr>
 <% } %>
 
 <% if (!members.length) { %>
-  <tr><td colspan="7" class="muted"><%= status === 'guest' ? 'No pending registrations.' : 'No active members yet.' %></td></tr>
+  <tr><td colspan="6" class="muted"><%= status === 'guest' ? 'No pending registrations.' : 'No active members yet.' %></td></tr>
 <% } %>
 
 <% members.forEach(u => { %>
@@ -81,27 +159,51 @@
    var self = u.id === session.userId; %>
 <tr>
   <td class="mem-who">
-    <b><a href="/portal/admin/members/<%= u.id %>"><%= u.name %></a></b>
+    <b><a href="/portal/admin/members/<%= u.id %>"><%= u.name %></a><%
+      if (blocked) { %> <span class="pill warn">Deactivated</span><% } %></b>
     <span><%= u.email %> · <%= u.phone %></span>
   </td>
 
   <% if (status === 'guest') { %>
-    <td><%= u.createdAt.toDateString() %></td>
+    <td class="mem-plan"><%= d(u.createdAt) %></td>
   <% } else { %>
     <td class="mem-id"><%= u.memberId || '—' %></td>
-    <td>
+    <td class="mem-plan">
       <% if (u.membership && u.membership.plan) { %>
         <%= plans[u.membership.plan] ? plans[u.membership.plan].name : u.membership.plan %><br>
-        <span class="muted"><%= u.membership.validTill.toDateString() %></span>
+        <span class="muted"><%= d(u.membership.validTill) %></span>
         <% if (!u.membershipValid) { %><br><span class="pill warn">Expired</span><% } %>
       <% } else { %>—<% } %>
     </td>
   <% } %>
 
-  <td>
+  <%#
+    THREE states, not two.
+
+    This cell used to be a boolean: a MembershipPayment row meant Paid, no row
+    meant Unpaid. On the Active tab that produced a flat contradiction — a member
+    with a Member ID and cover running to 2027, sitting on a tab whose own
+    description says "fee received", labelled Unpaid in red.
+
+    The cause is not a logic error, it is history: MembershipPayment was added
+    later, so anyone activated before it exists has the membership fields on
+    their User row and no receipt row to go with them. The fee WAS received —
+    that is what made them active — there is simply no receipt on file for it.
+
+    So: Paid (we have the receipt), No receipt (active, but nothing to print),
+    Unpaid (guest — the fee genuinely has not arrived). Being on the Active tab
+    means Unpaid is never a truthful answer, and it is no longer reachable there.
+  %>
+  <td class="mem-fee">
     <% if (paid) { %>
       <span class="pill ok">Paid</span><br>
       <span class="muted" style="font-size:.74rem">₹<%= (paid.amount/100).toLocaleString('en-IN') %> · <%= paid.mode %></span>
+    <% } else if (status === 'active') { %>
+      <%# The pill alone. The first version spelled out "activated before receipts
+          were recorded" in the cell, which wrapped to six lines and made the row
+          twice as tall as the others. It is explained once above the table
+          instead — a table cell is not the place for a sentence. %>
+      <span class="pill info" title="Active, but no receipt row exists to print">No receipt</span>
     <% } else { %>
       <span class="pill warn">Unpaid</span>
     <% } %>
@@ -111,52 +213,50 @@
     <td>
       <% if (certCount[u.id]) { %>
         <a href="/portal/admin/members/<%= u.id %>"><%= certCount[u.id] %> issued</a>
-      <% } else { %><span class="muted">none</span><% } %>
+      <% } else { %><span class="muted" style="font-size:.78rem">—</span><% } %>
     </td>
   <% } %>
 
-  <td>
-    <% if (blocked) { %><span class="pill warn">Deactivated</span>
-    <% } else { %><span class="pill ok">Active</span><% } %>
-  </td>
+  <%#
+    Only the exception gets a pill. Every row used to carry a green "Active"
+    badge that said nothing — the rows are all active, that is what the tab is —
+    while sitting immediately beside a green "Paid" badge, so the two read as one
+    repeated smear of green and neither got noticed. A deactivated account is the
+    thing worth spotting from across the table, so it is the only thing marked.
+  %>
 
   <td>
+    <%#
+      "View" used to be the first button here. It is gone: the person's name in
+      the first column is already a link to exactly the same page, so the button
+      was a second copy of the row's most obvious affordance, taking the primary
+      slot and pushing the actual documents onto a second line.
+    %>
     <div class="mem-acts">
-      <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>">View</a>
-
       <% if (status === 'active') { %>
         <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>/idcard.pdf" target="_blank" rel="noopener">ID card</a>
         <% if (paid) { %>
           <a class="btn btn-ghost btn-sm" href="/portal/admin/members/<%= u.id %>/receipt.pdf" target="_blank" rel="noopener">Receipt</a>
         <% } %>
-        <% if (certs.length) { %>
-          <form method="post" action="/portal/admin/members/<%= u.id %>/certificate" class="cert-inline">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <select name="certificateId" required aria-label="Certificate to issue to <%= u.name %>">
-              <option value="">Certificate…</option>
-              <% certs.forEach(c => { %><option value="<%= c.id %>"><%= c.title %></option><% }) %>
-            </select>
-            <button class="btn btn-purple btn-sm" type="submit">Issue</button>
-          </form>
-        <% } %>
-      <% } %>
-
-      <% if (!self) { %>
-        <form method="post" action="/portal/admin/members/<%= u.id %>/access"
-              onsubmit="return confirm('<%= blocked ? "Reactivate" : "Deactivate" %> <%= u.name %>?<%= blocked ? "" : " They will be signed out immediately." %>')">
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <input type="hidden" name="action" value="<%= blocked ? 'unblock' : 'block' %>">
-          <button class="btn btn-ghost btn-sm" type="submit"><%= blocked ? 'Reactivate' : 'Deactivate' %></button>
-        </form>
-      <% } else { %>
-        <span class="muted">you</span>
       <% } %>
     </div>
+    <%#
+      The certificate dropdown used to live here, on every row. Two problems.
+      It made every action cell two rows taller whether or not anybody was
+      issuing anything, and it was a second copy of a screen that already exists:
+      Certificates -> Generate is precisely this list of people with a
+      one-click issue per row, and it also greys out certificates somebody
+      already holds, which this inline version could not.
+      One place to issue a certificate. It is that page.
+    %>
 
-    <%# The payment form. On the guest tab it is the whole point of the row; on
-        the active tab it records a renewal taken in cash, which extends from the
-        current expiry rather than from today. %>
-    <details class="pay-panel" style="margin-top:8px">
+    <%#
+      The rare pair, on their own quiet line. On the guest tab "Record payment"
+      IS the point of the row, so it keeps a real button there; on the active tab
+      the same form records a renewal, which is occasional, so it drops to a link.
+    %>
+    <div class="mem-minor">
+    <details class="pay-panel<%= status === 'guest' ? ' pay-primary' : '' %>">
       <summary><%= status === 'guest' ? 'Record payment' : 'Record renewal' %></summary>
       <form method="post" action="/portal/admin/members/<%= u.id %>/membership">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -203,6 +303,18 @@
         </div>
       </form>
     </details>
+
+    <% if (!self) { %>
+      <form method="post" action="/portal/admin/members/<%= u.id %>/access"
+            onsubmit="return confirm('<%= blocked ? "Reactivate" : "Deactivate" %> <%= u.name %>?<%= blocked ? "" : " They will be signed out immediately." %>')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="action" value="<%= blocked ? 'unblock' : 'block' %>">
+        <button class="lnk <%= blocked ? '' : 'lnk-danger' %>" type="submit"><%= blocked ? 'Reactivate' : 'Deactivate' %></button>
+      </form>
+    <% } else { %>
+      <span class="muted" style="font-size:.78rem">this is you</span>
+    <% } %>
+    </div>
   </td>
 </tr>
 <% }) %>
