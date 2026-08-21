@@ -583,3 +583,108 @@ it decorates.
 `CertificateStyles`, `VisitorCertificates`, `OfflineDonations`, `Notices`,
 `ManagerAccesses`. All created by `sequelize.sync()` on the next start. Nothing to
 run by hand, and no existing table is altered.
+
+---
+
+## Shipping the current batch — the whole sequence
+
+Everything below is already written and tested on the Mac. This is the part that
+makes it real. Four steps, in this order, and step 0 is not optional.
+
+### 0. `APP_BASE_URL` is the one that will bite you
+
+Check it before anything else:
+
+```bash
+cd /opt/truekind
+sed -n 's|^APP_BASE_URL=|APP_BASE_URL is |p' .env
+```
+
+It must read `https://truekind.truehr.co.in`. Not `http`, not `localhost`, not an
+IP.
+
+The reason is specific to this batch. Every QR code on every ID card, receipt,
+certificate and appointment letter is built from `APP_BASE_URL` at the moment the
+PDF is generated — `verify.js` reads it, and there is no other source. Get it
+wrong and the documents still print, still look perfect, and every QR on them
+points at a host that does not answer. **Printed documents cannot be recalled.** A
+wrong `ALLOWED_ORIGINS` is a nuisance; a wrong `APP_BASE_URL` is a box of
+worthless ID cards.
+
+Fix it first, restart, generate one letter, scan it with an actual phone. Then
+carry on.
+
+### 1. On the Mac — commit and push
+
+Two files still need removing from git. They are deleted on disk but git is still
+tracking them, so a plain commit leaves them in the repo:
+
+```bash
+cd ~/dev/Freelencing-june-kp/True-HR/true-kind-site
+git rm --cached vercel.json .vercelignore 2>/dev/null || true
+git add -A
+git status                      # read this. Nothing surprising should be listed.
+git commit -m "Appointment letters, nav rebuild, ID card consolidation, rupee fix"
+git push
+```
+
+`git status` before committing is the step people skip. Read it.
+
+### 2. On the VPS — pull and rebuild
+
+```bash
+cd /opt/truekind
+git pull
+git log --oneline -1            # must match what you just pushed
+docker compose up -d --build
+docker compose logs --tail=30 app
+```
+
+Look for `✓ Database connected … schema synced` in the log. That line is
+`sequelize.sync()` having created the new tables.
+
+**New table this batch:** `AppointmentLetters`. Created automatically. No existing
+table is altered, nothing to run by hand, and no data is touched.
+
+### 3. Verify, in this order
+
+Do these in a browser, not by reading the code:
+
+1. **The nav.** Nine sections, one row, not eighteen links on two. The section
+   you are in is a filled purple pill.
+2. **Members → Active members.** Rows are two lines. Nobody who is active is
+   labelled `Unpaid`; anyone activated before receipts existed reads `No receipt`.
+3. **An ID card.** `Members → ID card` — two pages, portrait, logo, photo box.
+   One card, not two different ones from two buttons.
+4. **A receipt.** Amounts read `Rs. 1,500`, not `¹1,500`.
+5. **Documents → Appointment letters.** Pick an active member, Write letter,
+   fill it in, **Preview** — it must open watermarked SPECIMEN and appear nowhere
+   in the register. Then **Issue letter**.
+6. **Scan the letter's QR with a phone.** Not a scanner app, a phone camera. It
+   must open `truekind.truehr.co.in/verify/TKF-AL-…` and say **Valid**, naming
+   the holder and the designation — and showing no salary.
+7. **Withdraw it, scan again.** It must say *withdrawn*. Not "not recognised" —
+   that reads as forgery, and the difference is the whole point of the register.
+
+If step 6 shows the wrong host, go back to step 0.
+
+### 4. Before the first real appointment letter
+
+The seven general conditions on page 2 — probation, verification, confidentiality,
+safeguarding, notice, transfer, leave — are standard wording that **no lawyer has
+read**. Everything else on the letter comes from the form; those clauses do not.
+Have whoever advises the trust read them, and send the corrected wording back to
+be put into `server/utils/letter.js`. The warning is printed in red at the top of
+the admin page so it cannot be forgotten quietly.
+
+### Rolling back
+
+```bash
+cd /opt/truekind
+git log --oneline -5
+git checkout <the commit before this batch>
+docker compose up -d --build
+```
+
+Safe: `sequelize.sync()` only ever adds. The new table stays behind unused and
+nothing that existed before was altered.
