@@ -410,7 +410,10 @@ const base = 'http://127.0.0.1:3993';
        vacuous. idcard.pdf is the route that serves the file, so that is the one
        worth guarding. */
     ['GET', `/portal/admin/members/${member.id}/idcard.pdf`],
-    ['GET', `/portal/admin/members/${member.id}/receipt.pdf`]
+    ['GET', `/portal/admin/members/${member.id}/receipt.pdf`],
+    ['GET', '/portal/admin/appointments'],
+    ['POST', '/portal/admin/appointments'],
+    ['POST', '/portal/admin/appointments/preview']
   ];
   const leaked = [];
   for (const [method, p] of GUARDED) {

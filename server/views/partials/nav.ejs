@@ -66,11 +66,16 @@
       { key: 'memreceipts', label: 'Membership receipts', href: A + '/membership-receipts',  gate: 'memberships' }
     ]},
 
-    { key: 'certs', label: 'Certificates', pages: [
-      { key: 'certtypes',  label: 'Certificate types',   href: A + '/certificates',           gate: 'certificates' },
-      { key: 'certgen',    label: 'Generate',            href: A + '/certificates/generate',  gate: 'certificates' },
-      { key: 'certissued', label: 'Issued register',     href: A + '/certificates/issued',    gate: 'certificates', total: 'certificates' },
-      { key: 'vcerts',     label: 'Visitor certificates', href: A + '/visitor-certificates',  gate: 'certificates' }
+    /* "Documents", not "Certificates". The section held one family of document
+       and was named after it; it now holds two, and appointment letters are not
+       a kind of certificate. Naming a section after its first occupant is how
+       you end up with a letter filed under Certificates. */
+    { key: 'certs', label: 'Documents', pages: [
+      { key: 'certtypes',  label: 'Certificate types',    href: A + '/certificates',          gate: 'certificates' },
+      { key: 'certgen',    label: 'Generate',             href: A + '/certificates/generate', gate: 'certificates' },
+      { key: 'certissued', label: 'Issued register',      href: A + '/certificates/issued',   gate: 'certificates', total: 'certificates' },
+      { key: 'vcerts',     label: 'Visitor certificates', href: A + '/visitor-certificates',  gate: 'certificates' },
+      { key: 'letters',    label: 'Appointment letters',  href: A + '/appointments',          gate: 'letters' }
     ]},
 
     { key: 'money', label: 'Donations', pages: [

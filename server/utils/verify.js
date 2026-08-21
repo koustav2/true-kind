@@ -59,7 +59,14 @@ const KINDS = {
   // page — a certificate is a certificate to whoever is holding it — but a
   // different table behind it.
   'TKF-VC': { kind: 'visitorcert', label: 'Certificate' },
-  'TKF-R':  { kind: 'receipt',     label: 'Donation receipt' }
+  'TKF-R':  { kind: 'receipt',     label: 'Donation receipt' },
+  /* Registered HERE, in the same change as the table and the route — not
+     afterwards. TKF-VC went out for a while with no line in this object, and
+     every visitor certificate issued in that window scanned as "not recognised"
+     by a verifier that had never been told the prefix existed. A serial the
+     verifier does not know is worse than no QR at all: it invites a check and
+     then fails it. */
+  'TKF-AL': { kind: 'appointment', label: 'Appointment letter' }
 };
 
 /* Longest prefix first, so TKF-MR is never mistaken for TKF-M. */
@@ -142,7 +149,7 @@ async function resolve(models, raw) {
   if (!info) return { code, found: false, status: 'not_found', kind: null };
 
   const { User, CertificateIssue, Certificate, Donation, MembershipPayment,
-          VisitorCertificate, Revocation } = models;
+          VisitorCertificate, AppointmentLetter, Revocation } = models;
   const now = new Date();
   const out = { code, kind: info.kind, label: info.label, found: false, status: 'not_found' };
 
@@ -184,6 +191,26 @@ async function resolve(models, raw) {
         title: v.programme || null,
         issuedOn: v.issuedOn ? new Date(v.issuedOn) : v.createdAt,
         // Like a member certificate: valid until withdrawn.
+        status: 'valid'
+      });
+    }
+  } else if (info.kind === 'appointment') {
+    /* NOTHING ABOUT THE TERMS IS PUBLISHED HERE. /verify is a public page — no
+       login — so it answers only the question a stranger holding the document is
+       entitled to ask: is this letter genuine and does it still stand. Salary,
+       department and reporting line are none of their business, and a
+       verification page that leaks a person's pay is worse than no verification
+       page. The designation goes out because it is what the letter is FOR: the
+       holder is showing you the letter to prove they hold that post. */
+    const l = AppointmentLetter && await AppointmentLetter.findOne({ where: { serial: code } });
+    if (l) {
+      Object.assign(out, {
+        found: true,
+        holder: l.name,
+        title: l.designation || null,
+        issuedOn: l.letterDate ? new Date(l.letterDate) : l.createdAt,
+        // An appointment letter does not carry its own expiry. It stands until
+        // it is withdrawn — which the Revocations check below reports.
         status: 'valid'
       });
     }

@@ -243,6 +243,68 @@ const VisitorCertificate = sequelize.define('VisitorCertificate', {
 });
 
 /* ---------------------------------------------------------------------------
+   Appointment letters.
+
+   Another new table, for the usual reason: sync() cannot add a column to a
+   live one.
+
+   THE RECIPIENT IS SNAPSHOTTED, NOT JOINED. userId records who it went to, but
+   name / address / phone / email / designation are COPIED IN at the moment of
+   issue and read back from here when the PDF is generated. That is deliberate.
+   A letter is a historical document: it said what it said on the day it was
+   signed. Rendering it from a live join means somebody moving house in 2028
+   silently rewrites the address on a letter dated 2026, and the copy in the
+   filing cabinet stops matching the copy the portal prints.
+
+   `kind` is a STRING, not an ENUM, and that is also deliberate. Staff today;
+   volunteer and board letters are the obvious next ask, and sync() cannot
+   extend an ENUM on a live table — so an ENUM here would mean the second
+   variant needs a hand-written migration on a running database. A string costs
+   nothing and is validated in the route.
+
+   Terms are stored per letter rather than read from config, because probation
+   and notice are negotiated per person, and because a letter must keep printing
+   the terms it was issued under even after the organisation's standard changes.
+
+   No `revoked` column: withdrawal goes in the shared Revocations table, keyed
+   by serial, same as cards and certificates. One place answers "is this
+   document still good", which is the only way /verify can stay honest.
+   --------------------------------------------------------------------------- */
+const AppointmentLetter = sequelize.define('AppointmentLetter', {
+  _id:    { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  serial: { type: DataTypes.STRING, allowNull: false, unique: true },
+  userId: { type: DataTypes.INTEGER },              // who it went to
+  kind:   { type: DataTypes.STRING, defaultValue: 'staff' },
+
+  // Recipient, as printed.
+  name:    { type: DataTypes.STRING, allowNull: false },
+  address: { type: DataTypes.STRING },
+  phone:   { type: DataTypes.STRING },
+  email:   { type: DataTypes.STRING },
+
+  // Terms, as agreed.
+  designation:    { type: DataTypes.STRING },
+  department:     { type: DataTypes.STRING },
+  reportsTo:      { type: DataTypes.STRING },
+  location:       { type: DataTypes.STRING },
+  joiningDate:    { type: DataTypes.DATEONLY },
+  employmentType: { type: DataTypes.STRING },
+  probation:      { type: DataTypes.STRING },
+  grossMonthly:   { type: DataTypes.INTEGER },      // rupees, not paise — this
+                                                    // is a typed-in salary, not
+                                                    // a gateway amount
+  annualCtc:      { type: DataTypes.INTEGER },
+  hours:          { type: DataTypes.STRING },
+  notice:         { type: DataTypes.STRING },
+
+  signatoryName: { type: DataTypes.STRING },
+  signatoryRole: { type: DataTypes.STRING },
+
+  letterDate: { type: DataTypes.DATEONLY },
+  issuedBy:   { type: DataTypes.INTEGER }
+});
+
+/* ---------------------------------------------------------------------------
    Donations taken offline.
 
    Donation.kind is ENUM('member','guest') and that table is live, so 'cash'
@@ -439,5 +501,6 @@ module.exports = {
   sequelize, User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig,
   Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
   BoardMember, MembershipPayment, IdCardProfile, Revocation, VerificationScan,
-  CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess
+  CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess,
+  AppointmentLetter
 };

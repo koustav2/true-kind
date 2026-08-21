@@ -6,7 +6,7 @@ const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, 
         UserAccess, VolunteerLogin, CertificateFile, BoardMember,
         MembershipPayment, IdCardProfile, Revocation, VerificationScan,
         CertificateStyle, VisitorCertificate, OfflineDonation, Notice,
-        ManagerAccess } = require('../models');
+        ManagerAccess, AppointmentLetter } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const config = require('../config');
@@ -15,6 +15,7 @@ const { serial } = require('../utils/codes');
 const { certificatePdf, visitorCertificatePdf, membershipReceiptPdf,
         MODE_LABEL, CERT_TEMPLATES, CERT_TEMPLATE_KEYS } = require('../utils/pdf');
 const { idCardPdf, cardContext } = require('../utils/idcard');
+const { appointmentLetterPdf } = require('../utils/letter');
 
 /* The eight real blood groups. A free-text blood group on a card that may be
    read in an emergency is worse than a blank one. */
@@ -368,6 +369,147 @@ router.get('/members/:id/idcard.pdf', async (req, res) => {
   const { profile, photoPath, code, reason } = await cardContext(IdCardProfile, user);
   if (!code) return res.status(400).render('error', { title: 'No ID number yet', message: reason });
   await idCardPdf(res, user, profile, { photoPath, code });
+});
+
+/* ==========================================================================
+   Appointment letters.
+
+   Generated per use. Nothing is stored but the row; the PDF is re-rendered from
+   it on every request, so a reprint is free and there is no file store.
+
+   WHO CAN RECEIVE ONE. Active members only — the same rule, and the same
+   reason, as Certificates -> Generate: the letter prints a Member ID and
+   verifies against it, and a person with no Member ID has nothing for the QR to
+   resolve to. Registrations whose fee has not arrived are not offered, because
+   they are not members yet.
+   ========================================================================== */
+
+/* The letter's own defaults. Deliberately thin: these are the values an admin
+   would otherwise retype on every letter, NOT policy decisions. Anything that
+   is a real term of employment is left blank so somebody has to think about it
+   and type it in. */
+const LETTER_KINDS = ['staff', 'volunteer', 'board'];
+const LETTER_KIND_LABEL = { staff: 'Staff', volunteer: 'Volunteer', board: 'Board / trustee' };
+
+/* Read the form once, for both preview and issue, so the document you looked at
+   is the document you sent. Two readers would drift. */
+function letterFromForm(body, user) {
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n) || null;
+  const n = (v) => {
+    const x = parseInt(String(v == null ? '' : v).replace(/[^\d]/g, ''), 10);
+    return Number.isFinite(x) && x > 0 ? x : null;
+  };
+  return {
+    userId: user ? user.id : null,
+    kind: LETTER_KINDS.includes(body.kind) ? body.kind : 'staff',
+    // Snapshotted from the member record, overridable — the address on file is
+    // often the one the letter should go to, but not always.
+    name:    s(body.name, 120) || (user && user.name) || null,
+    address: s(body.address, 240) || (user && user.city) || null,
+    phone:   s(body.phone, 30)  || (user && user.phone) || null,
+    email:   s(body.email, 160) || (user && user.email) || null,
+
+    designation:    s(body.designation, 120),
+    department:     s(body.department, 120),
+    reportsTo:      s(body.reportsTo, 120),
+    location:       s(body.location, 120),
+    joiningDate:    s(body.joiningDate, 10),
+    employmentType: s(body.employmentType, 60),
+    probation:      s(body.probation, 60),
+    grossMonthly:   n(body.grossMonthly),
+    annualCtc:      n(body.annualCtc),
+    hours:          s(body.hours, 120),
+    notice:         s(body.notice, 60),
+
+    signatoryName: s(body.signatoryName, 120),
+    signatoryRole: s(body.signatoryRole, 120) || 'Authorised Signatory',
+    letterDate:    s(body.letterDate, 10) || new Date().toISOString().slice(0, 10)
+  };
+}
+
+/* The list: active members on the left, letters already issued below. */
+router.get('/appointments', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  const where = { role: 'member', status: 'active' };
+  if (q) {
+    where[Op.or] = [
+      { name: { [Op.like]: `%${q}%` } },
+      { email: { [Op.like]: `%${q}%` } },
+      { memberId: { [Op.like]: `%${q}%` } }
+    ];
+  }
+  const [members, letters] = await Promise.all([
+    User.findAll({ where, order: [['name', 'ASC']], limit: 300 }),
+    AppointmentLetter.findAll({ order: [['createdAt', 'DESC']], limit: 300 })
+  ]);
+  const revoked = {};
+  const revs = letters.length
+    ? await Revocation.findAll({ where: { code: letters.map(l => l.serial) } })
+    : [];
+  revs.forEach(r => { revoked[r.code] = r; });
+
+  // userId -> how many letters that person already has, so the row can say so
+  // rather than letting somebody issue a second one by accident.
+  const counts = {};
+  letters.forEach(l => { if (l.userId) counts[l.userId] = (counts[l.userId] || 0) + 1; });
+
+  res.render('admin/appointments', {
+    title: 'Appointment letters',
+    members, letters, revoked, counts, q,
+    kinds: LETTER_KINDS, kindLabel: LETTER_KIND_LABEL,
+    org: config.org,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+/* Preview. Renders from the form WITHOUT writing a row, watermarked SPECIMEN.
+   The point is to see the wording and the spacing before a serial is burned —
+   serials are permanent and a mistyped one cannot be tidied away. */
+router.post('/appointments/preview', async (req, res) => {
+  const user = req.body.userId ? await User.findByPk(req.body.userId) : null;
+  const draft = letterFromForm(req.body, user);
+  if (!draft.name) return res.redirect('/portal/admin/appointments?error=name');
+  await appointmentLetterPdf(res, draft, { specimen: true });
+});
+
+/* Issue. Mints the serial, writes the row. */
+router.post('/appointments', async (req, res) => {
+  const user = req.body.userId ? await User.findByPk(req.body.userId) : null;
+  if (!user || user.role !== 'member' || user.status !== 'active') {
+    return res.redirect('/portal/admin/appointments?error=member');
+  }
+  const data = letterFromForm(req.body, user);
+  if (!data.name) return res.redirect('/portal/admin/appointments?error=name');
+  if (!data.designation) return res.redirect('/portal/admin/appointments?error=designation');
+
+  const row = await AppointmentLetter.create(Object.assign(data, {
+    serial: serial('TKF-AL'),
+    issuedBy: req.session.userId
+  }));
+  res.redirect(`/portal/admin/appointments?saved=${encodeURIComponent(row.serial)}`);
+});
+
+/* The document. Re-rendered from the row every time — this is the "per use"
+   part. specimen:false, and this is the ONLY caller that passes it. */
+router.get('/appointments/:id.pdf', async (req, res) => {
+  const l = await AppointmentLetter.findByPk(req.params.id);
+  if (!l) return res.status(404).send('Not found');
+  await appointmentLetterPdf(res, l, { specimen: false });
+});
+
+/* Withdrawal, not deletion — same as cards and certificates. A letter that has
+   been handed over exists whether or not the row does; deleting it would make a
+   scan say "not recognised", which reads as forgery rather than withdrawal. */
+router.post('/appointments/:id/revoke', async (req, res) => {
+  const l = await AppointmentLetter.findByPk(req.params.id);
+  if (l) await revoke(l.serial, 'appointment', req);
+  res.redirect('/portal/admin/appointments?saved=withdrawn');
+});
+
+router.post('/appointments/:id/restore', async (req, res) => {
+  const l = await AppointmentLetter.findByPk(req.params.id);
+  if (l) await Revocation.destroy({ where: { code: l.serial } });
+  res.redirect('/portal/admin/appointments?saved=restored');
 });
 
 /* ==========================================================================

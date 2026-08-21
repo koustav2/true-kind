@@ -183,7 +183,7 @@ const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
    ========================================================================== */
 const { IdCardProfile, Revocation, VerificationScan, User: UserModel,
         CertificateIssue, Certificate, MembershipPayment,
-        VisitorCertificate } = require('./models');
+        VisitorCertificate, AppointmentLetter } = require('./models');
 
 const verifyHits = new Map();
 function verifyRateLimited(req) {
@@ -196,9 +196,22 @@ function verifyRateLimited(req) {
   return hits.length > 30;
 }
 
+/* The models /verify is allowed to read.
+ *
+ * HAND-LISTED, AND THAT IS A TRAP. resolve() destructures whatever it is given,
+ * so a model missing from this object is not an error — the branch for that
+ * document type just finds nothing and the page answers 404 "not recognised".
+ * Registering a new serial prefix in verify.js is therefore only half the job;
+ * forgetting this line produces a document with a QR that confidently reports
+ * the document is fake. Appointment letters hit exactly that on the first test
+ * run, one change after the TKF-VC version of the same mistake.
+ *
+ * It stays an explicit list rather than `require('./models')` because /verify is
+ * public and unauthenticated: this is the set of tables a stranger with a serial
+ * can cause to be queried, and that set should be written down on purpose. */
 const VERIFY_MODELS = () => ({
   User: UserModel, CertificateIssue, Certificate, Donation, MembershipPayment,
-  VisitorCertificate, Revocation
+  VisitorCertificate, AppointmentLetter, Revocation
 });
 
 /* Logging a scan must never be able to fail a verification. Fire and forget. */

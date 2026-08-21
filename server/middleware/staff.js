@@ -46,6 +46,11 @@ const SECTIONS = [
     help: 'Issue, withdraw and print certificates, including visitor certificates.' },
   { key: 'idcards',      label: 'ID cards',
     help: 'Fill in card details and print ID cards.' },
+  /* Its own grant, NOT folded into certificates. An appointment letter carries
+     salary and terms of employment; someone trusted to print training
+     certificates is not automatically someone who should see or set pay. */
+  { key: 'letters',      label: 'Appointment letters',
+    help: 'Write, issue and withdraw appointment letters. This includes setting the pay figure printed on them.' },
   { key: 'donations',    label: 'Donations',
     help: 'See donations and record one taken offline.' },
   { key: 'volunteers',   label: 'Volunteer applications',
@@ -101,6 +106,13 @@ const ALLOW = [
 
   ['idcards',      'POST', /^\/members\/\d+\/idcard$/],
   ['idcards',      'GET',  /^\/members\/\d+\/idcard\.pdf$/],
+
+  ['letters',      'GET',  /^\/appointments$/],
+  ['letters',      'POST', /^\/appointments$/],
+  ['letters',      'POST', /^\/appointments\/preview$/],
+  ['letters',      'GET',  /^\/appointments\/\d+\.pdf$/],
+  ['letters',      'POST', /^\/appointments\/\d+\/revoke$/],
+  ['letters',      'POST', /^\/appointments\/\d+\/restore$/],
 
   ['donations',    'GET',  /^\/donations$/],
   ['donations',    'GET',  /^\/receipts$/],

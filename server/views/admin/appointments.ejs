@@ -1,0 +1,281 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'letters'}) %>
+<%#
+  Appointment letters.
+
+  Shaped like Certificates -> Generate, on purpose: the list is the PEOPLE, and
+  each row issues for that person. Starting from the person is the direction the
+  work actually runs in — somebody has been hired, and the letter follows.
+
+  The terms live in a <details> per row rather than on a separate page. A letter
+  needs nine or ten fields, which is too many for an inline cell and not worth a
+  page load, and keeping them attached to the row means you can never lose track
+  of who you are writing to. Same pattern as the payment panel on the member
+  list, so it is a form the office has already learned.
+
+  PREVIEW BEFORE ISSUE. Preview renders the letter from whatever is typed, with
+  a SPECIMEN watermark, and writes nothing. Issue mints the serial and saves the
+  row. That order matters: a serial is permanent and appears on a document that
+  leaves the building, so it should not be spent on a first draft.
+%>
+<style>
+.ap-head{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px}
+.ap-search{flex:1;min-width:220px;max-width:380px}
+.ap-search label{margin-top:0}
+.ap-panel{margin:0}
+.ap-panel > summary{
+  list-style:none;cursor:pointer;display:inline-flex;align-items:center;
+  padding:8px 15px;border-radius:100px;background:var(--purple);color:#fff;
+  font:500 .82rem 'Work Sans',sans-serif;white-space:nowrap}
+.ap-panel > summary::-webkit-details-marker{display:none}
+.ap-panel[open] > summary{background:var(--purple-deep)}
+.ap-body{margin-top:10px;padding:16px 18px;border:1px solid var(--rule-strong);
+  border-radius:var(--radius-sm);background:var(--paper-2);min-width:520px}
+.ap-body .row{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.ap-body .row3{display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr}
+.ap-body label{margin-top:10px;font-size:.78rem}
+.ap-body input,.ap-body select{padding:9px 11px;font-size:.85rem}
+.ap-acts{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.ap-note{font-size:.75rem;color:var(--text-soft);margin:10px 0 0}
+.ap-has{font-size:.74rem;color:var(--text-mute)}
+.ap-ser{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--purple);white-space:nowrap}
+.ap-tbl th:nth-child(1){width:26%}
+.ap-tbl th:last-child{width:22%}
+@media(max-width:880px){
+  .ap-body{min-width:0}
+  .ap-body .row,.ap-body .row3{grid-template-columns:1fr}
+}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Documents</p>
+<h1 style="margin-bottom:6px">Appointment letters</h1>
+
+<% if (saved === 'withdrawn') { %>
+  <div class="alert ok">Withdrawn. The reference now verifies as withdrawn rather than valid.</div>
+<% } else if (saved === 'restored') { %>
+  <div class="alert ok">Restored. The reference verifies as valid again.</div>
+<% } else if (saved) { %>
+  <div class="alert ok">
+    Issued — reference <span class="serial"><%= saved %></span>. It is in the register below;
+    open the PDF from there whenever you need a copy.
+  </div>
+<% } %>
+<% if (error === 'member') { %><div class="alert err">Pick an active member. A letter prints and verifies against a Member ID, so it needs one.</div><% } %>
+<% if (error === 'name') { %><div class="alert err">The letter needs a name to be addressed to.</div><% } %>
+<% if (error === 'designation') { %><div class="alert err">The letter needs a designation — it is the subject line and the thing the letter proves.</div><% } %>
+
+<p class="muted" style="max-width:80ch">
+  The letter is generated when you ask for it, from the terms saved against it — nothing is
+  stored as a file, so a reprint is always available and always matches what was issued.
+  <strong>Preview</strong> shows the letter watermarked <em>specimen</em> without saving anything;
+  <strong>Issue</strong> mints a permanent reference and records it.
+</p>
+<p class="muted" style="max-width:80ch">
+  Only <strong>active members</strong> appear here. The letter carries a QR that verifies against
+  the holder's Member ID, and a registration whose fee has not arrived does not have one yet.
+</p>
+<div class="alert err" style="max-width:80ch">
+  <strong>Before the first real letter goes out:</strong> the general conditions printed on page 2
+  — probation, confidentiality, safeguarding, notice, termination — are standard wording that has
+  not been checked by a lawyer. Read them, and have whoever advises the trust read them. Everything
+  else on the letter comes from the fields below; those seven clauses do not.
+</div>
+
+<div class="ap-head">
+  <form method="get" action="/portal/admin/appointments" class="ap-search">
+    <label for="q">Find an active member</label>
+    <input id="q" name="q" value="<%= q %>" placeholder="Name, email or Member ID">
+  </form>
+  <div><a class="btn btn-ghost btn-sm" href="/portal/admin/appointments">Clear</a></div>
+</div>
+
+<p class="muted" style="margin-top:-4px">
+  <%= members.length %> active member<%= members.length === 1 ? '' : 's' %><%= q ? ' matching “' + q + '”' : '' %>.
+</p>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table class="ap-tbl">
+<tr><th>Member</th><th>Member ID</th><th>Letters</th><th>Issue a letter</th></tr>
+<% if (!members.length) { %>
+  <tr><td colspan="4" class="muted" style="padding:18px">
+    <%= q ? 'Nobody matches that search.' : 'No active members yet — record a membership payment first.' %>
+  </td></tr>
+<% } %>
+<% members.forEach(m => { %>
+<tr>
+  <td><b><a href="/portal/admin/members/<%= m.id %>"><%= m.name %></a></b><br>
+      <span class="muted" style="font-size:.78rem"><%= m.email %></span></td>
+  <td class="ap-ser"><%= m.memberId || '—' %></td>
+  <td class="ap-has"><%= counts[m.id] ? counts[m.id] + ' issued' : '—' %></td>
+  <td>
+    <details class="ap-panel">
+      <summary>Write letter</summary>
+      <%#
+        ONE form, TWO submit buttons with different formaction targets. Preview
+        and Issue must send byte-identical fields — if they were two forms the
+        two documents could differ, and a preview that does not match what gets
+        issued is worse than no preview at all.
+      %>
+      <form method="post" action="/portal/admin/appointments?_csrf=<%= csrfToken %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="userId" value="<%= m.id %>">
+        <div class="ap-body">
+
+          <div class="row3">
+            <div>
+              <label for="kind-<%= m.id %>" style="margin-top:0">Letter for</label>
+              <select id="kind-<%= m.id %>" name="kind">
+                <% kinds.forEach(k => { %><option value="<%= k %>"><%= kindLabel[k] %></option><% }) %>
+              </select>
+            </div>
+            <div>
+              <label for="ld-<%= m.id %>" style="margin-top:0">Letter date</label>
+              <input id="ld-<%= m.id %>" type="date" name="letterDate">
+            </div>
+            <div>
+              <label for="jd-<%= m.id %>" style="margin-top:0">Date of joining</label>
+              <input id="jd-<%= m.id %>" type="date" name="joiningDate">
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="desig-<%= m.id %>">Designation *</label>
+              <input id="desig-<%= m.id %>" name="designation" required maxlength="120"
+                     placeholder="Programme Coordinator">
+            </div>
+            <div>
+              <label for="dept-<%= m.id %>">Department</label>
+              <input id="dept-<%= m.id %>" name="department" maxlength="120"
+                     placeholder="Community Development">
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="rep-<%= m.id %>">Reporting to</label>
+              <input id="rep-<%= m.id %>" name="reportsTo" maxlength="120" placeholder="Programme Manager">
+            </div>
+            <div>
+              <label for="loc-<%= m.id %>">Place of posting</label>
+              <input id="loc-<%= m.id %>" name="location" maxlength="120" placeholder="Bhadrak, Odisha">
+            </div>
+          </div>
+
+          <div class="row3">
+            <div>
+              <label for="et-<%= m.id %>">Employment type</label>
+              <input id="et-<%= m.id %>" name="employmentType" maxlength="60" placeholder="Full time">
+            </div>
+            <div>
+              <label for="prob-<%= m.id %>">Probation</label>
+              <input id="prob-<%= m.id %>" name="probation" maxlength="60" placeholder="Six months">
+            </div>
+            <div>
+              <label for="not-<%= m.id %>">Notice period</label>
+              <input id="not-<%= m.id %>" name="notice" maxlength="60" placeholder="One month">
+            </div>
+          </div>
+
+          <div class="row3">
+            <div>
+              <label for="gm-<%= m.id %>">Gross per month (Rs.)</label>
+              <input id="gm-<%= m.id %>" type="number" name="grossMonthly" min="1" step="1" placeholder="28000">
+            </div>
+            <div>
+              <label for="ctc-<%= m.id %>">Annual, indicative (Rs.)</label>
+              <input id="ctc-<%= m.id %>" type="number" name="annualCtc" min="1" step="1" placeholder="336000">
+            </div>
+            <div>
+              <label for="hrs-<%= m.id %>">Working hours</label>
+              <input id="hrs-<%= m.id %>" name="hours" maxlength="120" placeholder="09:30 to 18:00, Mon–Sat">
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="addr-<%= m.id %>">Address on the letter</label>
+              <input id="addr-<%= m.id %>" name="address" maxlength="240"
+                     value="<%= m.city || '' %>" placeholder="Postal address">
+            </div>
+            <div>
+              <label for="sig-<%= m.id %>">Signed by</label>
+              <input id="sig-<%= m.id %>" name="signatoryName" maxlength="120" placeholder="Name of the signatory">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="sigr-<%= m.id %>">Signatory's role</label>
+              <input id="sigr-<%= m.id %>" name="signatoryRole" maxlength="120" placeholder="Secretary">
+            </div>
+            <div></div>
+          </div>
+
+          <p class="ap-note">
+            Name, phone and email are taken from the member record. Blank fields print as a dash
+            rather than a guess — a letter with an em dash on it is obviously unfinished, which is
+            what you want.
+          </p>
+
+          <div class="ap-acts">
+            <button class="btn btn-ghost btn-sm" type="submit"
+                    formaction="/portal/admin/appointments/preview?_csrf=<%= csrfToken %>"
+                    formtarget="_blank">Preview (specimen)</button>
+            <button class="btn btn-primary btn-sm" type="submit">Issue letter</button>
+          </div>
+        </div>
+      </form>
+    </details>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+<% if (members.length >= 300) { %>
+  <p class="muted" style="font-size:.8rem">Showing the first 300. Use the search to narrow it.</p>
+<% } %>
+
+<h2 style="margin-top:34px">Register of letters issued</h2>
+<p class="muted" style="max-width:80ch">
+  Every letter ever issued, whether or not it still stands. Withdrawing one does not remove it —
+  the document is out there either way, and a scan has to be able to say "withdrawn" rather than
+  "not recognised", which reads as forgery.
+</p>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Reference</th><th>Name</th><th>Designation</th><th>For</th><th>Dated</th><th>Status</th><th>Action</th></tr>
+<% if (!letters.length) { %>
+  <tr><td colspan="7" class="muted" style="padding:18px">No letters issued yet.</td></tr>
+<% } %>
+<% letters.forEach(l => { %>
+<% var rev = revoked[l.serial]; %>
+<tr>
+  <td class="ap-ser"><%= l.serial %></td>
+  <td><%= l.name %></td>
+  <td><%= l.designation || '—' %></td>
+  <td class="muted" style="font-size:.8rem"><%= kindLabel[l.kind] || l.kind %></td>
+  <td class="muted" style="font-size:.8rem"><%= l.letterDate || '—' %></td>
+  <td>
+    <% if (rev) { %><span class="pill warn">Withdrawn</span>
+    <% } else { %><span class="pill ok">Valid</span><% } %>
+  </td>
+  <td>
+    <div class="mem-acts" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+      <a class="btn btn-ghost btn-sm" href="/portal/admin/appointments/<%= l.id %>.pdf"
+         target="_blank" rel="noopener">PDF</a>
+      <a class="btn btn-ghost btn-sm" href="/verify/<%= l.serial %>"
+         target="_blank" rel="noopener">Check a scan</a>
+      <form method="post" style="display:inline"
+            action="/portal/admin/appointments/<%= l.id %>/<%= rev ? 'restore' : 'revoke' %>"
+            onsubmit="return confirm('<%= rev ? "Restore" : "Withdraw" %> <%= l.serial %>?')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit"><%= rev ? 'Restore' : 'Withdraw' %></button>
+      </form>
+    </div>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

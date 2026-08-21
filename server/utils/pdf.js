@@ -5,7 +5,24 @@ const verify = require('./verify');
 
 const INK = '#101F29', PURPLE = '#7D4AB1', SOFT = '#5B6870', RULE = '#D8D4CA';
 
-function money(paise) { return '₹' + (paise / 100).toLocaleString('en-IN'); }
+/* "Rs." and not "₹", and this is not a style choice.
+
+   PDFKit's built-in Helvetica is encoded WinAnsi, which has no U+20B9. Handed a
+   ₹ it silently substitutes the nearest codepoint it does have — `¹`, superscript
+   one — so every receipt this portal has ever generated printed the amount as
+   "¹1,500". Silently: no error, no warning, and it looks close enough to a thin
+   glyph on screen that it survived review.
+
+   Two ways out. This one costs nothing and cannot fail: "Rs. 1,500" is ordinary
+   on an Indian receipt and unambiguous everywhere. The other is to bundle a TTF
+   that has the glyph (DejaVuSans does; ~744 KB) in assets/fonts and register it
+   with doc.registerFont — a system font is NOT an option, because the runtime
+   image is node:20-alpine and ships no fonts at all, so it would render here and
+   break in production.
+
+   Every amount in every PDF goes through this one function, so switching to the
+   symbol later is a one-line change here and nowhere else. */
+function money(paise) { return 'Rs. ' + (paise / 100).toLocaleString('en-IN'); }
 
 /* The QR and the barcode carry DIFFERENT payloads, on purpose.
 
