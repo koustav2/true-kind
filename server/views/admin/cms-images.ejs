@@ -1,0 +1,185 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'images'}) %>
+<%
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+%>
+<div class="wrap">
+<p class="eyebrow">Website</p>
+<h1>Photographs</h1>
+<p class="muted" style="margin-top:0;max-width:62ch">
+  Every photograph slot on the site, in one list — no page to open first, no section to expand.
+  Choosing a file saves it immediately; there is nothing else to click. This is also where the
+  homepage banner's slides live, under "Homepage".
+</p>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+
+<label class="cms-idstoggle">
+  <input type="checkbox" id="idsToggle">
+  Show technical field names
+  <span class="cms-hint" style="margin:0">— only useful if you're describing a problem to a developer.</span>
+</label>
+
+<div id="imgWrap" class="cms-ids-off">
+<% pages.forEach(function (page) { %>
+  <section class="cms-imgpage">
+    <div class="cms-imgpage-head">
+      <h2><%= page.label %></h2>
+      <% if (page.file) { %><a class="textlink" href="/<%= page.file %>" target="_blank" rel="noopener">Open <%= page.label %> ↗</a><% } %>
+    </div>
+    <% page.fields.forEach(function (f) { %>
+      <div class="cms-field" data-imgfield="<%= f.id %>" data-page="<%= page.name %>">
+        <div class="meta">
+          <label style="margin:0"><%= f.label %></label>
+          <span class="pill ok" data-savedpill hidden>Saved</span>
+          <span class="key"><%= f.id %></span>
+          <button type="button" class="textlink" data-imgreset style="margin-left:auto;font-size:.78rem">Reset to default</button>
+        </div>
+        <% if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
+        <div class="row2">
+          <div>
+            <input type="text" data-imgalt value="<%= esc(f.value.alt || '') %>" placeholder="Describe the image for screen readers">
+            <p class="cms-hint">Alt text. Describe what is in the picture.</p>
+            <p class="cms-err" data-imgerr hidden></p>
+          </div>
+          <div class="media-preview">
+            <img data-imgprev src="<%= esc(f.value.src || '') %>" alt="" onerror="this.style.visibility='hidden'">
+            <button type="button" class="btn btn-ghost btn-sm" data-imgpick>Change…</button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </section>
+<% }) %>
+</div>
+
+<!-- media picker (images only) -->
+<div id="picker" hidden style="position:fixed;inset:0;background:rgba(16,31,41,.5);z-index:50;overflow:auto;padding:30px 16px">
+  <div class="card" style="max-width:820px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <h3 style="margin:0;flex:1">Choose a photograph</h3>
+      <button type="button" class="btn btn-ghost btn-sm" id="pickerClose">Close</button>
+    </div>
+    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet. <a class="textlink" href="/portal/admin/cms/media">Upload something first ↗</a></p>
+    <div class="media-grid" id="pickerGrid"></div>
+    <p class="muted" style="margin-top:14px"><a class="textlink" href="/portal/admin/cms/media">Manage the media library ↗</a></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var MEDIA = <%- JSON.stringify(media) %>;
+  var CSRF  = <%- JSON.stringify(csrfToken) %>;
+
+  /* ---- show/hide the technical field id, remembered per browser ---- */
+  var wrap = document.getElementById('imgWrap');
+  var toggle = document.getElementById('idsToggle');
+  try {
+    var want = localStorage.getItem('cms-show-ids') === '1';
+    toggle.checked = want;
+    wrap.classList.toggle('cms-ids-off', !want);
+  } catch (e) {}
+  toggle.addEventListener('change', function () {
+    wrap.classList.toggle('cms-ids-off', !toggle.checked);
+    try { localStorage.setItem('cms-show-ids', toggle.checked ? '1' : '0'); } catch (e) {}
+  });
+
+  /* ---- media picker ---- */
+  var picker = document.getElementById('picker');
+  var grid   = document.getElementById('pickerGrid');
+  var empty  = document.getElementById('pickerEmpty');
+  var activeField = null;
+
+  function render() {
+    grid.innerHTML = '';
+    empty.hidden = MEDIA.length > 0;
+    MEDIA.forEach(function (m) {
+      var tile = document.createElement('div'); tile.className = 'media-tile';
+      var th = document.createElement('div'); th.className = 'thumb';
+      var img = document.createElement('img'); img.src = m.url; img.alt = m.alt || ''; th.appendChild(img);
+      var cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = m.original || m.url;
+      var act = document.createElement('div'); act.className = 'media-act';
+      var use = document.createElement('button');
+      use.type = 'button'; use.className = 'btn btn-purple btn-sm'; use.textContent = 'Use this';
+      use.addEventListener('click', function () { choose(m); });
+      act.appendChild(use);
+      tile.append(th, cap, act);
+      grid.appendChild(tile);
+    });
+  }
+
+  document.querySelectorAll('[data-imgpick]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activeField = btn.closest('[data-imgfield]');
+      render();
+      picker.hidden = false;
+    });
+  });
+  document.getElementById('pickerClose').addEventListener('click', function () { picker.hidden = true; });
+  picker.addEventListener('click', function (e) { if (e.target === picker) picker.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') picker.hidden = true; });
+
+  function choose(m) {
+    if (!activeField) return;
+    picker.hidden = true;
+    var prev = activeField.querySelector('[data-imgprev]');
+    prev.src = m.url; prev.style.visibility = 'visible';
+    save(activeField, { src: m.url, alt: activeField.querySelector('[data-imgalt]').value });
+  }
+
+  /* ---- one field, saved the moment it changes — no page-wide Save button ---- */
+  function flashSaved(field) {
+    var pill = field.querySelector('[data-savedpill]');
+    pill.hidden = false;
+    clearTimeout(pill._t);
+    pill._t = setTimeout(function () { pill.hidden = true; }, 2200);
+  }
+
+  function save(field, value) {
+    var id = field.getAttribute('data-imgfield'), page = field.getAttribute('data-page');
+    var err = field.querySelector('[data-imgerr]'); err.hidden = true;
+    fetch('/portal/admin/cms/inline/' + page, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF, 'X-Requested-With': 'fetch' },
+      body: JSON.stringify({ id: id, value: value })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok) { err.textContent = d.message || 'Could not save that.'; err.hidden = false; return; }
+      flashSaved(field);
+    }).catch(function () { err.textContent = 'Could not reach the server to save that.'; err.hidden = false; });
+  }
+
+  document.querySelectorAll('[data-imgalt]').forEach(function (input) {
+    var initial = input.value;
+    input.addEventListener('change', function () {
+      if (input.value === initial) return;
+      initial = input.value;
+      var field = input.closest('[data-imgfield]');
+      var src = field.querySelector('[data-imgprev]').getAttribute('src') || '';
+      save(field, { src: src, alt: input.value });
+    });
+  });
+
+  /* ---- reset one field back to the original picture ---- */
+  document.querySelectorAll('[data-imgreset]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var field = btn.closest('[data-imgfield]');
+      var id = field.getAttribute('data-imgfield'), page = field.getAttribute('data-page');
+      if (!confirm('Put this photograph back to the site\'s original picture? This cannot be undone.')) return;
+      fetch('/portal/admin/cms/reset/' + page, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'fetch' },
+        body: 'id=' + encodeURIComponent(id) + '&_csrf=' + encodeURIComponent(CSRF)
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d.ok) return;
+        var prev = field.querySelector('[data-imgprev]');
+        prev.removeAttribute('src'); prev.style.visibility = 'hidden';
+        field.querySelector('[data-imgalt]').value = '';
+        flashSaved(field);
+      });
+    });
+  });
+})();
+</script>
+</div>
+</body></html>

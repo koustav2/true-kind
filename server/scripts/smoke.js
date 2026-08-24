@@ -147,9 +147,15 @@ process.env.ADMIN_PASSWORD = 'admin123';
   check('certificate PDF for member', r.headers.get('content-type') === 'application/pdf');
 
   // admin CMS + form config
-  await call('POST', '/portal/admin/content/about', { heading: 'About', body: 'New body' }, 'admin');
-  r = await fetch(base + '/api/content/about');
-  check('content API returns saved data', (await r.json()).body === 'New body');
+  // (/portal/admin/content used to be exercised here — a second, older editor
+  // retired in favour of the registry-driven one below because the two wrote
+  // into the same page elements and could silently fight. It now just
+  // redirects; this checks the real save path instead.)
+  r = await call('GET', '/portal/admin/content', null, 'admin');
+  check('the retired content editor redirects rather than 404ing or rendering', r.status === 302);
+  await call('POST', '/portal/admin/cms/page/about', { 'about.h2.1': 'New heading' }, 'admin');
+  r = await fetch(base + '/api/cms/about');
+  check('cms API returns saved data', (await r.json()).fields['about.h2.1'].v === 'New heading');
   await call('POST', '/portal/admin/form/add', { label: 'Occupation', type: 'text' }, 'admin');
   r = await call('GET', '/portal/member/donate');
   check('configured field appears on donation form', (await r.text()).includes('Occupation'));

@@ -39,11 +39,39 @@ const ALL_ROW_KEYS = ['cms:global', ...PAGE_KEYS.map(p => `cms:${p}`)];
 
 /* ---- shaping for the admin UI -------------------------------------------- */
 
+/* Cut a long group name at a WORD boundary, not a character count.
+   Group names for anything the generator could not name from a declared slot
+   are the page's own heading text, verbatim — "Kindness works better when
+   it's organized." — and the flat `slice(0, 37) + '…'` this replaced cut
+   straight through the middle of a word ("…organ…"). That reads as garbled
+   text, not as a shortened one; a plain reader has no way to tell truncation
+   from a typo. Cutting back to the last space before the limit keeps every
+   group name a run of whole words, at the cost of sometimes landing a few
+   characters short of the max — a trade worth making for something that has
+   to be scanned, not measured. */
+function truncateGroup(name, max) {
+  if (name.length <= max) return name;
+  const cut = name.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  // Only back off to the last space if that still leaves a reasonable amount
+  // of text — a name with no early space (one very long word) falls back to
+  // the hard cut rather than truncating to almost nothing.
+  const safe = sp > max * 0.55 ? cut.slice(0, sp) : cut;
+  return safe.trimEnd() + '…';
+}
+
 /* Fields for one page, arranged into the groups the generator derived, with
    `href` companions folded into their parent so the admin sees "Button label"
-   and "Button destination" side by side rather than 55 orphan URL rows. */
+   and "Button destination" side by side rather than 55 orphan URL rows.
+
+   IMAGES ARE EXCLUDED. Every photograph slot has its own screen now — the
+   Images tab (see imagePages/imageFieldsForPage below) — so a text editor
+   never has to scroll past a "Photographs" group of thumbnails to reach the
+   next paragraph, and a photograph is never filed under two different menus.
+   This is what actually shrinks the page: on the homepage it removes 59 of
+   the 178 fields and the one group that held them all. */
 function groupsForPage(pageName) {
-  const own = FIELDS.filter(f => f.page === pageName);
+  const own = FIELDS.filter(f => f.page === pageName && f.type !== 'image');
   const hrefIds = new Set(own.filter(f => f.role === 'href').map(f => f.id));
   const order = [];
   const groups = new Map();
@@ -56,23 +84,44 @@ function groupsForPage(pageName) {
     if (companion) item.hrefField = companion;
     groups.get(g).push(item);
   }
-  // Photographs and video last: they are additive, not corrections to copy.
-  for (const tail of ['Photographs', 'Video']) {
-    const idx = order.indexOf(tail);
-    if (idx > -1) { order.splice(idx, 1); order.push(tail); }
-  }
+  // Video last: it is additive, not a correction to copy. (Photographs used to
+  // get the same treatment; it can no longer appear here at all — see above.)
+  const idx = order.indexOf('Video');
+  if (idx > -1) { order.splice(idx, 1); order.push('Video'); }
   return order.map(name => ({
     name,
-    // Headings make honest group names but some run long in a sidebar.
-    short: name.length > 38 ? name.slice(0, 37).trimEnd() + '…' : name,
+    short: truncateGroup(name, 44),
     fields: groups.get(name)
   }));
+}
+
+/* How many fields the Pages editor will actually show for this page — used for
+   the sidebar count. Deliberately NOT "every field with this page name": that
+   count includes images (their own tab now) and href companions (folded into
+   their parent field, not a row of their own), and showing it next to a page
+   whose editor no longer has a Photographs group at all reads as a typo the
+   moment someone counts. */
+function textFieldCount(pageName) {
+  return groupsForPage(pageName).reduce((n, g) => n + g.fields.length, 0);
 }
 
 function pageList() {
   const pages = [{ name: 'global', label: 'Header & footer (all pages)', file: null }];
   for (const p of (registry.pages || [])) pages.push({ ...p });
   return pages.map(p => ({ ...p, count: FIELDS.filter(f => f.page === p.name && f.role !== 'href').length }));
+}
+
+/* ---- images tab ------------------------------------------------------------
+   Every photograph on the site in one flat list, instead of one buried inside
+   each page's own editor. 32 fields total across the whole site — few enough
+   that this needs no grouping or sub-navigation of its own; it is genuinely
+   the short list. */
+function imagePages() {
+  const withImages = new Set(FIELDS.filter(f => f.type === 'image').map(f => f.page));
+  return pageList().filter(p => withImages.has(p.name));
+}
+function imageFieldsForPage(pageName) {
+  return FIELDS.filter(f => f.page === pageName && f.type === 'image');
 }
 
 /* ---- validation ---------------------------------------------------------- */
@@ -271,6 +320,7 @@ async function bundleForPage(SiteContent, pageName) {
 
 module.exports = {
   registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor,
-  groupsForPage, pageList, valuesForPage, savePatch, resetFields, bundleForPage,
+  groupsForPage, textFieldCount, pageList, imagePages, imageFieldsForPage,
+  valuesForPage, savePatch, resetFields, bundleForPage,
   sanitizeRichtext, safeUrl, safeMediaPath, safeEmbedUrl, coerce
 };

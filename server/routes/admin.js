@@ -730,34 +730,22 @@ router.get('/donations.csv', async (req, res) => {
   res.send(rows.join('\n'));
 });
 
-// 4. Website content
-const CONTENT_KEYS = ['about', 'banner', 'team', 'works', 'press'];
-router.get('/content', async (req, res) => {
-  const docs = await SiteContent.findAll({ where: { key: CONTENT_KEYS } });
-  const byKey = Object.fromEntries(docs.map(d => [d.key, d.data]));
-  res.render('admin/content', { title: 'Website content', byKey, keys: CONTENT_KEYS, saved: req.query.saved });
-});
-router.post('/content/:key', (req, res, next) => {
-  uploadImage.single('image')(req, res, err => {
-    if (err) return res.status(err.status || 400).render('error', { title: 'Upload failed', message: uploadErrorMessage(err) });
-    next();
-  });
-}, async (req, res) => {
-  if (!CONTENT_KEYS.includes(req.params.key)) return res.status(400).send('Unknown key');
-  const patch = { ...req.body };
-  delete patch._csrf;
-  if (req.file) patch.image = '/uploads/' + req.file.filename;
-
-  const [row] = await SiteContent.findOrCreate({ where: { key: req.params.key }, defaults: { data: {} } });
-  // MERGE, not replace. This used to be `row.data = data`, which meant editing
-  // the banner headline without re-picking a file silently deleted the stored
-  // banner image — even though the form displayed it as "Current:" right above.
-  // Note the whole-object reassignment: Sequelize does not detect in-place
-  // mutation of a JSON column as dirty, so `row.data.x = y` would not persist.
-  row.data = { ...(row.data || {}), ...patch };
-  await row.save();
-  res.redirect('/portal/admin/content?saved=1');
-});
+// 4. Website content — RETIRED.
+//
+// This used to be a second, older admin screen writing five SiteContent rows
+// (about/banner/team/works/press) that assets/js/content.js read back into the
+// public pages. It grew up alongside the registry-driven CMS (server/cms/) and
+// nothing ever removed it, so the nav offered two different "edit the site"
+// screens that could silently fight over the same element — the homepage hero
+// heading carried both this system's `data-cms-banner-headline` hook and the
+// real one's `data-cms="index.h1.1"`, and whichever fetch resolved first on a
+// given page load won, with no error visible anywhere. See assets/js/content.js
+// for the full account.
+//
+// The redirect (not a 404) is for anyone with this URL bookmarked or cached;
+// nothing writes to these five rows any more, and the routes accept nothing.
+router.get('/content', (req, res) => res.redirect('/portal/admin/cms'));
+router.post('/content/:key', (req, res) => res.redirect('/portal/admin/cms'));
 
 // 6. Volunteer registrations (from the public site — no login for volunteers)
 const VOL_STATUSES = ['new', 'contacted', 'active', 'inactive'];

@@ -48,7 +48,13 @@
       </p>
     <% } %>
 
-    <form method="post" action="/portal/admin/cms/page/<%= page.name %>" id="cmsForm">
+    <label class="cms-idstoggle">
+      <input type="checkbox" id="idsToggle">
+      Show technical field names
+      <span class="cms-hint" style="margin:0">— only useful if you're describing a problem to a developer.</span>
+    </label>
+
+    <form method="post" action="/portal/admin/cms/page/<%= page.name %>" id="cmsForm" class="cms-ids-off">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <% groups.forEach(function(group, gi){ %>
@@ -216,6 +222,21 @@
   "use strict";
   var MEDIA = <%- JSON.stringify(media) %>;
   var CSRF  = <%- JSON.stringify(csrfToken) %>;
+
+  /* ---- show/hide the technical field id, remembered per browser ---- */
+  (function () {
+    var form = document.getElementById('cmsForm');
+    var toggle = document.getElementById('idsToggle');
+    try {
+      var want = localStorage.getItem('cms-show-ids') === '1';
+      toggle.checked = want;
+      form.classList.toggle('cms-ids-off', !want);
+    } catch (e) {}
+    toggle.addEventListener('change', function () {
+      form.classList.toggle('cms-ids-off', !toggle.checked);
+      try { localStorage.setItem('cms-show-ids', toggle.checked ? '1' : '0'); } catch (e) {}
+    });
+  })();
 
   /* ---- video mode tabs ---- */
   document.querySelectorAll('[data-video]').forEach(function (box) {

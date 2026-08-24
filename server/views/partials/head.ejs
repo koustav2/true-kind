@@ -8,6 +8,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+/* The browser's own [hidden] rule and an author class rule can tie on
+   specificity (an attribute selector and a class selector are both 0-1-0);
+   when they tie, whichever comes later in the cascade wins, which is always
+   this stylesheet, not the UA one. `.pill{display:inline-block}` below was
+   exactly that case — a <span hidden class="pill ok"> used as a toggleable
+   "Saved" flash (Photographs tab) rendered visible on every field on page
+   load, because .pill's display won the tie. This one line keeps hidden
+   authoritative no matter what else declares display on the same element. */
+[hidden]{display:none!important}
+
 /* Kept in step with assets/css/style.css by hand — the portal does not load the
    public stylesheet, so the same token names are declared twice. If you change a
    colour there, change it here too or the admin drifts off-brand. */
@@ -268,6 +278,31 @@ img{max-width:100%;height:auto}
 .cms-bar{position:sticky;bottom:0;background:rgba(255,255,255,.95);
   border-top:1px solid var(--rule-strong);padding:14px 0;margin-top:18px;
   display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:5}
+
+/* Technical field id, off by default everywhere it appears (Pages and
+   Photographs both use this). It exists for the rare case someone is
+   describing a problem to a developer — not for everyday editing, so it stays
+   out of the way until asked for rather than sitting next to every single
+   label as a permanent reminder that this is a database. */
+.cms-ids-off .key{display:none}
+.cms-idstoggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:.85rem;color:var(--text);margin:0 0 18px;cursor:pointer}
+.cms-idstoggle input{margin:0}
+
+/* ---- Photographs tab ------------------------------------------------------
+   Deliberately not built from .cms-group/<details>: 32 fields across the whole
+   site does not need an accordion per page, and a page you can just scroll is
+   one fewer click than a page you have to open first. */
+.cms-imgpage{margin-bottom:8px}
+.cms-imgpage-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  padding-top:22px;margin-bottom:2px;border-top:1px solid var(--rule)}
+.cms-imgpage:first-of-type .cms-imgpage-head{border-top:none;padding-top:0}
+.cms-imgpage-head h2{margin:0;font-size:1.15rem}
+/* .textlink elsewhere is only ever an <a> and rides on the default underline;
+   a <button> needs that spelled out since browsers do not underline those. */
+.cms-field .meta button.textlink{
+  background:none;border:0;padding:0;font:inherit;color:inherit;
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 
 .media-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .media-tile{border:1px solid var(--rule);border-radius:9px;overflow:hidden;background:#fff;display:flex;flex-direction:column}

@@ -31,8 +31,33 @@ function wantsJson(req) {
 
 router.get('/', (req, res) => res.redirect('/portal/admin/cms/page/global'));
 
+/* The Pages sidebar shows a TEXT count, not the raw field count — pageList()'s
+   count still includes images (their own tab now) and href companions (folded
+   into their parent row), and showing "178" next to a page whose editor no
+   longer has a Photographs group at all is the first thing anyone would
+   notice was wrong. */
+function sidebarPages() {
+  return cms.pageList().map(p => ({ ...p, count: cms.textFieldCount(p.name) }));
+}
+
+/* Stored overrides restricted to ids the Pages editor actually renders on this
+   page — i.e. not images. Without this, editing five photographs and two
+   paragraphs on About would show "2 fields" worth of "edited" pills on screen
+   but a "Reset all 7 edited fields" button at the bottom, five of which are
+   nowhere on the page to look at first. */
+function textEditedIds(pageName, stored) {
+  const shown = new Set();
+  for (const g of cms.groupsForPage(pageName)) {
+    for (const f of g.fields) {
+      shown.add(f.id);
+      if (f.hrefField) shown.add(f.hrefField.id);
+    }
+  }
+  return Object.keys(stored).filter(id => shown.has(id));
+}
+
 router.get('/page/:page', async (req, res) => {
-  const pages = cms.pageList();
+  const pages = sidebarPages();
   const page = pages.find(p => p.name === req.params.page);
   if (!page) return res.status(404).render('error', { title: 'Not found', message: 'No such page in the CMS.' });
 
@@ -44,14 +69,14 @@ router.get('/page/:page', async (req, res) => {
     pages, page,
     groups: cms.groupsForPage(page.name),
     values,
-    editedIds: Object.keys(stored),
+    editedIds: textEditedIds(page.name, stored),
     media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
     saved: req.query.saved, errors: {}
   });
 });
 
 router.post('/page/:page', async (req, res) => {
-  const pages = cms.pageList();
+  const pages = sidebarPages();
   const page = pages.find(p => p.name === req.params.page);
   if (!page) return res.status(404).send('Unknown page');
 
@@ -70,12 +95,33 @@ router.post('/page/:page', async (req, res) => {
     return res.status(400).render('admin/cms-page', {
       title: 'Website content', pages, page,
       groups: cms.groupsForPage(page.name), values,
-      editedIds: Object.keys(stored),
+      editedIds: textEditedIds(page.name, stored),
       media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
       saved: null, errors: result.errors
     });
   }
   res.redirect(`/portal/admin/cms/page/${page.name}?saved=${result.changed.length}`);
+});
+
+/* ---- images -------------------------------------------------------------- */
+
+/* Every photograph on the site, grouped by the real page it lives on — not the
+   heading-derived groups the Pages editor uses. One screen, no accordions:
+   32 fields across the whole site is short enough to just scroll. */
+router.get('/images', async (req, res) => {
+  const pages = cms.imagePages();
+  const perPage = await Promise.all(pages.map(async p => {
+    const { values } = await cms.valuesForPage(SiteContent, p.name);
+    return { ...p, fields: cms.imageFieldsForPage(p.name).map(f => ({ ...f, value: values[f.id] || {} })) };
+  }));
+  const media = await MediaAsset.findAll({ where: { kind: 'image' }, order: [['createdAt', 'DESC']], limit: 200 });
+
+  res.render('admin/cms-images', {
+    title: 'Photographs',
+    pages: perPage,
+    media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
+    saved: req.query.saved
+  });
 });
 
 /* Put a field back to whatever the original HTML says. */

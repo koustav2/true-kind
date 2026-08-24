@@ -96,14 +96,18 @@
 
     /* Never grantable — the CMS, the media library and the board are separate
        routers with no manager entry in the allow table (middleware/staff.js).
-       'Text content' is listed here because the page existed and nothing linked
-       to it: an editor reachable only by typing the URL is not a feature. */
+
+       'Text content' used to be listed here — a second, older editor that wrote
+       into the same page elements the real one does, so the two could silently
+       overwrite each other (see server/routes/admin.js). It is gone; the URL
+       still resolves, but redirects here instead of opening a screen that saved
+       into a dead end. */
     { key: 'website', label: 'Website', pages: [
-      { key: 'cms',     label: 'Pages',        href: A + '/cms',        gate: 'admin' },
-      { key: 'media',   label: 'Media',        href: A + '/cms/media',  gate: 'admin' },
-      { key: 'content', label: 'Text content', href: A + '/content',    gate: 'admin' },
-      { key: 'board',   label: 'Board',        href: A + '/board',      gate: 'admin' },
-      { key: 'form',    label: 'Form fields',  href: A + '/form',       gate: 'admin' }
+      { key: 'cms',     label: 'Pages',        href: A + '/cms',         gate: 'admin' },
+      { key: 'images',  label: 'Photographs',  href: A + '/cms/images',  gate: 'admin' },
+      { key: 'media',   label: 'Media',        href: A + '/cms/media',   gate: 'admin' },
+      { key: 'board',   label: 'Board',        href: A + '/board',       gate: 'admin' },
+      { key: 'form',    label: 'Form fields',  href: A + '/form',        gate: 'admin' }
     ]},
 
     /* Accounts and who may do what. Blocked sits here rather than under Members
