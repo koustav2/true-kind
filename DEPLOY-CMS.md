@@ -803,3 +803,44 @@ Then, in a browser:
   email signatures, social profiles, printed material still at the printer.
 - `info@truekindfoundation.org` already appears throughout the site and on the
   ID card back, so the mailbox on the new domain needs to exist and be watched.
+
+### Pre-flight: what is already on port 80?
+
+Run this BEFORE copying any vhost over `/etc/nginx/sites-available/truekind`.
+This box also runs TRUE HRMS, so nginx is serving more than one site and
+something else may already own the port.
+
+```bash
+# 1. What is listening, and is it actually nginx?
+ss -tlnp | grep -E ':80 |:443 '
+
+# 2. Any container publishing 80/443? Docker's iptables rules run BEFORE nginx,
+#    so a container on :80 silently intercepts traffic nginx thinks it has.
+docker ps --format 'table {{.Names}}\t{{.Ports}}'
+
+# 3. Every vhost nginx currently serves, and which one is the catch-all
+ls -l /etc/nginx/sites-enabled/
+nginx -T 2>/dev/null | grep -nE '^\s*(server_name|listen)' | head -40
+grep -rn default_server /etc/nginx/sites-enabled/ /etc/nginx/nginx.conf
+
+# 4. Does a truekind vhost already exist, and is it enabled?
+ls -l /etc/nginx/sites-enabled/truekind 2>/dev/null || echo "not enabled"
+grep -n 'server_name\|ssl_certificate' /etc/nginx/sites-available/truekind 2>/dev/null
+```
+
+**Reading the answers:**
+
+| What you see | What it means |
+|---|---|
+| `nginx` on `:80` and `:443` | normal. Carry on. |
+| `apache2`, `httpd`, `caddy` on `:80` | nginx is not the front door. Stop — replacing the truekind vhost will change nothing. |
+| a container with `0.0.0.0:80->…` | that container is intercepting before nginx. Resolve that first. |
+| nothing on `:80` | nginx is not running, or failed its last reload. `systemctl status nginx`. |
+| another vhost has `default_server` | fine. `server_name` matching still wins for our three names; `default_server` only catches names nobody claims. |
+| `sites-enabled/truekind` missing | the file exists but was never symlinked, so editing it does nothing. `ln -sf /etc/nginx/sites-available/truekind /etc/nginx/sites-enabled/truekind` |
+| `ssl_certificate` lines already present | certbot has managed this file before. Back it up and note the existing lineage name before overwriting. |
+
+**Do not skip step 2.** Docker publishing a port writes its own iptables DNAT
+rule, which is evaluated before the packet ever reaches nginx. The symptom is
+maddening: `nginx -t` passes, the config is visibly correct, `systemctl reload`
+succeeds, and the browser keeps showing something else entirely.
