@@ -3394,6 +3394,23 @@
    }
   },
   {
+   "id": "about.photo.hero",
+   "page": "about",
+   "scope": "about",
+   "group": "Photographs",
+   "label": "About Us — hero photograph",
+   "help": "Beside the headline at the top of About Us. Landscape, 1600x1200 or wider. The crop changes between desktop and phone, so keep the subject near the middle. A real photograph of your own work — a camp, a training batch, the team — is worth far more here than a bought one.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"about.photo.hero\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
    "id": "about.photo.story",
    "page": "about",
    "scope": "about",

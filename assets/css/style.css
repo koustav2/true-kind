@@ -698,6 +698,50 @@ header.site::after{
 .inner-hero h1{ margin-top:var(--sp-5); max-width:19ch; }
 .inner-hero .lede{ margin-top:var(--sp-5); }
 
+/* A hero with a picture beside the headline.
+   NOT a 50/50 split. The text column already has its own measure — the h1 is
+   capped at 19ch and the lede wants about 60 characters — so the image takes
+   the space the text was never going to use. That empty right-hand third is
+   exactly what this fills. */
+.hero-split{
+  display:grid; grid-template-columns:1.05fr 0.95fr;
+  gap:clamp(32px, 5vw, 72px); align-items:center;
+}
+.hero-split-text > :first-child{ margin-top:0; }
+.hero-split-media{
+  aspect-ratio:4/3;
+  border:1px solid var(--rule); border-radius:var(--radius);
+  background:var(--paper-3);
+  display:flex; align-items:center; justify-content:center;
+}
+/* The stand-in is FILLED brand shapes, not the grey outline used elsewhere.
+   The first version drew stick figures in the muted outline style of the other
+   placeholders, and on a panel this size it read as cheap — which is a poor
+   companion to a headline promising an institution. This is the logo's own
+   language instead: a leaf and three reaching figures in the brand colours.
+   Held at 0.9 so it is clearly a graphic and not a second logo competing with
+   the real one in the header. */
+.hero-split-media > svg{
+  width:72%; max-width:320px; height:auto;
+  opacity:0.9; fill:none; stroke:none;
+}
+.hero-split-mark .hs-leaf{ fill:var(--brand-green); opacity:0.85; }
+.hero-split-mark .hs-p{ fill:var(--brand-purple); }
+.hero-split-mark .hs-b{ fill:var(--brand-blue); opacity:0.92; }
+.hero-split-mark .hs-r{ fill:var(--brand-red); opacity:0.92; }
+.hero-split-mark .hs-ground{
+  fill:none; stroke:var(--rule-strong); stroke-width:1; stroke-linecap:round;
+}
+
+/* One column on narrow screens, and the image goes UNDER the text rather than
+   over it: on a phone the first thing on screen should be what the page is
+   about. A picture that pushes the headline below the fold makes the page
+   slower to understand, not richer. */
+@media (max-width:860px){
+  .hero-split{ grid-template-columns:1fr; gap:var(--sp-7); }
+  .hero-split-media{ aspect-ratio:16/9; order:2; }
+}
+
 .breadcrumb{
   font-family:var(--font-mono); font-size:var(--fs-xs);
   color:var(--text-mute); margin:0 0 var(--sp-5);

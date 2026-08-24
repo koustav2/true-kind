@@ -54,6 +54,22 @@ for (const page of ['index', 'work']) {
    client two different screens that each half-edit the same four cards. The
    photograph is uploaded with the rest of that person's details instead. */
 
+/* The About page HERO photograph — beside the headline, at the top of the page.
+   This is the most-seen image on the site after the homepage banner, so it is
+   the one worth putting a real photograph in first. 4:3 on desktop and 16:9 on
+   a phone, so a picture with its subject near the centre survives both crops. */
+slots.push({
+  id: 'about.photo.hero',
+  page: 'about',
+  label: 'About Us — hero photograph',
+  help: 'Beside the headline at the top of About Us. Landscape, 1600x1200 or wider. '
+      + 'The crop changes between desktop and phone, so keep the subject near the middle. '
+      + 'A real photograph of your own work — a camp, a training batch, the team — is worth '
+      + 'far more here than a bought one.',
+  container: '.hero-split-media',
+  fit: 'cover'
+});
+
 /* The About page photograph — a wide picture under the "Why we exist" story.
    Empty by default: the outline drawing in the HTML stands in until a real
    photograph is uploaded, so the page never shows a hole. */
