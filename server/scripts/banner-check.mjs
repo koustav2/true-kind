@@ -61,11 +61,34 @@ const settle = p => p.waitForTimeout(1700);
     g.body.x - g.slide.x < g.slide.w * 0.12 && g.body.h <= g.slide.h + 1,
     JSON.stringify({ slide: g.slide, body: g.body }));
 
-  /* A BAND, NOT A SCREENFUL. This is what the brand-plate version got wrong:
-     aspect-ratio:16/7 across the content column made a box taller than what was
-     left of the viewport, so a centred element read as empty space. */
-  ck('the slide is a bounded band, not screen height',
-    g.slide.h >= 300 && g.slide.h <= 480 && g.slide.h < 900 * 0.62, String(g.slide.h));
+  /* IT IS THE HERO'S RIGHT-HAND PANEL, and the ripple plate it replaced is gone
+     from the markup rather than just hidden. */
+  const place = await p.evaluate(() => {
+    const pan = document.querySelector('.hero-slider').getBoundingClientRect();
+    const txt = document.querySelector('.hero-grid > div').getBoundingClientRect();
+    return {
+      inHeroGrid: document.querySelector('.hero-grid > .hero-slider') !== null,
+      ripples: document.querySelectorAll('.ripple-wrap, .ripple-ring').length,
+      beside: pan.left >= txt.right - 1,
+      footMismatch: Math.abs(pan.bottom - txt.bottom)
+    };
+  });
+  ck('it is a child of the hero grid, not a section below it', place.inHeroGrid);
+  ck('the ripple plate is gone from the page entirely', place.ripples === 0, String(place.ripples));
+  ck('it sits beside the headline, not under it', place.beside === true);
+  /* The 4:5 ratio exists to make this true — a square left an 87px shortfall
+     against the text column, which read as a misalignment rather than a choice. */
+  ck('its bottom edge finishes level with the buttons',
+    place.footMismatch <= 40, String(Math.round(place.footMismatch)));
+
+  /* BOUNDED. This is what the first two attempts got wrong in opposite
+     directions: 16/7 across the full page was a 525px band taller than the
+     viewport had left, and an uncapped portrait ratio on a wide monitor is 725px
+     that pushes the stats strip off the screen. */
+  ck('the panel is bounded, not screen height',
+    g.slide.h >= 360 && g.slide.h <= 560 && g.slide.h < 900 * 0.72, String(g.slide.h));
+  ck('and it is portrait in the hero column',
+    g.slide.h > g.slide.w, JSON.stringify(g.slide));
 
   /* Headline, supporting line and button all present and visible. */
   for (const [sel, what] of [['.slide-title', 'headline'], ['.slide-caption', 'supporting line'], ['.slide-cta', 'button']]) {
@@ -75,15 +98,20 @@ const settle = p => p.waitForTimeout(1700);
   const hrefs = await p.locator('.slide:not([hidden]) .slide-cta').evaluateAll(a => a.map(x => x.getAttribute('href')));
   ck('every button has a destination', hrefs.every(h => h && h !== '#'), hrefs.join(' | '));
 
-  /* Controls, and the thing they must not do: sit on the words. */
+  /* Controls, and the thing they must not do: sit on the words. Measured against
+     the text ELEMENTS, not the .slide-body box — the body is a full-height flex
+     container, so testing its rectangle reports an overlap with anything in the
+     panel and would pass or fail for the wrong reason. */
   const clash = await p.evaluate(() => {
     const hit = (a, c) => a && c && !(a.right < c.left || c.right < a.left || a.bottom < c.top || c.bottom < a.top);
     const box = s => { const el = document.querySelector(s); if (!el || el.hidden) return null; return el.getBoundingClientRect(); };
-    const body = box('.slide[data-slide="1"] .slide-body');
-    return { prev: hit(body, box('[data-slider-prev]')), next: hit(body, box('[data-slider-next]')), dots: hit(body, box('[data-slider-dots]')) };
+    const words = [...document.querySelectorAll('.slide[data-slide="1"] .slide-body > *')]
+      .filter(el => !el.hidden).map(el => el.getBoundingClientRect());
+    const any = sel => words.some(w => hit(w, box(sel)));
+    return { prev: any('[data-slider-prev]'), next: any('[data-slider-next]'), dots: any('[data-slider-dots]') };
   });
-  ck('the arrows do not overlap the text column', clash.prev === false && clash.next === false, JSON.stringify(clash));
-  ck('the dots do not overlap the text column', clash.dots === false, JSON.stringify(clash));
+  ck('the arrows do not overlap the copy', clash.prev === false && clash.next === false, JSON.stringify(clash));
+  ck('the dots do not overlap the copy', clash.dots === false, JSON.stringify(clash));
 
   const labels = await p.locator('[data-slider-dots] button').evaluateAll(bs => bs.map(x => x.getAttribute('aria-label')));
   ck('three dots, one per slide', labels.length === 3, String(labels.length));
@@ -170,13 +198,44 @@ const settle = p => p.waitForTimeout(1700);
       pageScrollsSideways: document.documentElement.scrollWidth > document.documentElement.clientWidth
     };
   });
-  ck('the phone frame is taller than the desktop band', m.h >= 340 && m.h <= 470, String(m.h));
+  ck('the panel becomes a band once the hero stacks', m.h >= 340 && m.h <= 440, String(m.h));
   ck('nothing overflows the frame on a phone',
     m.overflowTop <= 0.5 && m.overflowBottom <= 0.5, JSON.stringify(m));
   ck('the button clears the dot row', m.ctaHitsDots === false);
   ck('the arrows step aside on a phone', m.arrowsGone === true);
   ck('the page does not scroll sideways', m.pageScrollsSideways === false);
   ck('no asset 404s and no page errors on a phone', errors.length === 0, errors.join(' | '));
+  await ctx.close();
+}
+
+/* ---- the stacking point ------------------------------------------------ */
+{
+  /* 920 is where .hero-grid collapses to one column. The panel goes full width
+     there, and 4:5 at 828px would be a 1035px-tall photograph — so the ratio has
+     to be dropped, not merely capped. */
+  const { ctx, p } = await page(900, 900);
+  await p.goto(B + '/index.html', { waitUntil: 'load' });
+  await settle(p);
+  const m = await p.evaluate(() => {
+    const pan = document.querySelector('.hero-slider').getBoundingClientRect();
+    const txt = document.querySelector('.hero-grid > div').getBoundingClientRect();
+    const li = document.querySelector('.slide:not([hidden])').getBoundingClientRect();
+    const kids = [...document.querySelector('.slide:not([hidden]) .slide-body').children]
+      .filter(e => !e.hidden).map(e => e.getBoundingClientRect());
+    return {
+      w: Math.round(li.width), h: Math.round(li.height),
+      stacked: pan.top > txt.bottom - 1,
+      sameWidth: Math.abs(pan.width - txt.width) < 2,
+      overflow: Math.max(+(li.top - Math.min(...kids.map(k => k.top))).toFixed(1),
+                         +(Math.max(...kids.map(k => k.bottom)) - li.bottom).toFixed(1)),
+      arrows: getComputedStyle(document.querySelector('[data-slider-next]')).display !== 'none'
+    };
+  });
+  ck('under 920 the panel drops below the headline', m.stacked === true);
+  ck('and takes the full content width', m.sameWidth === true, JSON.stringify(m));
+  ck('and stops being portrait', m.h < m.w && m.h >= 340 && m.h <= 440, JSON.stringify(m));
+  ck('nothing overflows the frame at the stacking point', m.overflow <= 0.5, String(m.overflow));
+  ck('the arrows are still there at tablet width', m.arrows === true);
   await ctx.close();
 }
 
