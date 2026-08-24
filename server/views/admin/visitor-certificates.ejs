@@ -7,15 +7,19 @@
   CertificateIssue because that one requires a userId, and issuing through it
   would mean silently creating a login for a person who never asked for one.
 
-  The template thumbnails are drawn in CSS rather than shipped as images: three
-  small PNGs would be three more files to keep in step with the actual PDF
-  designs, and they would drift.
+  The template thumbnails are drawn in CSS rather than shipped as images: six
+  small PNGs would be six more files to keep in step with the actual PDF
+  designs, and they would drift. Each thumbnail's SHAPE (not just its colour)
+  follows the template's `layout` — a ribbon template gets a drawn ribbon and
+  a centred medallion, a modern template gets the left-aligned strip and no
+  seal — so the picker actually shows which of the three layouts an admin is
+  choosing, not just which colourway.
 %>
 <style>
-.vc-form{max-width:620px}
+.vc-form{max-width:680px}
 .vc-row{display:grid;gap:12px}
 @media(min-width:560px){.vc-row.two{grid-template-columns:1fr 1fr}}
-.tpl-grid{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin-top:8px}
+.tpl-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-top:8px}
 .tpl{cursor:pointer;margin:0;display:block;position:relative}
 .tpl input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
 .tpl .card-mini{
@@ -32,6 +36,17 @@
 .tpl .corner{position:absolute;width:0;height:0;border-style:solid}
 .tpl .name{font-size:.68rem;text-align:center;margin-top:6px;color:var(--text-soft)}
 .tpl:has(input:checked) .name{color:var(--purple);font-weight:500}
+/* ribbon layout: a small notched banner near the top, a medallion dot
+   bottom-centre, thin border instead of the double frame. */
+.tpl .frame.ribbon{border-width:1px;justify-content:flex-start;padding-top:8px}
+.tpl .ribbon-banner{width:60%;height:8px;clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);margin-bottom:auto}
+.tpl .medallion{width:12px;height:12px;border-radius:50%;margin-top:auto;margin-bottom:4px;position:relative}
+.tpl .medallion::after{content:"";position:absolute;inset:3px;border-radius:50%}
+/* modern layout: top strip + corner flag, left-aligned bars, no seal. */
+.tpl .frame.modern{border-width:1px;align-items:flex-start;justify-content:flex-start;padding:10px 8px 8px}
+.tpl .modern-strip{position:absolute;top:0;left:0;right:0;height:4px}
+.tpl .modern-flag{position:absolute;top:4px;left:0;width:0;height:0;border-style:solid;border-width:0 0 22px 26px;border-color:transparent transparent transparent}
+.tpl .frame.modern .bar{width:60%;margin-left:0}
 </style>
 
 <div class="wrap">
@@ -76,6 +91,20 @@
       <label class="tpl">
         <input type="radio" name="template" value="<%= k %>" <%= i === 0 ? 'checked' : '' %>>
         <div class="card-mini">
+          <% if (t.layout === 'ribbon') { %>
+          <div class="frame ribbon" style="border-color:<%= t.frame %>;background:<%= t.wash %>">
+            <span class="ribbon-banner" style="background:<%= t.frame %>"></span>
+            <span class="bar short" style="background:<%= t.accent %>"></span>
+            <span class="medallion" style="background:<%= t.frame %>"></span>
+          </div>
+          <% } else if (t.layout === 'modern') { %>
+          <div class="frame modern" style="border-color:<%= t.frame %>;background:<%= t.wash %>">
+            <span class="modern-strip" style="background:<%= t.frame %>"></span>
+            <span class="modern-flag" style="border-left-color:<%= t.accent %>"></span>
+            <span class="bar" style="background:<%= t.frame %>;margin-top:20px"></span>
+            <span class="bar short" style="background:<%= t.accent %>"></span>
+          </div>
+          <% } else { %>
           <div class="frame" style="border-color:<%= t.frame %>;background:<%= t.wash %>">
             <span class="corner" style="top:0;left:0;border-width:9px 9px 0 0;border-color:<%= t.accent %> transparent transparent transparent"></span>
             <span class="corner" style="top:0;right:0;border-width:0 9px 9px 0;border-color:transparent <%= t.accent %> transparent transparent"></span>
@@ -83,6 +112,7 @@
             <span class="bar short" style="background:<%= t.accent %>"></span>
             <span class="seal" style="background:<%= t.accent %>"></span>
           </div>
+          <% } %>
         </div>
         <span class="name"><%= t.label %></span>
       </label>

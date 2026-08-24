@@ -129,21 +129,35 @@ async function membershipReceiptPdf(res, payment, user) {
 }
 
 /* ==========================================================================
-   Certificates, in three designs.
+   Certificates, in six designs across three LAYOUTS.
 
-   The client's reference admin offers three templates at issue time, so this
-   does too. They differ in the frame colour, the seal and the corner treatment —
-   not in the information, which is identical on all three. A template that moved
-   the serial or dropped the QR would be a different document, not a different
-   design.
+   The first three (navy/purple/green) are one layout — a double frame with
+   corner wedges and a corner seal — in three colourways. The other three
+   (maroon, teal, slate) are genuinely different compositions, not recolours
+   of the same drawing: a ribbon banner with a centred medallion (maroon,
+   teal), and a left-aligned, seal-free modern strip (slate). `layout` on
+   each entry says which drawing function it uses; `certTemplate()` falls
+   back to 'frame' for anything undeclared, so an entry that forgets the key
+   still renders instead of crashing.
 
-   Each one is drawn rather than composited over a background image so that a
-   long title or a long name reflows instead of overprinting the border.
+   Whatever the layout, the INFORMATION is identical on every template — the
+   serial, the issued date, the QR, the barcode and the signatory line are
+   drawn once, by the single shared `drawFooter`, never by a per-layout
+   function. A template that moved the serial or dropped the QR would be a
+   different document, not a different design; putting the footer in one
+   place, called by all six, makes that impossible to get wrong per-template.
+
+   Every layout is drawn rather than composited over a background image so
+   that a long title or a long name reflows instead of overprinting the
+   border.
    ========================================================================== */
 const CERT_TEMPLATES = {
-  navy:   { key: 'navy',   label: 'Navy & gold',   frame: '#0E4C92', accent: '#B8860B', wash: '#F7F9FC' },
-  purple: { key: 'purple', label: 'Purple',        frame: '#7D4AB1', accent: '#C0397A', wash: '#FAF7FD' },
-  green:  { key: 'green',  label: 'Green',         frame: '#2F5D03', accent: '#59B306', wash: '#F6FAF2' }
+  navy:   { key: 'navy',   label: 'Navy & gold',          layout: 'frame',  frame: '#0E4C92', accent: '#B8860B', wash: '#F7F9FC' },
+  purple: { key: 'purple', label: 'Purple',               layout: 'frame',  frame: '#7D4AB1', accent: '#C0397A', wash: '#FAF7FD' },
+  green:  { key: 'green',  label: 'Green',                layout: 'frame',  frame: '#2F5D03', accent: '#59B306', wash: '#F6FAF2' },
+  maroon: { key: 'maroon', label: 'Maroon & gold ribbon', layout: 'ribbon', frame: '#7A1F2B', accent: '#C89A3A', wash: '#FBF7EE' },
+  teal:   { key: 'teal',   label: 'Teal ribbon',          layout: 'ribbon', frame: '#0B5E5A', accent: '#D97B3F', wash: '#F2FAF9' },
+  slate:  { key: 'slate',  label: 'Slate modern',         layout: 'modern', frame: '#1F2937', accent: '#E4572E', wash: '#FFFFFF' }
 };
 const CERT_TEMPLATE_KEYS = Object.keys(CERT_TEMPLATES);
 
@@ -152,8 +166,9 @@ function certTemplate(key) {
 }
 
 /* A ribbon seal, drawn. Three concentric arcs and two tails — enough to read as
-   a seal at print size without shipping an image per template. */
-function seal(doc, x, y, t) {
+   a seal at print size without shipping an image per template. Used by the
+   'frame' layout, corner-mounted. */
+function cornerSeal(doc, x, y, t) {
   doc.save();
   doc.path(`M ${x - 9} ${y + 16} L ${x - 4} ${y + 34} L ${x} ${y + 26} L ${x + 4} ${y + 34} L ${x + 9} ${y + 16} Z`).fill(t.accent);
   doc.circle(x, y, 17).fill(t.frame);
@@ -162,18 +177,43 @@ function seal(doc, x, y, t) {
   doc.restore();
 }
 
-/* One renderer for member certificates and visitor certificates alike. `doc`
-   subject fields are already resolved by the caller, so this function knows
-   nothing about which table the record came from. */
-async function drawCertificate(doc, opts) {
-  const t = certTemplate(opts.template);
-  const W = doc.page.width, H = doc.page.height;
+/* Same idea, bigger, with two tails instead of one, sat bottom-centre for the
+   'ribbon' layout's medallion. */
+function medallionSeal(doc, x, y, t) {
+  doc.save();
+  doc.path(`M ${x - 11} ${y + 18} L ${x - 5} ${y + 40} L ${x} ${y + 30} L ${x + 5} ${y + 40} L ${x + 11} ${y + 18} Z`).fill(t.frame);
+  doc.circle(x, y, 20).fill(t.frame);
+  doc.circle(x, y, 15).fill(t.accent);
+  doc.circle(x, y, 9).fill(t.frame);
+  doc.restore();
+}
 
+/* ---- shared footer -------------------------------------------------------
+   Serial, issued date, signatory line, QR and barcode — at the SAME position
+   regardless of which layout drew everything above it. This is what keeps the
+   "identical information on every template" promise true by construction:
+   there is exactly one place in the code that draws the serial, and every
+   layout function calls it instead of drawing its own. */
+async function drawFooter(doc, t, opts, W, H) {
+  doc.font('Helvetica').fontSize(8.5).fillColor(SOFT)
+     .text(`Serial ${opts.serial}`, 60, H - 152, { characterSpacing: 0.4 })
+     .text(`Issued ${opts.issuedOn}`, 60, H - 141);
+
+  doc.save().lineWidth(0.7).strokeColor(SOFT)
+     .moveTo(W - 210, H - 74).lineTo(W - 60, H - 74).stroke().restore();
+  doc.font('Helvetica-Bold').fontSize(7.5).fillColor(SOFT)
+     .text('AUTHORISED SIGNATORY', W - 210, H - 70, { width: 150, align: 'center', characterSpacing: 0.5 });
+
+  await codesRow(doc, opts.serial, 60, H - 128);
+}
+
+/* ---- layout: frame --------------------------------------------------------
+   Double rectangle border, four corner wedges, a seal in the corner. The
+   original three-colourway design. */
+function drawFrameLayout(doc, t, opts, W, H) {
   doc.rect(0, 0, W, H).fill(t.wash);
-  // Double frame.
   doc.save().lineWidth(3).strokeColor(t.frame).rect(22, 22, W - 44, H - 44).stroke().restore();
   doc.save().lineWidth(0.8).strokeColor(t.accent).rect(30, 30, W - 60, H - 60).stroke().restore();
-  // Corner wedges, so the three templates are distinguishable at a glance.
   [[30, 30, 1, 1], [W - 30, 30, -1, 1], [30, H - 30, 1, -1], [W - 30, H - 30, -1, -1]]
     .forEach(([cx, cy, sx, sy]) => {
       doc.save().path(`M ${cx} ${cy} L ${cx + 34 * sx} ${cy} L ${cx} ${cy + 34 * sy} Z`).fill(t.accent).restore();
@@ -210,18 +250,119 @@ async function drawCertificate(doc, opts) {
        .text(opts.body, 130, 293, { align: 'center', width: W - 260, lineGap: 2 });
   }
 
-  seal(doc, W - 118, H - 132, t);
+  cornerSeal(doc, W - 118, H - 132, t);
+}
 
-  doc.font('Helvetica').fontSize(8.5).fillColor(SOFT)
-     .text(`Serial ${opts.serial}`, 60, H - 152, { characterSpacing: 0.4 })
-     .text(`Issued ${opts.issuedOn}`, 60, H - 141);
+/* ---- layout: ribbon --------------------------------------------------------
+   A single thin border with L-shaped corner brackets (not wedges — the point
+   is that this reads as a different design from across a room, not just a
+   different colour), a notched ribbon banner carrying the title, and a
+   medallion with two hanging tails centred at the bottom. Formal / award-like,
+   for the client who wants something closer to a printed award than a
+   frame-and-logo layout. */
+function drawRibbonLayout(doc, t, opts, W, H) {
+  doc.rect(0, 0, W, H).fill(t.wash);
+  doc.save().lineWidth(1.4).strokeColor(t.frame).rect(26, 26, W - 52, H - 52).stroke().restore();
 
-  doc.save().lineWidth(0.7).strokeColor(SOFT)
-     .moveTo(W - 210, H - 74).lineTo(W - 60, H - 74).stroke().restore();
-  doc.font('Helvetica-Bold').fontSize(7.5).fillColor(SOFT)
-     .text('AUTHORISED SIGNATORY', W - 210, H - 70, { width: 150, align: 'center', characterSpacing: 0.5 });
+  const L = 22;
+  [[30, 30, 1, 1], [W - 30, 30, -1, 1], [30, H - 30, 1, -1], [W - 30, H - 30, -1, -1]]
+    .forEach(([cx, cy, sx, sy]) => {
+      doc.save().lineWidth(2).strokeColor(t.accent)
+         .moveTo(cx, cy + L * sy).lineTo(cx, cy).lineTo(cx + L * sx, cy).stroke().restore();
+    });
 
-  await codesRow(doc, opts.serial, 60, H - 128);
+  const logo = certLogo();
+  if (logo) {
+    try { doc.image(logo, W / 2 - 44, 40, { fit: [88, 28], align: 'center' }); } catch (e) {}
+  }
+  doc.fillColor(SOFT).font('Helvetica').fontSize(8)
+     .text(config.org.name.toUpperCase(), 0, 74, { align: 'center', characterSpacing: 2 });
+  doc.fillColor(SOFT).font('Helvetica').fontSize(6.5)
+     .text(`Reg. No ${config.org.regNo}   ·   NGO Darpan ${config.org.darpan}`, 0, 86,
+       { align: 'center', characterSpacing: 0.5 });
+
+  // Notched ribbon banner holding the title — a hexagon-ish flag, not a plain box.
+  const bw = Math.min(420, W - 200), bh = 40, bx = W / 2 - bw / 2, by = 104, notch = 16;
+  doc.save().path(
+    `M ${bx} ${by} L ${bx + bw} ${by} L ${bx + bw - notch} ${by + bh / 2} L ${bx + bw} ${by + bh} ` +
+    `L ${bx} ${by + bh} L ${bx + notch} ${by + bh / 2} Z`
+  ).fill(t.frame).restore();
+  doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(17)
+     .text(opts.title || 'Certificate', bx + notch + 6, by + bh / 2 - 9, { width: bw - 2 * notch - 12, align: 'center' });
+
+  doc.font('Helvetica').fontSize(11).fillColor(SOFT)
+     .text('is proudly presented to', 0, by + bh + 22, { align: 'center' });
+  doc.font('Helvetica-Bold').fontSize(22).fillColor(t.frame)
+     .text(opts.holder || '—', 70, by + bh + 44, { align: 'center', width: W - 140 });
+  doc.save().lineWidth(0.7).strokeColor(t.accent)
+     .moveTo(W / 2 - 130, by + bh + 76).lineTo(W / 2 + 130, by + bh + 76).stroke().restore();
+
+  let y2 = by + bh + 84;
+  if (opts.subline) {
+    doc.font('Helvetica').fontSize(9.5).fillColor(SOFT)
+       .text(opts.subline, 70, y2, { align: 'center', width: W - 140 });
+    y2 += 16;
+  }
+  if (opts.body) {
+    doc.font('Helvetica').fontSize(10.5).fillColor(INK)
+       .text(opts.body, 130, y2 + 6, { align: 'center', width: W - 260, lineGap: 2 });
+  }
+
+  // Medallion sits centred, clear of the QR block (left) and signatory (right) —
+  // see the footer positions in drawFooter, which this layout never touches.
+  medallionSeal(doc, W / 2, H - 92, t);
+}
+
+/* ---- layout: modern ---------------------------------------------------------
+   Left-aligned, no seal, no double frame — a thin colour strip across the top,
+   a solid corner flag, and an accent tick beside the recipient's name instead
+   of a centred underline. For a client who finds the award-certificate look
+   too formal for something like a workshop-completion note. */
+function drawModernLayout(doc, t, opts, W, H) {
+  doc.rect(0, 0, W, H).fill(t.wash);
+  doc.rect(0, 0, W, 10).fill(t.frame);
+  doc.save().path('M 0 10 L 90 10 L 0 70 Z').fill(t.accent).restore();
+
+  const logo = certLogo();
+  if (logo) {
+    try { doc.image(logo, 50, 34, { fit: [92, 30] }); } catch (e) {}
+  }
+  doc.fillColor(SOFT).font('Helvetica-Bold').fontSize(9)
+     .text(config.org.name.toUpperCase(), 150, 40, { characterSpacing: 1.6 });
+  doc.fillColor(SOFT).font('Helvetica').fontSize(7)
+     .text(`Reg. No ${config.org.regNo}   ·   NGO Darpan ${config.org.darpan}`, 150, 54);
+
+  doc.fillColor(t.accent).font('Helvetica-Bold').fontSize(30)
+     .text(opts.title || 'Certificate', 60, 130, { width: W - 120 });
+
+  doc.font('Helvetica').fontSize(11).fillColor(SOFT).text('presented to', 60, 186);
+  doc.rect(60, 210, 6, 30).fill(t.accent);
+  doc.font('Helvetica-Bold').fontSize(24).fillColor(INK)
+     .text(opts.holder || '—', 78, 214, { width: W - 200 });
+
+  let y2 = 250;
+  if (opts.subline) {
+    doc.font('Helvetica').fontSize(9.5).fillColor(SOFT).text(opts.subline, 78, y2);
+    y2 += 18;
+  }
+  if (opts.body) {
+    doc.font('Helvetica').fontSize(10.5).fillColor(INK)
+       .text(opts.body, 78, y2 + 6, { width: W - 260, lineGap: 2 });
+  }
+}
+
+const LAYOUT_DRAWERS = { frame: drawFrameLayout, ribbon: drawRibbonLayout, modern: drawModernLayout };
+
+/* One renderer for member certificates and visitor certificates alike. `doc`
+   subject fields are already resolved by the caller, so this function knows
+   nothing about which table the record came from. The layout draws
+   everything decorative; drawFooter always draws the serial/QR/barcode —
+   see the comment above CERT_TEMPLATES for why that split matters. */
+async function drawCertificate(doc, opts) {
+  const t = certTemplate(opts.template);
+  const W = doc.page.width, H = doc.page.height;
+  (LAYOUT_DRAWERS[t.layout] || LAYOUT_DRAWERS.frame)(doc, t, opts, W, H);
+  await drawFooter(doc, t, opts, W, H);
 }
 
 function certLogo() {
