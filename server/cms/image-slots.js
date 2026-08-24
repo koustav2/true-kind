@@ -133,20 +133,22 @@ slots.push({
     id: `index.slide.${n}.image`,
     page: 'index',
     label: `Homepage slider — slide ${n} photograph`,
-    /* Slide 1 SHIPS WITH A PICTURE — assets/img/banner-brand.jpg, the logo on
-       the site's ripple motif — so the banner is present on a fresh install
-       instead of the section hiding itself and the homepage looking unfinished.
-       That default lives in index.html, not in the database, which is why the
+    /* Slides 1-3 SHIP WITH A PICTURE — the three generated backgrounds in
+       assets/img/ (see tools/make-demo-banners.py) — so the banner is present and
+       looks finished on a fresh install instead of the section hiding itself.
+       Those defaults live in index.html, not in the database, which is why the
        preview box below is empty until somebody uploads something: the box shows
        stored overrides only. Hence spelling it out here. */
-    help: n === 1
-      ? 'Landscape, ideally 1600x900 or wider (16:7 is the exact frame). '
-        + 'This slide currently shows the built-in brand plate — the preview box '
-        + 'to the right is empty because nothing has been uploaded yet. Choose a '
-        + 'file to replace it. Clearing every slide hides the banner entirely.'
-      : 'Landscape, 16:7. Leave empty to use fewer slides — the banner shows only '
-        + 'the slides that have a photograph, and the arrows and dots appear only '
-        + 'once there are two or more.',
+    help: n <= 3
+      ? 'Landscape, ideally 1600x900 or wider. This slide currently shows a '
+        + 'placeholder background in the brand colours — the preview box to the '
+        + 'right is empty because nothing has been uploaded yet. Choose a file to '
+        + 'replace it with a real photograph. The frame is a wide band and the '
+        + 'picture is cropped to fill it, so keep the subject clear of the '
+        + 'left-hand third, where the headline sits.'
+      : 'Landscape. Leave empty to use fewer slides — the banner shows only the '
+        + 'slides that have a photograph, and the arrows and dots appear only once '
+        + 'there are two or more.',
     container: `.slide[data-slide="${n}"] .slide-media`,
     fit: 'cover',
     preset: true            // container already carries the slot classes

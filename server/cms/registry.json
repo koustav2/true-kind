@@ -452,11 +452,182 @@
    }
   },
   {
+   "id": "index.h2.6",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skill Development"
+  },
+  {
+   "id": "index.p.3",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Training that ends in a job, and a follow-up six months later to see if it held."
+  },
+  {
+   "id": "index.a.11.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.11\"]",
+    "attr": "href"
+   },
+   "default": "work.html"
+  },
+  {
+   "id": "index.a.11",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "See our programs",
+   "href": {
+    "id": "index.a.11.href",
+    "default": "work.html"
+   }
+  },
+  {
+   "id": "index.h2.7",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Women's Empowerment"
+  },
+  {
+   "id": "index.p.13",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "An income she controls changes what the whole household can plan for."
+  },
+  {
+   "id": "index.a.12.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.12\"]",
+    "attr": "href"
+   },
+   "default": "work.html"
+  },
+  {
+   "id": "index.a.12",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "See our programs",
+   "href": {
+    "id": "index.a.12.href",
+    "default": "work.html"
+   }
+  },
+  {
+   "id": "index.h2.8",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — heading (H2)",
+   "role": "heading (H2)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Environment"
+  },
+  {
+   "id": "index.p.21",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Cleaner air and shade where people actually live, planted and then maintained."
+  },
+  {
+   "id": "index.a.13.href",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"index.a.13\"]",
+    "attr": "href"
+   },
+   "default": "donate.html"
+  },
+  {
+   "id": "index.a.13",
+   "page": "index",
+   "scope": "index",
+   "group": "Skill Development",
+   "label": "Skill Development — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Support the work",
+   "href": {
+    "id": "index.a.13.href",
+    "default": "donate.html"
+   }
+  },
+  {
    "id": "index.button.1",
    "page": "index",
    "scope": "index",
-   "group": "Page",
-   "label": "Page — button label",
+   "group": "Skill Development",
+   "label": "Skill Development — button label",
    "role": "button label",
    "type": "text",
    "target": {
@@ -468,8 +639,8 @@
    "id": "index.button.2",
    "page": "index",
    "scope": "index",
-   "group": "Page",
-   "label": "Page — button label",
+   "group": "Skill Development",
+   "label": "Skill Development — button label",
    "role": "button label",
    "type": "text",
    "target": {
@@ -2564,7 +2735,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 1 photograph",
-   "help": "Landscape, ideally 1600x900 or wider (16:7 is the exact frame). This slide currently shows the built-in brand plate — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it. Clearing every slide hides the banner entirely.",
+   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2581,7 +2752,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 2 photograph",
-   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2598,7 +2769,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 3 photograph",
-   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2615,7 +2786,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 4 photograph",
-   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Landscape. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2632,7 +2803,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 5 photograph",
-   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Landscape. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2644,12 +2815,26 @@
    }
   },
   {
+   "id": "index.slide.1.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 1 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"1\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.slide.1.caption",
    "page": "index",
    "scope": "index",
    "group": "Photographs",
-   "label": "Homepage slider — slide 1 caption",
-   "help": "Optional. Leave empty for a photograph with no caption.",
+   "label": "Homepage banner — slide 1 supporting line",
+   "help": "One sentence under the headline. Optional.",
    "role": "optional text",
    "type": "text",
    "target": {
@@ -2658,12 +2843,55 @@
    "default": ""
   },
   {
+   "id": "index.slide.1.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 1 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"1\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.1.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 1 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"1\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.2.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 2 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"2\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.slide.2.caption",
    "page": "index",
    "scope": "index",
    "group": "Photographs",
-   "label": "Homepage slider — slide 2 caption",
-   "help": "Optional. Leave empty for a photograph with no caption.",
+   "label": "Homepage banner — slide 2 supporting line",
+   "help": "One sentence under the headline. Optional.",
    "role": "optional text",
    "type": "text",
    "target": {
@@ -2672,12 +2900,55 @@
    "default": ""
   },
   {
+   "id": "index.slide.2.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 2 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"2\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.2.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 2 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"2\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.3.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 3 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"3\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.slide.3.caption",
    "page": "index",
    "scope": "index",
    "group": "Photographs",
-   "label": "Homepage slider — slide 3 caption",
-   "help": "Optional. Leave empty for a photograph with no caption.",
+   "label": "Homepage banner — slide 3 supporting line",
+   "help": "One sentence under the headline. Optional.",
    "role": "optional text",
    "type": "text",
    "target": {
@@ -2686,12 +2957,55 @@
    "default": ""
   },
   {
+   "id": "index.slide.3.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 3 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"3\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.3.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 3 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"3\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.4.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 4 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"4\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.slide.4.caption",
    "page": "index",
    "scope": "index",
    "group": "Photographs",
-   "label": "Homepage slider — slide 4 caption",
-   "help": "Optional. Leave empty for a photograph with no caption.",
+   "label": "Homepage banner — slide 4 supporting line",
+   "help": "One sentence under the headline. Optional.",
    "role": "optional text",
    "type": "text",
    "target": {
@@ -2700,16 +3014,88 @@
    "default": ""
   },
   {
+   "id": "index.slide.4.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 4 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"4\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.4.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 4 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"4\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.5.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 5 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"5\"]"
+   },
+   "default": ""
+  },
+  {
    "id": "index.slide.5.caption",
    "page": "index",
    "scope": "index",
    "group": "Photographs",
-   "label": "Homepage slider — slide 5 caption",
-   "help": "Optional. Leave empty for a photograph with no caption.",
+   "label": "Homepage banner — slide 5 supporting line",
+   "help": "One sentence under the headline. Optional.",
    "role": "optional text",
    "type": "text",
    "target": {
     "selector": "[data-cms-slide-caption=\"5\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.5.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 5 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"5\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.5.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 5 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"5\"]",
+    "attr": "href"
    },
    "default": ""
   },

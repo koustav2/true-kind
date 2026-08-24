@@ -157,6 +157,18 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       if (!slides.length) { root.hidden = true; stop(); return; }
       root.hidden = false;
 
+      // A button needs both a label and a destination, and those are two
+      // separate CMS fields — so an admin can fill in one and not the other.
+      // cms.js reveals whatever it is given a value for, which would leave
+      // either a button-shaped thing that goes nowhere or a bare arrow with no
+      // words on it. Neither ships: it takes both or it stays hidden.
+      slides.forEach(function (li) {
+        var cta = li.querySelector(".slide-cta");
+        if (!cta) return;
+        var href = (cta.getAttribute("href") || "").trim();
+        cta.hidden = !(cta.textContent.trim() && href && href !== "#");
+      });
+
       var many = slides.length > 1;
       prev.hidden = next.hidden = !many;
       dotsBox.innerHTML = "";
@@ -165,7 +177,15 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
           var d = document.createElement("button");
           d.type = "button";
           d.setAttribute("role", "tab");
-          d.setAttribute("aria-label", "Photograph " + (i + 1) + " of " + slides.length);
+          // Name the dot after the slide's own headline where there is one. "Skill
+          // Development (slide 1 of 3)" tells a screen-reader user where the dot
+          // goes; "Photograph 1 of 3" — what this said while a slide was nothing
+          // but a picture — tells them nothing.
+          var h = li.querySelector(".slide-title");
+          var name = h && !h.hidden ? h.textContent.trim() : "";
+          d.setAttribute("aria-label", name
+            ? name + " (slide " + (i + 1) + " of " + slides.length + ")"
+            : "Slide " + (i + 1) + " of " + slides.length);
           d.addEventListener("click", function () { go(i); restart(); });
           dotsBox.appendChild(d);
         });
@@ -187,9 +207,17 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
         d.setAttribute("aria-selected", i === index ? "true" : "false");
       });
       slides.forEach(function (li, i) {
+        var on = i === index;
         // Hide the off-screen slides from assistive tech, so a screen reader is
-        // not read four captions for one visible photograph.
-        li.setAttribute("aria-hidden", i === index ? "false" : "true");
+        // not read four headlines for one visible photograph.
+        li.setAttribute("aria-hidden", on ? "false" : "true");
+        // The slides now carry a LINK, and a focusable element inside an
+        // aria-hidden subtree is the classic version of this bug: tab past the
+        // banner and focus lands on an off-screen button, the track scrolls
+        // sideways on its own, and the focus ring is nowhere on screen. Take the
+        // off-screen ones out of the tab order to match what they claim.
+        var cta = li.querySelector(".slide-cta");
+        if (cta) { if (on) cta.removeAttribute("tabindex"); else cta.setAttribute("tabindex", "-1"); }
       });
     }
 

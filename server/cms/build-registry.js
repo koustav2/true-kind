@@ -304,10 +304,23 @@ function processPage(page, entries) {
       console.warn(`  ! text slot ${slot.id}: selector "${slot.selector}" not found — skipped`);
       continue;
     }
+    /* A slot may target an ATTRIBUTE rather than the element's text — the banner
+       button's href is declared that way, pointing at the same <a> as its label.
+       assets/js/cms.js has always honoured `a` on a field; this generator simply
+       never emitted it, so the capability existed and was unreachable.
+
+       For an href the type MUST be 'url'. That is what routes the value through
+       safeUrl() on save, which is the only thing standing between an
+       admin-entered link and `javascript:` in an href attribute. Type 'text'
+       would store it verbatim. */
     entries.push({
       id: slot.id, page: page.name, scope: page.name, group: slot.group || 'Page',
-      label: slot.label, help: slot.help, role: 'optional text', type: 'text',
-      target: { selector: slot.selector },
+      label: slot.label, help: slot.help,
+      role: slot.attr ? 'optional link' : 'optional text',
+      type: slot.type || (slot.attr === 'href' ? 'url' : 'text'),
+      target: slot.attr
+        ? { selector: slot.selector, attr: slot.attr }
+        : { selector: slot.selector },
       default: ''
     });
   }

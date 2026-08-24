@@ -9,14 +9,51 @@
 
 const slots = [];
 
-/* Optional caption under each homepage slider photograph. */
+/* The homepage banner. Each of the five slides carries a headline, a supporting
+   line and one button, laid over its photograph.
+
+   The slide used to be a bare photograph with an optional caption, and it did
+   not work: at banner size a picture with a line of small text under it reads as
+   a stray image, not a banner. A banner has something to say and somewhere to
+   send you.
+
+   `caption` KEEPS ITS ID rather than being renamed to something tidier like
+   `.text`. Anything an admin has already typed into it lives in the database
+   under that key, and renaming the slot would orphan it — the field would come
+   back empty while the old value sat in the row forever, invisible. It is
+   relabelled instead. The id is a database key, not a description. */
 [1, 2, 3, 4, 5].forEach(n => {
+  slots.push({
+    id: `index.slide.${n}.title`,
+    page: 'index',
+    label: `Homepage banner — slide ${n} headline`,
+    help: 'A few words, not a sentence. Leave empty and the slide shows the photograph alone.',
+    selector: `[data-cms-slide-title="${n}"]`,
+    group: 'Photographs'
+  });
   slots.push({
     id: `index.slide.${n}.caption`,
     page: 'index',
-    label: `Homepage slider — slide ${n} caption`,
-    help: 'Optional. Leave empty for a photograph with no caption.',
+    label: `Homepage banner — slide ${n} supporting line`,
+    help: 'One sentence under the headline. Optional.',
     selector: `[data-cms-slide-caption="${n}"]`,
+    group: 'Photographs'
+  });
+  slots.push({
+    id: `index.slide.${n}.cta`,
+    page: 'index',
+    label: `Homepage banner — slide ${n} button text`,
+    help: 'Leave empty for no button. The button appears only when this and the link below are both filled in.',
+    selector: `[data-cms-slide-cta="${n}"]`,
+    group: 'Photographs'
+  });
+  slots.push({
+    id: `index.slide.${n}.ctaHref`,
+    page: 'index',
+    label: `Homepage banner — slide ${n} button link`,
+    help: 'Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.',
+    selector: `[data-cms-slide-cta="${n}"]`,
+    attr: 'href',
     group: 'Photographs'
   });
 });

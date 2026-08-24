@@ -992,47 +992,161 @@ header.site::after{
   scrollbar-width:none; -webkit-overflow-scrolling:touch;
 }
 .slider-track::-webkit-scrollbar{ display:none; }
-.slide{ flex:0 0 100%; scroll-snap-align:center; position:relative; }
+/* HEIGHT IS BOUNDED, NOT DERIVED FROM THE WIDTH.
+
+   This used to be `aspect-ratio:16/7` on the full content column, which on a
+   1440 laptop is a 525px-tall box — taller than what was left of the viewport
+   under the header and hero. A slide is a band across the page, so it is given
+   a band's height and the photograph is cropped to fit, rather than the page
+   being stretched to fit the photograph. */
+.slide{
+  flex:0 0 100%; scroll-snap-align:center;
+  position:relative; isolation:isolate;
+  height:clamp(340px, 34vw, 420px);
+}
 .slide[hidden]{ display:none; }
-.slide-media{ aspect-ratio:16/7; width:100%; background:var(--paper-3); }
-@media (max-width:700px){ .slide-media{ aspect-ratio:4/3; } }
+/* The photograph is the background layer; .cms-photo below is already
+   position:absolute/inset:0/object-fit:cover, so this only has to be the box it
+   fills. background is the colour showing while the file loads.
+
+   `.slide .slide-media`, not `.slide-media`: the element is also a
+   `.cms-photo-slot`, and that rule — further down this file, same specificity —
+   sets `position:relative`. Later wins, so a single class here lost, the box
+   collapsed to 0px tall, and the banner rendered as an empty grey panel with the
+   headline floating on it. The descendant selector puts this one ahead. */
+.slide .slide-media{ position:absolute; inset:0; z-index:0; background:var(--paper-3); }
+
+/* THE SCRIM — two gradients, not one.
+
+   Dark from the left because the text column is left-aligned, and dark from the
+   bottom so the lower edge holds together whatever gets uploaded. We never see
+   the client's photographs before they go live, so legibility cannot depend on
+   them being dark: white text over a pale sky is unreadable, and the floor has
+   to be built into the frame. Measured against the worst case, a pure white
+   photograph: #FFFFFF text over the 0.80 stop is 12.6:1, and over the 0.55 stop
+   where the headline's last words fall, 4.75:1 — both clear AA. Heavier than
+   this and the placeholder backgrounds, already dark down their left side, go
+   to black and lose the colour that is the point of them. */
+.slide .slide-media::after{
+  content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(to right,
+      rgba(17,24,39,0.80) 0%, rgba(17,24,39,0.55) 38%,
+      rgba(17,24,39,0.10) 72%, rgba(17,24,39,0) 100%),
+    linear-gradient(to top, rgba(17,24,39,0.55) 0%, rgba(17,24,39,0) 55%);
+}
+
+.slide-body{
+  position:relative; z-index:1; height:100%;
+  display:flex; flex-direction:column;
+  align-items:flex-start; justify-content:center;
+  gap:var(--sp-3);
+  /* 34rem keeps the headline to two lines at most; 62% keeps it clear of the
+     control cluster in the bottom-right corner. */
+  max-width:min(34rem, 62%);
+  padding:var(--sp-6) var(--sp-6) var(--sp-6) var(--sp-7);
+}
+/* Heavier and tighter than the page's own h2, which is 400-weight on white and
+   would go soft over a photograph. */
+.slide-title{
+  margin:0; color:#fff; font-weight:600;
+  font-size:clamp(1.7rem, 1.1rem + 1.9vw, 2.6rem);
+  line-height:1.08; letter-spacing:-0.015em; text-wrap:balance;
+}
+.slide-title[hidden]{ display:none; }
 .slide-caption{
-  position:absolute; left:0; right:0; bottom:0; margin:0;
-  padding:var(--sp-6) var(--sp-5) var(--sp-4);
-  color:var(--paper); font-size:var(--fs-sm);
-  background:linear-gradient(to top, rgba(17,24,39,0.72), rgba(17,24,39,0));
+  margin:0; color:rgba(255,255,255,0.90);
+  font-size:var(--fs-lede); line-height:1.5; max-width:38ch;
 }
 .slide-caption[hidden]{ display:none; }
+/* Solid white with dark text, not a tinted or outlined button: it is the one
+   fill that stays legible over a photograph of any colour. */
+.slide-cta{
+  margin-top:var(--sp-2);
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 22px; border-radius:var(--radius-sm);
+  background:#fff; color:var(--ink);
+  font-size:var(--fs-sm); font-weight:500; text-decoration:none;
+  box-shadow:0 2px 12px rgba(17,24,39,0.22);
+  transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide-cta::after{ content:"\2192"; }
+.slide-cta:hover{ background:var(--paper-2); transform:translateX(2px); }
+.slide-cta[hidden]{ display:none; }
 
+/* CONTROLS — one cluster in the bottom-right corner.
+
+   Arrows used to sit at the vertical centre of each edge, which is exactly
+   where a left-aligned headline now is: the prev arrow landed on the text. Dots
+   were centred along the bottom, which is the caption's line on a phone. Both
+   move into a corner the copy is kept out of. */
 .slider-nav{
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:44px; height:44px; border-radius:50%;
+  position:absolute; z-index:2;
+  top:auto; bottom:var(--sp-4); transform:none;
+  width:40px; height:40px; border-radius:50%;
   border:0; cursor:pointer;
   background:rgba(255,255,255,0.92); color:var(--ink);
-  font-size:1.5rem; line-height:1;
+  font-size:1.4rem; line-height:1;
   display:flex; align-items:center; justify-content:center;
   box-shadow:0 2px 10px rgba(17,24,39,0.18);
   transition:background var(--dur) var(--ease);
 }
 .slider-nav:hover{ background:#fff; }
-.slider-nav.prev{ left:var(--sp-4); }
+.slider-nav.prev{ left:auto; right:calc(var(--sp-4) + 46px); }
 .slider-nav.next{ right:var(--sp-4); }
 .slider-nav[hidden]{ display:none; }
 
+/* Aligned to the arrows' centre line: the 40px buttons sit 18px off the floor,
+   so their centre is at 38px and an 8px dot's bottom is 34px. */
 .slider-dots{
-  position:absolute; left:0; right:0; bottom:var(--sp-3);
-  display:flex; gap:7px; justify-content:center;
+  position:absolute; z-index:2;
+  left:auto; right:calc(var(--sp-4) + 100px);
+  bottom:calc(var(--sp-4) + 16px);
+  /* 16px, not 8: each dot's tap area is grown 8px on every side below, and at an
+     8px gap those areas overlapped so a thumb aimed between two dots hit the
+     wrong one. 16px makes them meet exactly. */
+  display:flex; gap:16px; justify-content:flex-end;
 }
 .slider-dots button{
+  position:relative;
   width:8px; height:8px; padding:0; border-radius:50%; border:0; cursor:pointer;
   background:rgba(255,255,255,0.55);
+  box-shadow:0 1px 4px rgba(17,24,39,0.45);
   transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 .slider-dots button[aria-selected="true"]{ background:#fff; transform:scale(1.4); }
+/* An 8px dot is a 8px tap target, which fails WCAG 2.5.8 (24px minimum) and is
+   genuinely hard to hit with a thumb. The dot stays 8px; its hit area is grown
+   to 24px with a transparent pseudo-element instead of by adding padding, which
+   would have spread the row out. */
+.slider-dots button::before{ content:""; position:absolute; inset:-8px; }
 
-/* Keyboard focus has to be visible on top of a photograph. */
-.slider-nav:focus-visible, .slider-dots button:focus-visible{
-  outline:2px solid var(--brand-blue); outline-offset:3px;
+/* Keyboard focus has to be visible on top of a photograph of any colour, so it
+   is white here rather than the page's blue. */
+.slider-nav:focus-visible, .slider-dots button:focus-visible, .slide-cta:focus-visible{
+  outline:2px solid #fff; outline-offset:3px;
+}
+
+@media (max-width:700px){
+  /* Taller and text-at-the-bottom on a phone: a 300px band with a centred
+     column leaves the headline floating in the middle of a photograph. */
+  .slide{ height:clamp(360px, 78vw, 460px); }
+  .slide-body{
+    max-width:none; justify-content:flex-end;
+    /* The extra 30px is the dot row, which is centred along the bottom here. */
+    padding:var(--sp-5) var(--sp-5) calc(var(--sp-5) + 30px);
+  }
+  /* The left-to-right scrim does nothing once the column is full width. */
+  .slide .slide-media::after{
+    background:linear-gradient(to top,
+      rgba(17,24,39,0.88) 0%, rgba(17,24,39,0.45) 52%, rgba(17,24,39,0.10) 100%);
+  }
+  .slide-title{ font-size:clamp(1.55rem, 1.1rem + 2.4vw, 2rem); }
+  .slide-caption{ font-size:var(--fs-body); }
+  /* Arrows go: they would sit on the copy at this width, and the track already
+     swipes. The dots remain, and they are tappable. */
+  .slider-nav{ display:none; }
+  .slider-dots{ left:0; right:0; bottom:var(--sp-4); justify-content:center; }
 }
 
 /* --------------------------------------------------------------------------

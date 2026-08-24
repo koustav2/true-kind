@@ -17,7 +17,8 @@
     "member:smoke": "node server/scripts/membership-smoke.js",
     "verify:smoke": "node server/scripts/verify-smoke.js",
     "sections:smoke": "node server/scripts/sections-smoke.js",
-    "letter:smoke": "node server/scripts/letter-smoke.js"
+    "letter:smoke": "node server/scripts/letter-smoke.js",
+    "banner:render": "node server/scripts/banner-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",
