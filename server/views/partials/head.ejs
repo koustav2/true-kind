@@ -50,8 +50,16 @@ a{color:inherit}
 /* Alert badge — "somebody has to do something". Deliberately rare: only unpaid
    registrations, new volunteers and new enquiries earn one. Sized to sit on the
    baseline of the label without changing the link's height, so a badge
-   appearing never reflows the bar. */
-.n{display:inline-block;min-width:17px;padding:1px 5px;margin-left:5px;
+   appearing never reflows the bar.
+
+   SCOPED TO THE TWO NAV ROWS, and it has to be. Written as a bare `.n` this
+   turned every other count in the admin into a red alert pill — the field
+   counts beside each page in the CMS sidebar, the field counts on each group
+   heading — because `.n` is the class those already used for a plain muted
+   number. Nine red pills in the navigation was the thing being fixed; putting
+   thirty of them in the CMS instead is not an improvement. */
+:where(.topnav .secs, .subnav-in) a .n{
+  display:inline-block;min-width:17px;padding:1px 5px;margin-left:5px;
   border-radius:100px;background:var(--clay);color:#fff;
   font:500 .64rem/1.5 'Work Sans',sans-serif;text-align:center;vertical-align:1px}
 /* On the filled pill the badge inverts: solid white, purple figure. A

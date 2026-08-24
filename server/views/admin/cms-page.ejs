@@ -52,14 +52,58 @@
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <% groups.forEach(function(group, gi){ %>
+      <%#
+        Work out a readable name per field BEFORE drawing any of them, because
+        both fixes need to see the whole group at once.
+
+        1. DROP THE GROUP PREFIX. Slot labels are written as
+           "Why we exist — heading (H2)", and they sit inside a group already
+           headed "Why we exist". Saying it twice, once per field, buries the
+           half that differs.
+
+        2. NUMBER THE REPEATS. Three body paragraphs all reduce to "text", which
+           is no more useful than three identical labels was. Numbering them
+           only when there is more than one keeps the single cases clean.
+      %>
+      <%
+        var groupShort = String(group.short || '').trim();
+        var names = group.fields.map(function (f) {
+          var base = f.label || (f.role.charAt(0).toUpperCase() + f.role.slice(1));
+          if (groupShort && base.indexOf(groupShort) === 0) {
+            var rest = base.slice(groupShort.length).replace(/^\s*[—–-]\s*/, '').trim();
+            if (rest) base = rest.charAt(0).toUpperCase() + rest.slice(1);
+          }
+          return base;
+        });
+        var seen = {}, total = {};
+        names.forEach(function (n) { total[n] = (total[n] || 0) + 1; });
+        var display = names.map(function (n) {
+          if (total[n] < 2) return n;
+          seen[n] = (seen[n] || 0) + 1;
+          return n + ' ' + seen[n];
+        });
+      %>
       <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
         <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
         <div class="cms-body">
 
-          <% group.fields.forEach(function(f){ %>
+          <% group.fields.forEach(function(f, fi){ %>
           <div class="cms-field">
+            <%#
+              THE FIELD'S OWN NAME.
+
+              This printed `f.role` capitalised and nothing else, so every image
+              field on a page was labelled "Photograph" — the About page showed
+              five of them in one group, identical, and the only way to tell the
+              hero picture from the story picture from the three Mission/Vision
+              icons was to read the grey field id beside it. That id is developer
+              text; nobody should have to parse `about.photo.hero` to work out
+              which box holds the big picture at the top of the page.
+
+              All 564 fields already carry a written label. It was never shown.
+            %>
             <div class="meta">
-              <label for="<%= f.id %>" style="margin:0"><%= f.role.charAt(0).toUpperCase() + f.role.slice(1) %></label>
+              <label for="<%= f.id %>" style="margin:0"><%= display[fi] %></label>
               <% if (edited.has(f.id)) { %><span class="pill info">edited</span><% } %>
               <span class="key"><%= f.id %></span>
             </div>
