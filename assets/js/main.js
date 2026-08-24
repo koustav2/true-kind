@@ -172,7 +172,33 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       var many = slides.length > 1;
       prev.hidden = next.hidden = !many;
       dotsBox.innerHTML = "";
-      if (many) {
+      // DOTS UP TO SIX, A COUNTER BEYOND IT.
+      //
+      // There are ten slots now, and ten dots is 224px of row: in the hero the
+      // panel is about 455px wide and the arrows take 96 of it, so the dots would
+      // have run under the arrows and then off the edge. Past six the row is
+      // replaced by a "4 / 9" counter, which is a fixed width whatever the count.
+      // The arrows do the moving at that point, so nothing is lost but the
+      // ability to jump straight to slide 7 — which nobody does on a banner.
+      dotsBox.classList.toggle("as-count", slides.length > 6);
+      // role=tablist on a box holding no tabs is a lie to a screen reader, so the
+      // role goes with the dots it describes.
+      if (slides.length > 6) {
+        dotsBox.removeAttribute("role");
+        dotsBox.removeAttribute("aria-label");
+      } else {
+        dotsBox.setAttribute("role", "tablist");
+        dotsBox.setAttribute("aria-label", "Choose a photograph");
+      }
+      if (many && slides.length > 6) {
+        var c = document.createElement("span");
+        c.className = "slider-count";
+        // Announced on change, since the dots' aria-selected is what a screen
+        // reader would otherwise have followed.
+        c.setAttribute("role", "status");
+        c.setAttribute("aria-live", "polite");
+        dotsBox.appendChild(c);
+      } else if (many) {
         slides.forEach(function (li, i) {
           var d = document.createElement("button");
           d.type = "button";
@@ -203,7 +229,9 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       mark();
     }
     function mark() {
-      [].slice.call(dotsBox.children).forEach(function (d, i) {
+      var counter = dotsBox.querySelector(".slider-count");
+      if (counter) counter.textContent = (index + 1) + " / " + slides.length;
+      [].slice.call(dotsBox.querySelectorAll("button")).forEach(function (d, i) {
         d.setAttribute("aria-selected", i === index ? "true" : "false");
       });
       slides.forEach(function (li, i) {

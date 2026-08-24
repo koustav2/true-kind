@@ -1121,6 +1121,23 @@ header.site::after{
    would have spread the row out. */
 .slider-dots button::before{ content:""; position:absolute; inset:-8px; }
 
+/* Past six slides main.js swaps the row for a "4 / 9" counter — ten dots is
+   224px of row and the panel is ~455px wide with 96px of it already spent on the
+   arrows, so the dots would have run under the arrows and off the edge. The
+   counter is the same width at any count. Tabular figures so it does not jog
+   sideways as the number changes. */
+.slider-count{
+  padding:5px 11px; border-radius:var(--radius-pill);
+  background:rgba(255,255,255,0.92); color:var(--ink);
+  font-family:var(--font-mono); font-size:var(--fs-xs);
+  font-variant-numeric:tabular-nums; line-height:1.45;
+  box-shadow:0 2px 10px rgba(17,24,39,0.18);
+  white-space:nowrap;
+}
+/* The dot row is aligned to the arrows' centre by a hand-worked offset; the
+   counter is 27px tall rather than 8px, so it needs its own. */
+.slider-dots.as-count{ top:calc(var(--sp-4) + 6px); right:calc(var(--sp-4) + 92px); }
+
 /* Keyboard focus has to be visible on top of a photograph of any colour, so it
    is white here rather than the page's blue. */
 .slider-nav:focus-visible, .slider-dots button:focus-visible, .slide-cta:focus-visible{
@@ -1149,6 +1166,7 @@ header.site::after{
      now free they move to the bottom where a thumb actually rests. */
   .slider-nav{ display:none; }
   .slider-dots{ left:0; right:0; top:auto; bottom:var(--sp-4); justify-content:center; }
+  .slider-dots.as-count{ left:0; right:0; top:auto; bottom:var(--sp-4); justify-content:center; }
 }
 
 /* --------------------------------------------------------------------------

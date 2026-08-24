@@ -9,8 +9,10 @@
 
 const slots = [];
 
-/* The homepage banner. Each of the five slides carries a headline, a supporting
-   line and one button, laid over its photograph.
+/* The homepage banner. Each of the ten slides carries a headline, a supporting
+   line and one button, laid over its photograph. Ten because the client wanted
+   room past five; a slide with no photograph never reaches the page, so the
+   unused ones cost nothing but a row in this list.
 
    The slide used to be a bare photograph with an optional caption, and it did
    not work: at banner size a picture with a line of small text under it reads as
@@ -22,7 +24,7 @@ const slots = [];
    under that key, and renaming the slot would orphan it — the field would come
    back empty while the old value sat in the row forever, invisible. It is
    relabelled instead. The id is a database key, not a description. */
-[1, 2, 3, 4, 5].forEach(n => {
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach(n => {
   slots.push({
     id: `index.slide.${n}.title`,
     page: 'index',

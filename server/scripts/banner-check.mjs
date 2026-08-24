@@ -30,7 +30,9 @@ const settle = p => p.waitForTimeout(1700);
 
   ck('the banner section reveals itself', (await p.locator('.hero-slider').isVisible()) === true);
   const shown = await p.locator('.slide:not([hidden])').count();
-  ck('three demo slides ship, not one and not five', shown === 3, String(shown));
+  ck('three demo slides ship, not one and not ten', shown === 3, String(shown));
+  const slots = await p.locator('.slide').count();
+  ck('ten slots are declared in the markup', slots === 10, String(slots));
   ck('no asset 404s and no page errors', errors.length === 0, errors.join(' | '));
 
   /* THE REGRESSION. Every one of these was true while the banner was visibly
@@ -205,6 +207,54 @@ const settle = p => p.waitForTimeout(1700);
   ck('the arrows step aside on a phone', m.arrowsGone === true);
   ck('the page does not scroll sideways', m.pageScrollsSideways === false);
   ck('no asset 404s and no page errors on a phone', errors.length === 0, errors.join(' | '));
+  await ctx.close();
+}
+
+/* ---- a lot of slides --------------------------------------------------- */
+{
+  /* Ten dots is 224px of row inside a ~455px panel that has already spent 96 on
+     the arrows, so past six the row becomes a counter. This fills every slot and
+     checks the cluster stays inside the frame. */
+  const { ctx, p } = await page();
+  await p.goto(B + '/index.html', { waitUntil: 'load' });
+  await settle(p);
+  const m = await p.evaluate(() => {
+    document.querySelectorAll('.slide').forEach((li, i) => {
+      const img = li.querySelector('img.cms-photo');
+      if (img.getAttribute('src')) return;
+      img.hidden = false;
+      img.setAttribute('src', 'assets/img/banner-' + ['skilling', 'women', 'environment'][i % 3] + '.jpg');
+    });
+    document.dispatchEvent(new CustomEvent('cms:hydrated', { detail: {} }));
+    return new Promise(r => setTimeout(() => {
+      const frame = document.querySelector('.slider-frame').getBoundingClientRect();
+      const box = document.querySelector('[data-slider-dots]');
+      const c = box.querySelector('.slider-count');
+      const cr = box.getBoundingClientRect();
+      const prev = document.querySelector('[data-slider-prev]').getBoundingClientRect();
+      r({
+        slides: document.querySelectorAll('.slide:not([hidden])').length,
+        dots: box.querySelectorAll('button').length,
+        counter: c ? c.textContent : null,
+        live: c ? c.getAttribute('aria-live') : null,
+        role: box.getAttribute('role'),
+        insideFrame: cr.left >= frame.left - 0.5 && cr.right <= frame.right + 0.5,
+        clearsArrows: cr.right <= prev.left + 0.5
+      });
+    }, 300));
+  });
+  ck('all ten slots run once every one has a photograph', m.slides === 10, String(m.slides));
+  ck('past six slides the dot row becomes a counter',
+    m.dots === 0 && m.counter === '1 / 10', JSON.stringify(m));
+  ck('the counter is announced rather than silently changing', m.live === 'polite', String(m.live));
+  ck('and the box drops its tablist role, having no tabs', m.role === null, String(m.role));
+  ck('the counter stays inside the frame and clear of the arrows',
+    m.insideFrame === true && m.clearsArrows === true, JSON.stringify(m));
+
+  await p.click('[data-slider-next]');
+  await p.waitForTimeout(700);
+  const t = await p.evaluate(() => document.querySelector('.slider-count').textContent);
+  ck('the counter follows the arrows', t === '2 / 10', t);
   await ctx.close();
 }
 

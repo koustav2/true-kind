@@ -125,10 +125,17 @@ slots.push({
   });
 });
 
-/* Homepage slider. Five declared slides; only the ones with a photograph
-   appear, and with none set the whole section stays hidden — so the page is
-   never short of content while the client fills it in. */
-[1, 2, 3, 4, 5].forEach(n => {
+/* Homepage banner. TEN declared slides; only the ones with a photograph appear,
+   and with none set the whole section stays hidden — so the page is never short
+   of content while the client fills it in.
+
+   Ten, not five, because the client asked for room to run more than five. An
+   unused slot costs a hidden <li> in the markup and a row in the CMS list;
+   nothing reaches the public page. Going past about ten would be worth doing
+   properly instead — an admin-managed list with Add and Remove, the way the
+   board page works — because a fixed field per slide stops scaling the moment
+   somebody wants to reorder them. */
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach(n => {
   slots.push({
     id: `index.slide.${n}.image`,
     page: 'index',
@@ -140,15 +147,16 @@ slots.push({
        preview box below is empty until somebody uploads something: the box shows
        stored overrides only. Hence spelling it out here. */
     help: n <= 3
-      ? 'Landscape, ideally 1600x900 or wider. This slide currently shows a '
-        + 'placeholder background in the brand colours — the preview box to the '
-        + 'right is empty because nothing has been uploaded yet. Choose a file to '
-        + 'replace it with a real photograph. The frame is a wide band and the '
-        + 'picture is cropped to fill it, so keep the subject clear of the '
-        + 'left-hand third, where the headline sits.'
-      : 'Landscape. Leave empty to use fewer slides — the banner shows only the '
-        + 'slides that have a photograph, and the arrows and dots appear only once '
-        + 'there are two or more.',
+      ? 'This slide currently shows a placeholder background in the brand colours '
+        + '— the preview box to the right is empty because nothing has been '
+        + 'uploaded yet. Choose a file to replace it with a real photograph. '
+        + 'Portrait or square works best (1200x1500 or larger): beside the '
+        + 'headline the frame is upright, and it is cropped to fill, so keep the '
+        + 'subject in the upper half — the lower third carries the words.'
+      : 'Portrait or square, 1200x1500 or larger, subject in the upper half. '
+        + 'Leave empty to use fewer slides — the banner shows only the slides that '
+        + 'have a photograph, and the controls appear only once there are two or '
+        + 'more. Ten slots are available; there is no need to fill them all.',
     container: `.slide[data-slide="${n}"] .slide-media`,
     fit: 'cover',
     preset: true            // container already carries the slot classes

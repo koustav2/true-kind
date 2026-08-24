@@ -2735,7 +2735,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 1 photograph",
-   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
+   "help": "This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. Portrait or square works best (1200x1500 or larger): beside the headline the frame is upright, and it is cropped to fill, so keep the subject in the upper half — the lower third carries the words.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2752,7 +2752,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 2 photograph",
-   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
+   "help": "This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. Portrait or square works best (1200x1500 or larger): beside the headline the frame is upright, and it is cropped to fill, so keep the subject in the upper half — the lower third carries the words.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2769,7 +2769,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 3 photograph",
-   "help": "Landscape, ideally 1600x900 or wider. This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. The frame is a wide band and the picture is cropped to fill it, so keep the subject clear of the left-hand third, where the headline sits.",
+   "help": "This slide currently shows a placeholder background in the brand colours — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it with a real photograph. Portrait or square works best (1200x1500 or larger): beside the headline the frame is upright, and it is cropped to fill, so keep the subject in the upper half — the lower third carries the words.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2786,7 +2786,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 4 photograph",
-   "help": "Landscape. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2803,11 +2803,96 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 5 photograph",
-   "help": "Landscape. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
    "role": "photograph",
    "type": "image",
    "target": {
     "selector": "[data-cms-image=\"index.slide.5.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.6.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 6 photograph",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.6.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.7.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 7 photograph",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.7.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.8.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 8 photograph",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.8.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.9.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 9 photograph",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.9.image\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   }
+  },
+  {
+   "id": "index.slide.10.image",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage slider — slide 10 photograph",
+   "help": "Portrait or square, 1200x1500 or larger, subject in the upper half. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the controls appear only once there are two or more. Ten slots are available; there is no need to fill them all.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"index.slide.10.image\"]"
    },
    "default": {
     "src": "",
@@ -3095,6 +3180,291 @@
    "type": "url",
    "target": {
     "selector": "[data-cms-slide-cta=\"5\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.6.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 6 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"6\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.6.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 6 supporting line",
+   "help": "One sentence under the headline. Optional.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"6\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.6.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 6 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"6\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.6.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 6 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"6\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.7.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 7 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"7\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.7.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 7 supporting line",
+   "help": "One sentence under the headline. Optional.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"7\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.7.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 7 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"7\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.7.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 7 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"7\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.8.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 8 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"8\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.8.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 8 supporting line",
+   "help": "One sentence under the headline. Optional.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"8\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.8.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 8 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"8\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.8.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 8 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"8\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.9.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 9 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"9\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.9.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 9 supporting line",
+   "help": "One sentence under the headline. Optional.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"9\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.9.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 9 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"9\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.9.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 9 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"9\"]",
+    "attr": "href"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.10.title",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 10 headline",
+   "help": "A few words, not a sentence. Leave empty and the slide shows the photograph alone.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-title=\"10\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.10.caption",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 10 supporting line",
+   "help": "One sentence under the headline. Optional.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-caption=\"10\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.10.cta",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 10 button text",
+   "help": "Leave empty for no button. The button appears only when this and the link below are both filled in.",
+   "role": "optional text",
+   "type": "text",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"10\"]"
+   },
+   "default": ""
+  },
+  {
+   "id": "index.slide.10.ctaHref",
+   "page": "index",
+   "scope": "index",
+   "group": "Photographs",
+   "label": "Homepage banner — slide 10 button link",
+   "help": "Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.",
+   "role": "optional link",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms-slide-cta=\"10\"]",
     "attr": "href"
    },
    "default": ""
