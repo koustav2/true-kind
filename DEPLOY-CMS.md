@@ -132,8 +132,8 @@ grep -q ssl_certificate /etc/nginx/sites-enabled/truekind && echo "TLS: LIVE" ||
 
 | TLS | APP_BASE_URL must be |
 |---|---|
-| LIVE | `https://truekind.truehr.co.in` |
-| not yet | `http://truekind.truehr.co.in` |
+| LIVE | `https://truekindfoundation.org` |
+| not yet | `http://truekindfoundation.org` |
 
 This drives the session cookie's `secure` flag. A `secure` cookie is only ever
 sent over HTTPS, so `https` while the site is still plain HTTP means the browser
@@ -250,7 +250,7 @@ returned 200 and handed out your route source.
 
 ### 12. Sign in and open the editor
 
-In a browser: `https://truekind.truehr.co.in/portal/signin` (http if TLS is not up yet)
+In a browser: `https://truekindfoundation.org/portal/signin` (http if TLS is not up yet)
 
 **Check:** you can sign in. If the page just bounces you back to the sign-in
 form, the cookie is being dropped — go back to step 7 and make sure
@@ -265,7 +265,7 @@ the 9 pages, each with a field count. Homepage should show around 129.
 
 1. Click **Homepage**, open the first group, change any heading.
 2. Press **Save changes**. You should see "Saved 1 change".
-3. Open `https://truekind.truehr.co.in/` and **hard-refresh** — Cmd/Ctrl +
+3. Open `https://truekindfoundation.org/` and **hard-refresh** — Cmd/Ctrl +
    Shift + R. A normal reload serves the cached page and looks unchanged, which
    is the single most common reason to think this is broken.
 
@@ -281,10 +281,10 @@ toolbar, no dashed outlines, and your edit is there.
 ### 14. Once certbot is done
 
 ```bash
-certbot --nginx -d truekind.truehr.co.in
+certbot --nginx -d truekindfoundation.org -d www.truekindfoundation.org -d truekind.truehr.co.in
 # then
 cd /opt/truekind
-sed -i 's|^APP_BASE_URL=.*|APP_BASE_URL=https://truekind.truehr.co.in|' .env
+sed -i 's|^APP_BASE_URL=.*|APP_BASE_URL=https://truekindfoundation.org|' .env
 docker compose up -d
 docker logs truekind --tail 10
 ```
@@ -600,7 +600,7 @@ cd /opt/truekind
 sed -n 's|^APP_BASE_URL=|APP_BASE_URL is |p' .env
 ```
 
-It must read `https://truekind.truehr.co.in`. Not `http`, not `localhost`, not an
+It must read `https://truekindfoundation.org`. Not `http`, not `localhost`, not an
 IP.
 
 The reason is specific to this batch. Every QR code on every ID card, receipt,
@@ -661,7 +661,7 @@ Do these in a browser, not by reading the code:
    fill it in, **Preview** — it must open watermarked SPECIMEN and appear nowhere
    in the register. Then **Issue letter**.
 6. **Scan the letter's QR with a phone.** Not a scanner app, a phone camera. It
-   must open `truekind.truehr.co.in/verify/TKF-AL-…` and say **Valid**, naming
+   must open `truekindfoundation.org/verify/TKF-AL-…` and say **Valid**, naming
    the holder and the designation — and showing no salary.
 7. **Withdraw it, scan again.** It must say *withdrawn*. Not "not recognised" —
    that reads as forgery, and the difference is the whole point of the register.
@@ -688,3 +688,118 @@ docker compose up -d --build
 
 Safe: `sequelize.sync()` only ever adds. The new table stays behind unused and
 nothing that existed before was altered.
+
+---
+
+## Moving to truekindfoundation.org
+
+The application does not need changing. Every path in the front-end is relative
+and there is exactly **one** place in the code that names a domain — the
+`APP_BASE_URL` fallback in `server/utils/verify.js`. This is a DNS, nginx and
+`.env` job.
+
+### The thing that is easy to get wrong
+
+**The old hostname must keep answering. Do not retire it.**
+
+Every membership card, certificate, appointment letter and receipt printed
+before the move carries a QR code containing
+`https://truekind.truehr.co.in/verify/…`. The URL was written into the image at
+the moment the PDF was generated. Those documents are on lanyards and in filing
+cabinets and **cannot be recalled**.
+
+Stop answering on that name and every one of them fails to verify. A member holds
+up a card, somebody scans it, and the phone reports nothing. That does not read
+as "the charity changed domain" — it reads as a fake card.
+
+So `truekind.truehr.co.in` keeps its A record, keeps a TLS certificate, and 301s
+to the new domain with the path intact. Keep it for as long as any printed
+document is in circulation — for a one-year card, at least a year past the last
+one printed. A redirect costs nothing; there is no reason to ever remove it.
+
+### 1. DNS
+
+```
+truekindfoundation.org        A   66.116.242.17
+www.truekindfoundation.org    A   66.116.242.17
+truekind.truehr.co.in         A   66.116.242.17     <- LEAVE THIS
+```
+
+Wait for it to resolve before going further:
+
+```bash
+dig +short truekindfoundation.org
+```
+
+### 2. nginx and certificates
+
+```bash
+cd /opt/truekind
+git pull                                    # brings the new vhost templates
+cp /etc/nginx/sites-available/truekind ~/nginx-truekind-$(date +%F).bak
+
+certbot --nginx -d truekindfoundation.org \
+                -d www.truekindfoundation.org \
+                -d truekind.truehr.co.in
+```
+
+One certificate covering all three names. Then compare the live file against
+`deploy/nginx-truekind-tls.conf` — that file is the shape you want: the new
+domain serving, the old one redirecting, both on TLS. Patch the live config to
+match rather than copying over what certbot wrote.
+
+```bash
+nginx -t && systemctl reload nginx
+```
+
+### 3. `.env`
+
+```bash
+sed -i 's|^APP_BASE_URL=.*|APP_BASE_URL=https://truekindfoundation.org|' .env
+sed -n 's|^APP_BASE_URL=|APP_BASE_URL is |p' .env
+docker compose up -d --build
+```
+
+This one variable drives three things, which is why it gets its own step:
+
+| It sets | Consequence of getting it wrong |
+|---|---|
+| the QR URL on every new document | cards print with a dead link, and cannot be recalled |
+| the session cookie's `secure` flag | `http` while TLS is live, or the reverse, and nobody can sign in |
+| the PhonePe return URL | a donor pays and lands nowhere |
+
+### 4. PhonePe
+
+Check with PhonePe whether your merchant account pins the redirect domain. Many
+gateways hold an allow-list of return URLs, and a payment that redirects to a
+host they do not recognise is refused **after the money moves** — the worst
+possible time to find out. Ask before taking a real payment on the new domain,
+and test with the mock gateway first (leave `PHONEPE_MERCHANT_ID` empty).
+
+### 5. Verify
+
+```bash
+curl -sI https://truekindfoundation.org/            | head -1   # 200
+curl -sI https://truekind.truehr.co.in/portal/signin | head -1   # 301
+curl -sI https://truekind.truehr.co.in/portal/signin | grep -i location
+```
+
+That last line must point at `https://truekindfoundation.org/portal/signin` —
+path preserved, not dropped to the homepage. A redirect that loses the path
+turns a scanned card into "here is our website" instead of "this card is valid".
+
+Then, in a browser:
+
+1. `https://truekindfoundation.org/portal/signin` — sign in. If it bounces back
+   with no error, `APP_BASE_URL` and TLS disagree.
+2. Issue a card or letter and scan the QR — it must now say
+   **truekindfoundation.org**.
+3. **Scan a card printed before the move.** It must still resolve. This is the
+   check that matters and the one nobody thinks to do.
+
+### 6. Afterwards
+
+- Update the domain anywhere outside this repo: Darpan, the 12A/80G paperwork,
+  email signatures, social profiles, printed material still at the printer.
+- `info@truekindfoundation.org` already appears throughout the site and on the
+  ID card back, so the mailbox on the new domain needs to exist and be watched.

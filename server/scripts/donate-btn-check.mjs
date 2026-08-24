@@ -115,8 +115,15 @@ for (const w of [1440, 900, 390]) {
   ck('cost-tier links are relative too',
      tiers.length===3 && tiers.every(h=>h.startsWith('/portal/donate?amount=')),
      tiers.join(' '));
+  /* ANY absolute host, not one named domain. This used to test for
+     "https://truekind.truehr.co.in/portal" by name, which would have gone on
+     passing after the move to truekindfoundation.org while protecting nothing —
+     the check would be looking for a string that could no longer appear. What
+     matters is that no portal link carries a scheme and host at all. */
+  const absolute = await p.locator('a[href*="//"][href*="/portal"]')
+    .evaluateAll(els => els.map(e => e.getAttribute('href')));
   ck('no page hardcodes a domain into a portal link',
-     !(await p.content()).includes('https://truekind.truehr.co.in/portal'));
+     absolute.length === 0, absolute.join(' '));
   await ctx.close();
 }
 

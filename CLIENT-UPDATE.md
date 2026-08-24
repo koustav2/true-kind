@@ -1,6 +1,6 @@
 # True Kind Foundation — Website Update
 
-**Site:** https://truekind.truehr.co.in
+**Site:** https://truekindfoundation.org
 **Date:** 19 August 2026
 
 ---
@@ -16,7 +16,7 @@ from your side to finish the site properly.
 The largest addition is a content management system. You no longer need to come
 back to us for wording changes, new photographs, or updated figures.
 
-**Where:** https://truekind.truehr.co.in/portal/admin/cms
+**Where:** https://truekindfoundation.org/portal/admin/cms
 **Access:** your existing admin sign-in
 
 Inside, you will find every page listed down the left-hand side. Select a page
@@ -38,7 +38,7 @@ A few points worth knowing:
 ## 2. Images and video
 
 A media library now sits alongside the editor, at
-https://truekind.truehr.co.in/portal/admin/cms/media
+https://truekindfoundation.org/portal/admin/cms/media
 
 You can upload photographs and replace any image on the site. Eight video slots
 have also been prepared — on the homepage, About Us, Our Work, Our Impact,

@@ -1,0 +1,17 @@
+# truekindfoundation.org
+#
+# The portal is not for search engines. Nothing under /portal is useful in a
+# result — it is sign-in, an admin, and a member's own pages — and /uploads and
+# /api are not pages at all.
+#
+# This is a courtesy to well-behaved crawlers, NOT a security measure. Disallow
+# is a request; it stops nothing. Access control for /portal is the session
+# middleware, and /verify stays open on purpose because a stranger holding a card
+# must be able to check it.
+
+User-agent: *
+Disallow: /portal/
+Disallow: /api/
+Disallow: /uploads/
+
+Sitemap: https://truekindfoundation.org/sitemap.xml

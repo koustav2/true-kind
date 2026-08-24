@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The nine public pages. Absolute URLs, because the sitemap protocol requires
+  them — a sitemap is fetched by a crawler that has no page to resolve a relative
+  path against.
+
+  No <lastmod>. A date here has to be true to be worth anything, and nothing in
+  this build knows when a page's content last actually changed — the CMS stores
+  overrides per page but the HTML defaults change on deploy. A fabricated
+  lastmod teaches crawlers to distrust the file, which is worse than omitting it.
+
+  Nothing under /portal is listed: it is sign-in, an admin and a member's own
+  pages, none of which belong in a search result. /verify is deliberately absent
+  too — those URLs are per-document and only meaningful to whoever is holding
+  the card.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://truekindfoundation.org/</loc><priority>1.0</priority></url>
+  <url><loc>https://truekindfoundation.org/about.html</loc><priority>0.8</priority></url>
+  <url><loc>https://truekindfoundation.org/work.html</loc><priority>0.8</priority></url>
+  <url><loc>https://truekindfoundation.org/impact.html</loc><priority>0.8</priority></url>
+  <url><loc>https://truekindfoundation.org/donate.html</loc><priority>0.9</priority></url>
+  <url><loc>https://truekindfoundation.org/volunteer.html</loc><priority>0.8</priority></url>
+  <url><loc>https://truekindfoundation.org/contact.html</loc><priority>0.6</priority></url>
+  <url><loc>https://truekindfoundation.org/press-release.html</loc><priority>0.5</priority></url>
+  <url><loc>https://truekindfoundation.org/chairperson-message.html</loc><priority>0.5</priority></url>
+</urlset>

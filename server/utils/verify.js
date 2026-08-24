@@ -112,12 +112,26 @@ function checkTag(raw, supplied) {
   return crypto.timingSafeEqual(expected, got) ? 'ok' : 'mismatch';
 }
 
-/* The origin printed into the QR. APP_BASE_URL is already required for the
-   payment gateway's return URL, so it is always set in a real deployment. The
-   fallback is the live site rather than localhost: a QR printed onto a physical
-   card with "localhost" in it is a card that has to be reprinted. */
+/* The origin printed into the QR — the ONE place in this application that names
+   a domain. Everything else is a relative path, which is what made moving from
+   truekind.truehr.co.in to truekindfoundation.org a DNS and nginx job rather
+   than a code change.
+
+   APP_BASE_URL is already required for the payment gateway's return URL, so it
+   is always set in a real deployment; the fallback is the live site rather than
+   localhost because a QR printed onto a physical card with "localhost" in it is
+   a card that has to be reprinted.
+
+   THE OLD HOST MUST KEEP ANSWERING. Every card, certificate and receipt printed
+   before the move carries a QR pointing at truekind.truehr.co.in. Those are on
+   lanyards and in filing cabinets and cannot be recalled, so that hostname has
+   to keep resolving and redirecting here — see deploy/nginx-truekind-tls.conf,
+   which does it with a 301. Retiring the old domain silently kills every
+   document issued to date. */
+const CANONICAL = 'https://truekindfoundation.org';
+
 function origin() {
-  const base = process.env.APP_BASE_URL || 'https://truekind.truehr.co.in';
+  const base = process.env.APP_BASE_URL || CANONICAL;
   return base.replace(/\/+$/, '');
 }
 

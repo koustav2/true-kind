@@ -12,7 +12,7 @@ npm run seed                # creates truekind DB + admin
 npm start                   # http://localhost:3000
 ```
 
-## Deploy on the truehr.co.in VPS — Docker (recommended, HRMS compose untouched)
+## Deploy on the VPS — Docker (recommended, HRMS compose untouched)
 ```bash
 git clone <repo-url> /opt/truekind && cd /opt/truekind
 cp .env.example .env && nano .env      # DB_PASS from /opt/truehr/.env.production; ADMIN_*
@@ -23,7 +23,7 @@ docker logs truekind --tail 20         # expect "schema synced"
 cp deploy/nginx-truekind.conf /etc/nginx/sites-available/truekind
 ln -sf /etc/nginx/sites-available/truekind /etc/nginx/sites-enabled/truekind
 nginx -t && systemctl reload nginx
-certbot --nginx -d truekind.truehr.co.in   # once DNS resolves
+certbot --nginx -d truekindfoundation.org -d www.truekindfoundation.org -d truekind.truehr.co.in   # once DNS resolves
 ```
 Updates later: `cd /opt/truekind && git pull && docker compose up -d --build`.
 
@@ -151,6 +151,27 @@ defaults to an empty allowlist for the same reason.
 
 Deploy is `git pull` + `docker compose up -d --build` on the VPS, behind nginx
 with certbot. See `DEPLOY-CMS.md`.
+
+### Where the domain is named
+
+Every path the browser resolves is relative, which is what made moving from
+`truekind.truehr.co.in` to `truekindfoundation.org` a DNS and nginx job. There
+are exactly three places that spell the domain out, and each has a reason:
+
+| Where | Why it cannot be relative |
+|---|---|
+| `APP_BASE_URL` in `.env` | printed into QR codes, signs the session cookie, returns the payment gateway |
+| `server/utils/verify.js` — the `CANONICAL` fallback | only used if `APP_BASE_URL` is unset; a QR reading "localhost" is a reprint |
+| `og:url`, `og:image`, `canonical` in the 9 page heads | fetched by third-party crawlers that have no page to resolve against, and do not run JS |
+
+The last row is the one worth knowing about. `og:image` was relative, which meant
+WhatsApp, Facebook and LinkedIn showed **no preview image at all** when anyone
+shared the site — Open Graph requires absolute URLs and crawlers do not resolve
+relative ones. Same reason `sitemap.xml` and the `Sitemap:` line in `robots.txt`
+are absolute.
+
+On a future domain change: `.env`, `verify.js`, the nginx vhost, `robots.txt`,
+`sitemap.xml`, and the three meta lines per page. Nothing else.
 
 ## Test
 ```bash
