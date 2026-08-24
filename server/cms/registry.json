@@ -2564,7 +2564,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 1 photograph",
-   "help": "Landscape, ideally 1600x900 or wider. Leave every slide empty to hide the slider entirely.",
+   "help": "Landscape, ideally 1600x900 or wider (16:7 is the exact frame). This slide currently shows the built-in brand plate — the preview box to the right is empty because nothing has been uploaded yet. Choose a file to replace it. Clearing every slide hides the banner entirely.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2581,7 +2581,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 2 photograph",
-   "help": "Landscape. Leave empty to use fewer slides.",
+   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2598,7 +2598,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 3 photograph",
-   "help": "Landscape. Leave empty to use fewer slides.",
+   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2615,7 +2615,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 4 photograph",
-   "help": "Landscape. Leave empty to use fewer slides.",
+   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {
@@ -2632,7 +2632,7 @@
    "scope": "index",
    "group": "Photographs",
    "label": "Homepage slider — slide 5 photograph",
-   "help": "Landscape. Leave empty to use fewer slides.",
+   "help": "Landscape, 16:7. Leave empty to use fewer slides — the banner shows only the slides that have a photograph, and the arrows and dots appear only once there are two or more.",
    "role": "photograph",
    "type": "image",
    "target": {

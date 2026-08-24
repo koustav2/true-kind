@@ -971,8 +971,16 @@ header.site::after{
    slider costs the page nothing — no blank band, no layout shift, nothing for
    the client to feel bad about while they gather photos.
    -------------------------------------------------------------------------- */
-.hero-slider{ padding-block:0 var(--section-y-s); background:var(--paper); }
+/* Top padding here is NOT decorative. With `padding-block:0` the frame's top
+   edge landed on the hero buttons' bottom edge — a measured gap of exactly 0px —
+   so "Support the work" and the banner were touching. */
+.hero-slider{ padding-block:var(--sp-7) var(--section-y-s); background:var(--paper); }
 .hero-slider[hidden]{ display:none; }
+/* The slider markup carries its own .wrap and the section is ALREADY inside one.
+   Nested, the gutter applied twice and the banner sat 40px right of the headline
+   above it — close enough to read as a mistake rather than a deliberate inset.
+   Neutralise the inner one so the banner lines up with the hero text. */
+.hero-slider .wrap{ max-width:none; padding-inline:0; }
 
 .slider-frame{ position:relative; border-radius:var(--radius-lg); overflow:hidden; background:var(--paper-3); }
 .slider-track{
