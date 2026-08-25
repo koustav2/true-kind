@@ -484,6 +484,34 @@ const BoardMember = sequelize.define('BoardMember', {
   visible:  { type: DataTypes.BOOLEAN, defaultValue: true }
 });
 
+/* ---------------------------------------------------------------------------
+   Press & media coverage, as data.
+
+   press-release.html shipped with a static "coverage will be listed here"
+   placeholder and no way to add real items — press mentions arrive on no
+   fixed schedule and in no fixed number, so a handful of named CMS fields
+   could never express "add one more clipping". Same reasoning as BoardMember:
+   a table that can hold any number of rows, admin-managed, with an image per
+   row via the same upload pattern.
+
+   `visible` rather than deleting, for the same reason as everywhere else on
+   this site: taking a mention down is common (an outlet's link rots, a
+   client asks for it to come off), losing its photograph and details to an
+   accidental delete is not recoverable.
+   --------------------------------------------------------------------------- */
+const PressItem = sequelize.define('PressItem', {
+  _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  title: { type: DataTypes.STRING, allowNull: false },
+  source:   { type: DataTypes.STRING },           // publication / outlet name
+  url:      { type: DataTypes.STRING },           // link to the original coverage
+  date:     { type: DataTypes.DATEONLY },
+  excerpt:  { type: DataTypes.TEXT },
+  photoUrl: { type: DataTypes.STRING },           // /uploads/<file>
+  photoFile:{ type: DataTypes.STRING },           // on-disk name, so a replace can unlink
+  sortOrder:{ type: DataTypes.INTEGER, defaultValue: 0 },
+  visible:  { type: DataTypes.BOOLEAN, defaultValue: true }
+});
+
 // Associations
 Donation.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(Donation, { as: 'donations', foreignKey: 'userId' });
@@ -502,5 +530,5 @@ module.exports = {
   Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
   BoardMember, MembershipPayment, IdCardProfile, Revocation, VerificationScan,
   CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess,
-  AppointmentLetter
+  AppointmentLetter, PressItem
 };

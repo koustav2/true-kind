@@ -420,6 +420,108 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
   })();
 
   /* ----------------------------------------------------------------------
+     Press & media coverage (Press page)
+
+     Same reasoning and the same three rules as the board, above: the list is
+     admin-managed (the PressItem table, edited at /portal/admin/press)
+     because "add one more mention" is not something a fixed set of CMS
+     fields can express.
+
+     1. The placeholder note already in press-release.html is the fallback and
+        is never removed speculatively — only once we hold at least one real
+        item.
+     2. Everything the admin typed is written with textContent; a link is
+        re-checked for an http(s) scheme here even though the server already
+        validated it.
+     3. Photograph optional: a card with no photo simply shows no thumbnail.
+     ---------------------------------------------------------------------- */
+  (function press() {
+    var list = document.querySelector(".press-list");
+    if (!list) return;
+
+    function safeHref(url) {
+      if (!url) return null;
+      try {
+        var u = new URL(url, location.href);
+        return (u.protocol === "http:" || u.protocol === "https:") ? u.href : null;
+      } catch (e) { return null; }
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      var d = new Date(iso + "T00:00:00");
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function card(item) {
+      var el = document.createElement("div");
+      el.className = "press-card";
+
+      var meta = document.createElement("div");
+      if (item.photo) {
+        var img = document.createElement("img");
+        img.className = "press-thumb";
+        img.src = item.photo;
+        img.alt = "";
+        img.loading = "lazy";
+        meta.appendChild(img);
+      }
+      var when = formatDate(item.date);
+      if (when) {
+        var date = document.createElement("p");
+        date.className = "press-date";
+        date.textContent = when;
+        meta.appendChild(date);
+      }
+      el.appendChild(meta);
+
+      var body = document.createElement("div");
+      if (item.source) {
+        var tag = document.createElement("span");
+        tag.className = "press-tag";
+        tag.textContent = item.source;
+        body.appendChild(tag);
+      }
+      var h = document.createElement("h3");
+      var href = safeHref(item.url);
+      if (href) {
+        var a = document.createElement("a");
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.className = "textlink";
+        a.textContent = item.title || "";
+        h.appendChild(a);
+      } else {
+        h.textContent = item.title || "";
+      }
+      body.appendChild(h);
+      if (item.excerpt) {
+        var p = document.createElement("p");
+        p.textContent = item.excerpt;
+        body.appendChild(p);
+      }
+      el.appendChild(body);
+      return el;
+    }
+
+    fetch(API_BASE + "/press", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var items = data && data.items;
+        if (!items || !items.length) return;       // keep the placeholder note
+        var frag = document.createDocumentFragment();
+        items.forEach(function (item) { if (item && item.title) frag.appendChild(card(item)); });
+        if (!frag.childNodes.length) return;
+        list.textContent = "";
+        list.appendChild(frag);
+        document.dispatchEvent(new CustomEvent("press:rendered"));
+      })
+      .catch(function () { /* the placeholder note stays */ });
+  })();
+
+  /* ----------------------------------------------------------------------
      Impact dials
 
      The percentage lives in the visible .ring-num text, not in a data
@@ -611,6 +713,13 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
     document.addEventListener("board:rendered", function () {
       var fresh = document.querySelectorAll(".board-card:not(.reveal)");
       i = 0;                                   // restart the stagger for the row
+      fresh.forEach(function (el) { markLift(el); io.observe(el); });
+    });
+
+    // Same reasoning: press cards arrive from the API after this ran.
+    document.addEventListener("press:rendered", function () {
+      var fresh = document.querySelectorAll(".press-card:not(.reveal)");
+      i = 0;
       fresh.forEach(function (el) { markLift(el); io.observe(el); });
     });
   })();

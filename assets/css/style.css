@@ -1731,6 +1731,11 @@ fieldset.field{ border:none; padding:0; margin:0; }
   font-family:var(--font-mono); font-size:var(--fs-xs);
   color:var(--text-mute); line-height:1.6; padding-top:3px;
 }
+.press-thumb{
+  width:100%; aspect-ratio:4/3; object-fit:cover;
+  border-radius:var(--radius); border:1px solid var(--rule);
+  display:block; margin-bottom:var(--sp-3); background:var(--paper-2);
+}
 .press-tag{
   font-family:var(--font-mono); font-size:var(--fs-label);
   text-transform:uppercase; letter-spacing:0.16em;

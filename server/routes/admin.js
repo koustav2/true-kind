@@ -6,7 +6,7 @@ const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, 
         UserAccess, VolunteerLogin, CertificateFile, BoardMember,
         MembershipPayment, IdCardProfile, Revocation, VerificationScan,
         CertificateStyle, VisitorCertificate, OfflineDonation, Notice,
-        ManagerAccess, AppointmentLetter } = require('../models');
+        ManagerAccess, AppointmentLetter, PressItem } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const config = require('../config');
@@ -1109,6 +1109,110 @@ router.post('/board/:id/delete', async (req, res) => {
     dropPhoto(file);
   }
   res.redirect('/portal/admin/board?saved=1');
+});
+
+/* ==========================================================================
+   Press & media coverage.
+
+   Same shape as the board above, for the same reason: an admin-managed list
+   with any number of rows, each carrying its own optional photograph.
+   ========================================================================== */
+const PRESS_ORDER = [['sortOrder', 'ASC'], ['id', 'ASC']];
+
+function pressFields(body) {
+  const s = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+  const order = parseInt(body.sortOrder, 10);
+  const date = String(body.date || '').trim();
+  return {
+    title:   s(body.title, 200),
+    source:  s(body.source, 120),
+    url:     pressUrl(body.url),
+    date:    date || null,
+    excerpt: s(body.excerpt, 600),
+    sortOrder: Number.isFinite(order) ? Math.max(0, Math.min(999, order)) : 0,
+    visible: body.visible === 'on' || body.visible === 'true' || body.visible === '1'
+  };
+}
+
+// A press link can be any external URL, not just a handful of known social
+// hosts — socialUrl() only ever returns http(s) or null for a bare handle, so
+// this runs the same http(s)-only check directly rather than stretching that
+// helper to cover an arbitrary link.
+function pressUrl(raw) {
+  const v = String(raw == null ? '' : raw).trim();
+  if (!v) return null;
+  try {
+    const u = new URL(/^[a-z][a-z0-9+.-]*:/i.test(v) ? v : 'https://' + v);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : null;
+  } catch (e) { return null; }
+}
+
+router.get('/press', async (req, res) => {
+  const items = await PressItem.findAll({ order: PRESS_ORDER });
+  res.render('admin/press', {
+    title: 'Press', items,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+const pressPhoto = (req, res, next) => {
+  uploadImage.single('photo')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error',
+      { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+};
+
+router.post('/press', pressPhoto, async (req, res) => {
+  const data = pressFields(req.body);
+  if (!data.title) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/press?error=title');
+  }
+  if (req.file) {
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  }
+  if (!req.body.sortOrder) {
+    const last = await PressItem.max('sortOrder');
+    data.sortOrder = (Number.isFinite(last) ? last : 0) + 10;
+  }
+  await PressItem.create(data);
+  res.redirect('/portal/admin/press?saved=1');
+});
+
+router.post('/press/:id', pressPhoto, async (req, res) => {
+  const m = await PressItem.findByPk(req.params.id);
+  if (!m) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.status(404).send('No such press item');
+  }
+  const data = pressFields(req.body);
+  if (!data.title) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/press?error=title');
+  }
+  if (req.file) {
+    dropPhoto(m.photoFile);
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  } else if (req.body.removePhoto === 'on') {
+    dropPhoto(m.photoFile);
+    data.photoUrl = null;
+    data.photoFile = null;
+  }
+  await m.update(data);
+  res.redirect('/portal/admin/press?saved=1');
+});
+
+router.post('/press/:id/delete', async (req, res) => {
+  const m = await PressItem.findByPk(req.params.id);
+  if (m) {
+    const file = m.photoFile;
+    await m.destroy();
+    dropPhoto(file);
+  }
+  res.redirect('/portal/admin/press?saved=1');
 });
 
 /* ==========================================================================

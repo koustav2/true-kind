@@ -84,7 +84,7 @@ app.get('/portal', async (req, res) => {
 
 // Guest donation + guest receipt
 const config = require('./config');
-const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember } = require('./models');
+const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember, PressItem } = require('./models');
 const { qrDataUrl, barcodeDataUrl } = require('./utils/codes');
 const verify = require('./utils/verify');
 const { receiptPdf } = require('./utils/pdf');
@@ -362,6 +362,29 @@ app.get('/api/board', async (req, res) => {
       }
     })) });
   } catch (e) { res.status(500).json({ ok: false, members: [] }); }
+});
+
+/* Press & media coverage, for the Press page.
+   Same reasoning as /api/board: a LIST of unknown length, so its own endpoint
+   rather than a fixed CMS field. Only visible rows, and only the fields the
+   page renders — no internal ids, no on-disk filenames. On any failure this
+   returns an empty list, and press-release.html keeps its placeholder note. */
+app.get('/api/press', async (req, res) => {
+  try {
+    const rows = await PressItem.findAll({
+      where: { visible: true },
+      order: [['sortOrder', 'ASC'], ['id', 'ASC']]
+    });
+    res.set('Cache-Control', 'no-cache');
+    res.json({ ok: true, items: rows.map(m => ({
+      title: m.title,
+      source: m.source || '',
+      url: m.url || '',
+      date: m.date || '',
+      excerpt: m.excerpt || '',
+      photo: m.photoUrl || ''
+    })) });
+  } catch (e) { res.status(500).json({ ok: false, items: [] }); }
 });
 
 // --------------------------------------------------------------------------

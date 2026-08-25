@@ -1,0 +1,142 @@
+<%- include('../partials/head') %><%- include('../partials/nav', { active: 'press' }) %>
+<%#
+  Press & media coverage.
+
+  One form per item, same reasoning as the board page: a photograph upload is
+  multipart and cannot be batched with the others without posting every file
+  on every save, and a mistake in one row should not be able to discard the
+  edits in another.
+
+  Every form's action carries ?_csrf= as well as the hidden field. The CSRF
+  guard runs before multer, so on a multipart POST the hidden field has not
+  been parsed yet — the query string is the only copy it can see. Do not
+  remove it.
+%>
+<style>
+.pr-grid{display:grid;gap:16px}
+@media(min-width:820px){.pr-grid{grid-template-columns:1fr 1fr}}
+.pr-card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);padding:20px 22px}
+.pr-card.add{border-style:dashed;border-color:var(--rule-strong)}
+.pr-head{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.pr-shot{
+  width:58px;height:58px;border-radius:8px;flex:none;overflow:hidden;
+  border:1.5px solid var(--brand-green);background:var(--paper-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--green);
+}
+.pr-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.pr-head h3{margin:0;font-size:1rem}
+.pr-head .muted{margin:2px 0 0}
+.pr-row{display:grid;gap:10px}
+@media(min-width:520px){.pr-row.two{grid-template-columns:1fr 1fr}}
+.pr-check{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:.85rem}
+.pr-check input{width:auto;margin:0;accent-color:var(--purple)}
+.pr-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px;
+  padding-top:14px;border-top:1px solid var(--rule)}
+.pr-acts .grow{flex:1}
+.pr-hint{font-size:.76rem;color:var(--text-soft);margin:5px 0 0}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Website</p>
+<h1 style="margin-bottom:6px">Press &amp; Media</h1>
+<p class="muted" style="margin:0 0 20px;max-width:70ch">
+  These are the items under <b>Press &amp; Media → News &amp; coverage</b> on the public site.
+  Add as many as you need; they appear in the order below. Untick <i>Show on the website</i>
+  to take one off the page without deleting it.
+  <br>
+  <b>While this list is empty</b> the Press page keeps showing its placeholder note.
+</p>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'title') { %><div class="alert err">A title is required — nothing else is.</div><% } %>
+
+<div class="pr-grid">
+  <% items.forEach(m => { %>
+    <div class="pr-card">
+      <form method="post" action="/portal/admin/press/<%= m.id %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="pr-head">
+          <div class="pr-shot">
+            <% if (m.photoUrl) { %>
+              <img src="<%= m.photoUrl %>" alt="">
+            <% } else { %>
+              PRESS
+            <% } %>
+          </div>
+          <div>
+            <h3><%= m.title %></h3>
+            <p class="muted"><%= m.source || 'No source' %><%= m.visible ? '' : ' · hidden' %></p>
+          </div>
+        </div>
+
+        <div class="pr-row two">
+          <div><label>Title *</label><input name="title" value="<%= m.title %>" required maxlength="200"></div>
+          <div><label>Source / outlet</label><input name="source" value="<%= m.source || '' %>" maxlength="120" placeholder="The Daily Herald"></div>
+        </div>
+        <div class="pr-row two">
+          <div><label>Link to coverage</label><input type="url" name="url" value="<%= m.url || '' %>" placeholder="https://..."></div>
+          <div><label>Date</label><input type="date" name="date" value="<%= m.date || '' %>"></div>
+        </div>
+        <label>Photograph</label><input type="file" name="photo" accept="image/*">
+        <p class="pr-hint">A clipping, screenshot or programme photo. Leave empty to keep the current one.</p>
+        <% if (m.photoUrl) { %>
+          <label class="pr-check"><input type="checkbox" name="removePhoto"> Remove the current photograph</label>
+        <% } %>
+
+        <label>Excerpt (optional)</label>
+        <textarea name="excerpt" rows="2" maxlength="600"><%= m.excerpt || '' %></textarea>
+
+        <div class="pr-row two">
+          <div><label>Order</label><input type="number" name="sortOrder" value="<%= m.sortOrder %>" min="0" max="999"></div>
+          <div><label>&nbsp;</label>
+            <label class="pr-check" style="margin:0;padding:12px 0">
+              <input type="checkbox" name="visible" <%= m.visible ? 'checked' : '' %>> Show on the website
+            </label>
+          </div>
+        </div>
+
+        <div class="pr-acts">
+          <button class="btn btn-primary btn-sm" type="submit">Save changes</button>
+          <span class="grow"></span>
+        </div>
+      </form>
+      <%# Delete is its own form: a submit button inside the edit form would post
+          the edits to the delete route. %>
+      <form method="post" action="/portal/admin/press/<%= m.id %>/delete" style="margin-top:10px">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Delete <%= m.title %></button>
+      </form>
+    </div>
+  <% }) %>
+
+  <div class="pr-card add">
+    <form method="post" action="/portal/admin/press?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <h3 style="margin:0 0 4px">Add a press item</h3>
+      <p class="muted" style="margin:0 0 8px">Only the title is required.</p>
+
+      <div class="pr-row two">
+        <div><label>Title *</label><input name="title" required maxlength="200" placeholder="Headline or listing title"></div>
+        <div><label>Source / outlet</label><input name="source" maxlength="120" placeholder="The Daily Herald"></div>
+      </div>
+      <div class="pr-row two">
+        <div><label>Link to coverage</label><input type="url" name="url" placeholder="https://..."></div>
+        <div><label>Date</label><input type="date" name="date"></div>
+      </div>
+      <label>Photograph</label><input type="file" name="photo" accept="image/*">
+      <p class="pr-hint">A clipping, screenshot or programme photo, up to 6 MB. JPG, PNG or WebP.</p>
+
+      <label>Excerpt (optional)</label>
+      <textarea name="excerpt" rows="2" maxlength="600" placeholder="One or two lines on the coverage."></textarea>
+
+      <label class="pr-check"><input type="checkbox" name="visible" checked> Show on the website</label>
+
+      <div class="pr-acts">
+        <button class="btn btn-purple btn-sm" type="submit">Add press item</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+</body></html>

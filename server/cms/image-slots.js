@@ -101,6 +101,18 @@ slots.push({
   });
 });
 
+/* The Get Involved (volunteer) page HERO photograph — beside the headline,
+   same arrangement as the About page hero above. */
+slots.push({
+  id: 'volunteer.photo.hero',
+  page: 'volunteer',
+  label: 'Get Involved — hero photograph',
+  help: 'Beside the headline at the top of Get Involved. Landscape, 1600x1200 or wider. '
+      + 'A real photograph of volunteers at work is worth far more here than a bought one.',
+  container: '.hero-split-media',
+  fit: 'cover'
+});
+
 /* The Chairperson's own page has a dedicated portrait area. */
 slots.push({
   id: 'chairperson.photo.portrait',

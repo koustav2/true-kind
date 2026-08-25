@@ -49,15 +49,40 @@
 <main id="main-content">
 
 <section class="inner-hero">
-  <div class="wrap">
-    <nav class="breadcrumb" aria-label="Breadcrumb" data-cms="volunteer.nav.1"><a href="index.html">Home</a> / Get Involved</nav>
-    <p class="eyebrow" data-cms="volunteer.p.1">Be a Volunteer</p>
-    <h1 data-cms="volunteer.h1.1">Join the people doing the work.</h1>
-    <p class="lede" data-cms="volunteer.p.2">Two hours on a weekend or a whole batch you run yourself — there's a place for both. We take individuals, students and organisation teams. No experience required; follow-through is the only prerequisite.</p>
-    <div class="btn-row mt-6">
-      <a href="#register" class="btn btn-primary" data-cms="volunteer.a.1">Register as a volunteer</a>
-      <a href="/portal/signin" class="login-trigger" data-cms="volunteer.a.2">Member sign in</a>
+  <div class="wrap hero-split">
+    <div class="hero-split-text">
+      <nav class="breadcrumb" aria-label="Breadcrumb" data-cms="volunteer.nav.1"><a href="index.html">Home</a> / Get Involved</nav>
+      <p class="eyebrow" data-cms="volunteer.p.1">Be a Volunteer</p>
+      <h1 data-cms="volunteer.h1.1">Join the people doing the work.</h1>
+      <p class="lede" data-cms="volunteer.p.2">Two hours on a weekend or a whole batch you run yourself — there's a place for both. We take individuals, students and organisation teams. No experience required; follow-through is the only prerequisite.</p>
+      <div class="btn-row mt-6">
+        <a href="#register" class="btn btn-primary" data-cms="volunteer.a.1">Register as a volunteer</a>
+        <a href="/portal/signin" class="login-trigger" data-cms="volunteer.a.2">Member sign in</a>
+      </div>
     </div>
+    <!--
+      The hero photograph slot. Empty until somebody uploads one in the admin,
+      and while it is empty the line drawing stands in — same arrangement as
+      the other photo slots on the site, so the page never shows a hole.
+    -->
+    <div class="hero-split-media hero-split-mark cms-photo-slot">
+      <svg viewBox="0 0 120 96" aria-hidden="true" role="presentation">
+        <path class="hs-leaf" d="M16 80 C16 61, 29 48, 47 45 C45 64, 33 78, 16 80 Z"></path>
+        <g class="hs-p">
+          <circle cx="54" cy="24" r="8.7"></circle>
+          <path d="M54 37.4 C37.2 56.5, 42.2 80, 54 80 C65.8 80, 70.8 56.5, 54 37.4 Z"></path>
+        </g>
+        <g class="hs-b">
+          <circle cx="76" cy="36" r="6.8"></circle>
+          <path d="M76 46.6 C62.8 61.5, 66.8 80, 76 80 C85.2 80, 89.2 61.5, 76 46.6 Z"></path>
+        </g>
+        <g class="hs-r">
+          <circle cx="94" cy="46" r="5.3"></circle>
+          <path d="M94 54.2 C83.8 65.7, 86.9 80, 94 80 C101.1 80, 104.2 65.7, 94 54.2 Z"></path>
+        </g>
+        <path class="hs-ground" d="M10 80.6h100"></path>
+      </svg>
+    <img class="cms-photo" data-cms-image="volunteer.photo.hero" alt="" hidden=""></div>
   </div>
 </section>
 
