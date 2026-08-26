@@ -169,6 +169,7 @@ function processPage(page, entries) {
   const file = path.join(ROOT, page.file);
   let html = fs.readFileSync(file, 'utf8');
   const $ = cheerio.load(html, { decodeEntities: false });
+  const firstEntry = entries.length;   // everything added below belongs to this page
 
   const existing = [];
   $('[data-cms]').each((i, el) => existing.push($(el).attr('data-cms')));
@@ -353,6 +354,31 @@ function processPage(page, entries) {
       target: { selector: `[data-cms-video="${slot.id}"]` },
       default: { mode: '', src: '', embedUrl: '', provider: '', poster: '', caption: '' }
     });
+  }
+
+  /* ---- where each field actually is on the page -------------------------
+     The editor used to list sections in the order fields were GENERATED, which
+     is not the order they appear. The banner is the first thing on the
+     homepage and came out second-to-last, because declared slots are appended
+     after the walk; the About story photograph sits a third of the way down the
+     page and came out eleventh of twelve; "Video" was pinned to the bottom
+     everywhere, including the pages where it is halfway up. Editing the site
+     top to bottom meant hunting around the admin.
+
+     So stamp every entry with its element's position in the document, and let
+     the editor sort by that. Computed here, once, at build time — the runtime
+     has no DOM to ask. Fields with no element (the <head> meta ones) keep
+     pos undefined and the editor puts them first, which is where they belong:
+     the browser tab title before the page body. */
+  const domIndex = new Map();
+  let counter = 0;
+  $('*').each((_, el) => { domIndex.set(el, ++counter); });
+  for (let i = firstEntry; i < entries.length; i++) {
+    const e = entries[i];
+    const sel = (e.target && e.target.selector) || `[data-cms="${e.id}"]`;
+    let node = null;
+    try { node = $(sel).get(0); } catch (err) { node = null; }
+    if (node && domIndex.has(node)) e.pos = domIndex.get(node);
   }
 
   fs.writeFileSync(file, $.html());

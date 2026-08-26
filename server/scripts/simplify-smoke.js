@@ -155,7 +155,7 @@ process.env.ADMIN_PASSWORD = 'admin123';
 
   /* Photograph first inside its section, and — on the banner — beside its own
      slide rather than in a block of ten at the top. */
-  const banner = cms.groupsForPage('index').find(g => g.name === 'Photo banner — slides');
+  const banner = cms.groupsForPage('index').find(g => g.name === 'Photo slider');
   check('the banner interleaves each slide\'s photo with that slide\'s text',
     banner && banner.fields[0].id === 'index.slide.1.image'
            && banner.fields[1].id === 'index.slide.1.title',
@@ -302,6 +302,20 @@ process.env.ADMIN_PASSWORD = 'admin123';
   // which is the one thing that must never happen silently.
   check('total field count matches the registry as committed (617)',
     cms.FIELDS.length === 617, `now ${cms.FIELDS.length}`);
+
+  /* ---- 10. the editor is in the same order as the page ------------------- */
+
+  const outOfOrder = [];
+  for (const p of cms.PAGE_KEYS) {
+    const seq = cms.groupsForPage(p)
+      .map(g => g.fields.map(f => f.pos).filter(n => typeof n === 'number'))
+      .filter(ps => ps.length).map(ps => Math.min(...ps));
+    const sorted = [...seq].sort((a, b) => a - b);
+    if (JSON.stringify(seq) !== JSON.stringify(sorted)) outOfOrder.push(p);
+  }
+  check('every page\'s sections are listed in the order they appear on the page',
+    outOfOrder.length === 0, outOfOrder.join(', '));
+
 
   /* ---- report ------------------------------------------------------------ */
   for (const x of results) console.log(`${x.ok ? 'PASS' : 'FAIL'}  ${x.name}${x.ok ? '' : '   << ' + x.detail}`);

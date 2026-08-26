@@ -61,41 +61,28 @@ function truncateGroup(name, max) {
   return safe.trimEnd() + '…';
 }
 
-/* Every field on one page belongs to a CLUSTER — the field id minus its last
-   segment. `index.slide.3.image`, `.title`, `.caption` and `.cta` are all
-   `index.slide.3`; the three body paragraphs of a card are all `work.p`.
+/* Rows inside a section are in the order they appear on the page — the same
+   rule the sections themselves follow, using the position build-registry.js
+   stamped on each field.
 
-   Clusters are what let a photograph sit with the words it belongs to. Without
-   them, images join their group at the end (they are generated after the text
-   in the registry) and the homepage banner would list ten photographs followed
-   by thirty unrelated text rows, with slide 3's picture nowhere near slide 3's
-   headline. */
-function clusterKey(id) {
-  const i = String(id).lastIndexOf('.');
-  return i === -1 ? id : id.slice(0, i);
-}
+   This replaced a cleverer scheme that grouped fields by a shared id prefix and
+   pulled photographs to the front of their section. It read well on a programme
+   card and badly everywhere else: merging the header and footer into one
+   section put the footer logo second, above the menu links, because both logos
+   were "photographs" and photographs went first. One rule that matches what the
+   editor is looking at beats two rules that argue.
 
-/* Order the fields of one group: clusters in the order they first appear, but
-   any cluster holding a photograph comes first, and inside a cluster the
-   photograph leads.
-
-   Picture first is deliberate. On the page itself the image is above the words
-   on a card and beside them in a hero, so leading with it matches what the
-   editor is looking at — and it is the control people could not find at all
-   when it lived on another tab. */
+   Fields with no position are the <head> ones — the browser tab title and the
+   share text. They keep the order they were declared in. */
 function orderGroupFields(fields) {
-  const order = [];
-  const clusters = new Map();
-  for (const f of fields) {
-    const k = clusterKey(f.id);
-    if (!clusters.has(k)) { clusters.set(k, { images: [], rest: [] }); order.push(k); }
-    const c = clusters.get(k);
-    (f.type === 'image' ? c.images : c.rest).push(f);
-  }
-  const withPhoto = order.filter(k => clusters.get(k).images.length);
-  const without   = order.filter(k => !clusters.get(k).images.length);
-  return [...withPhoto, ...without]
-    .flatMap(k => [...clusters.get(k).images, ...clusters.get(k).rest]);
+  return fields
+    .map((f, i) => ({ f, i }))
+    .sort((a, b) => {
+      const pa = typeof a.f.pos === 'number' ? a.f.pos : Infinity;
+      const pb = typeof b.f.pos === 'number' ? b.f.pos : Infinity;
+      return pa - pb || a.i - b.i;
+    })
+    .map(x => x.f);
 }
 
 /* Fields for one page, arranged into the groups the generator derived, with
@@ -137,18 +124,32 @@ function groupsForPage(pageName, storedIds) {
 
     if (hidden) { item.strandedReason = hidden; add(sections.STRANDED, item); continue; }
     const generated = f.group || 'Page';
-    add(sections.sectionFor(f.id) || rename[generated] || generated, item);
+    add(sections.sectionFor(f.id) || rename[generated] || sections.PLAIN[generated] || generated, item);
   }
 
-  /* Video last: it is additive, not a correction to copy. Stranded duplicates
-     after even that — they are cleanup, not content. */
-  for (const tail of ['Video', sections.STRANDED]) {
-    const i = order.indexOf(tail);
-    if (i > -1) { order.splice(i, 1); order.push(tail); }
-  }
+  /* Sections come out in the order they appear ON THE PAGE, using the position
+     build-registry.js stamped on each field. A section sits where its earliest
+     field sits. Head fields (the browser tab title and the share text) carry no
+     position and sort to the top, ahead of the page body.
+
+     'Video' used to be pinned last on every page. It is a real block in a real
+     place, so it now sorts like everything else. */
+  const at = name => {
+    const ps = groups.get(name).map(f => f.pos).filter(p => typeof p === 'number');
+    return ps.length ? Math.min(...ps) : -1;         // -1 = <head>, sorts first
+  };
+  order.sort((a, b) => at(a) - at(b));
+
+  /* Except the stranded duplicates, which are cleanup rather than content and
+     belong out of the way at the bottom. */
+  const s = order.indexOf(sections.STRANDED);
+  if (s > -1) { order.splice(s, 1); order.push(sections.STRANDED); }
+
+  const notes = (sections.SECTION_NOTES || {})[pageName] || {};
   return order.map(name => ({
     name,
     short: truncateGroup(name, 44),
+    note: notes[name] || null,
     fields: orderGroupFields(groups.get(name))
   }));
 }

@@ -273,6 +273,14 @@ img{max-width:100%;height:auto}
    alt text is a caption on a decision already made, so it follows.
    An empty slot draws a dashed frame that says so — a bare button floating in
    white space reads as a layout bug rather than as an empty picture. */
+/* A standing note at the top of a section — "this list is edited elsewhere".
+   Blue rather than grey: it is orientation, not a caption, and somebody who
+   misses it goes looking for rows that are deliberately not here. */
+.cms-note{
+  margin:0 0 16px;padding:12px 14px;border-radius:var(--radius-sm);
+  background:rgba(3,146,212,.07);border:1px solid rgba(3,146,212,.22);
+  color:var(--ink-2);font-size:.86rem;line-height:1.6}
+.cms-note .textlink{white-space:nowrap}
 .cms-photo-row{display:grid;gap:14px;align-items:start}
 @media(min-width:680px){.cms-photo-row{grid-template-columns:172px 1fr}}
 .cms-photo-thumb{
@@ -290,9 +298,17 @@ img{max-width:100%;height:auto}
 .cms-err{color:var(--clay-deep);font-size:.8rem;margin-top:6px}
 .cms-hint{color:var(--text-soft);font-size:.78rem;margin:4px 0 0}
 
-.cms-bar{position:sticky;bottom:0;background:rgba(255,255,255,.95);
+/* The save bar sticks to the bottom of the window, so form rows scroll UNDER
+   it. Its background was rgba(255,255,255,.95) — 95% opaque — which let the row
+   behind show faintly through and read as a rendering fault rather than as a
+   bar sitting on top. Opaque, with a soft edge above it so it still reads as
+   floating, and enough room below the last row that nothing is ever stuck
+   underneath it. */
+.cms-bar{position:sticky;bottom:0;background:var(--paper);
   border-top:1px solid var(--rule-strong);padding:14px 0;margin-top:18px;
+  box-shadow:0 -10px 18px -12px rgba(17,24,39,.30);
   display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:5}
+#cmsForm{padding-bottom:8px}
 
 /* Technical field id, off by default everywhere it appears (Pages and
    Photographs both use this). It exists for the rare case someone is

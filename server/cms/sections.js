@@ -32,53 +32,73 @@
    ========================================================================== */
 'use strict';
 
-/* Every hero is "the big thing at the top of the page", and every one of them
-   was named after its own headline. One name, used consistently, means an
-   admin who has learned one page has learned all nine. */
-const HERO = 'Hero — top of the page';
+/* Section names come from the page's own EYEBROW labels — the small caps line
+   above each block ("Our story", "What guides us", "Governance"). Those are
+   what the page itself calls its sections, so they are what the admin calls
+   them too.
 
-/* ---- RENAME: generated section name -> plain name ----------------------- */
+   The generator could not do this on its own: build-registry.js deliberately
+   prefers the heading over the eyebrow, because one hero eyebrow is a
+   registration notice ("Registered non-profit · Bhadrak, Odisha") rather than
+   a name. Preferring the eyebrow everywhere would have made that the homepage's
+   first section name. So the choice is made here, per section, by hand — the
+   eyebrow where it reads as a name, the heading where it does not. */
 const RENAME = {
-  global: {
-    'Header / navigation': 'Header & menu'
-  },
   index: {
-    "Kindness works better when it's organized.": HERO,
-    'The four numbers our board actually reviews': 'Impact numbers — intro',
-    'Five programs, one thread':                   'Programmes — intro',
-    "Three commitments we don't compromise on":    'Our commitments',
-    'From people in the programs':                 'Voices — quotes from participants',
-    'Every rupee is tracked to a program, not a fundr': 'Donate strip',
-    'Homepage banner':                             'Photo banner — slides'
+    /* The homepage eyebrow is the registration notice, so this one keeps a
+       written name rather than the page's label. */
+    "Kindness works better when it's organized.": 'Top of the page',
+    'The four numbers our board actually reviews': 'Where the effort goes',
+    'Five programs, one thread':                   'Our work',
+    "Three commitments we don't compromise on":    'How we work',
+    'From people in the programs':                 'Voices',
+    'Every rupee is tracked to a program, not a fundr': 'Donate box',
+    'Homepage banner':                             'Photo slider'
   },
   about: {
-    'Kindness, run like an institution.': HERO
+    'Kindness, run like an institution.':   'About Us',
+    'Why we exist':                         'Our story',
+    'Mission, vision & how we earn trust':  'What guides us',
+    'Our Board':                            'Governance',
+    'Hear from our Chairperson':            'Leadership'
   },
   work: {
-    'Five programs, chosen for how they compound.': HERO,
-    'Pick the program you want to back.':           'Donate strip'
+    'Five programs, chosen for how they compound.': 'Our Work',
+    'What a True Kind program has to have':         'Every program, same rules',
+    'Pick the program you want to back.':           'Donate box'
   },
   impact: {
-    'What the work has actually moved.': HERO
+    'What the work has actually moved.': 'Our Impact',
+    'Reach across our five programs':    'By program',
+    'Since we began tracking':           'Headline numbers',
+    'Where we work across India':        'Our footprint',
+    'How we measure this':               'Methodology',
+    'Request our latest impact report':  'Want the detail'
   },
   donate: {
-    'Every rupee is tracked to a program, not a fundr': HERO,
-    'Questions before you give? Ask them.':             'Contact prompt'
+    'Every rupee is tracked to a program, not a fundr': 'Donate',
+    'Where a contribution goes':                        'What it funds',
+    'Bank account details':                             'Direct transfer',
+    'Not everything useful arrives as money':           'Other ways to give',
+    "What we'll tell you, unprompted":                  'Before you give',
+    'Questions before you give? Ask them.':             'Questions before you give'
   },
   volunteer: {
-    'Join the people doing the work.': HERO
+    'Join the people doing the work.': 'Be a Volunteer'
   },
   contact: {
-    'Talk to us.':                                 HERO,
-    'We usually reply within a few working days':  'Contact details & form'
+    'Talk to us.':                                'Contact Us',
+    'We usually reply within a few working days': 'Send a message'
   },
   'press-release': {
-    'News & coverage.': HERO,
-    'Page':             'Coverage list'
+    'News & coverage.': 'Press & Media',
+    'Page':             'News list',
+    'Media enquiries':  'For journalists'
   },
   'chairperson-message': {
-    'A note from our Chairperson.': HERO,
-    'Page':                         'The message'
+    'A note from our Chairperson.': "Chairperson's Message",
+    'Page':                         'The message',
+    'Two ways to be part of this':  'Take the next step'
   }
 };
 
@@ -92,9 +112,9 @@ const MOVE = {};
    that go with them sat in the Voices section. Same four people, two sections,
    for no reason a person could see. */
 [1, 2, 3, 4].forEach(n => {
-  MOVE[`index.blockquote.${n}`] = 'Voices — quotes from participants';
-  MOVE[`index.b.${n + 7}`]      = 'Voices — quotes from participants';
-  MOVE[`index.span.${n + 15}`]  = 'Voices — quotes from participants';
+  MOVE[`index.blockquote.${n}`] = 'Voices';
+  MOVE[`index.b.${n + 7}`]      = 'Voices';
+  MOVE[`index.span.${n + 15}`]  = 'Voices';
 });
 
 /* Get Involved had ONE section of 30 rows called "For individuals" — the name
@@ -103,11 +123,12 @@ const MOVE = {};
 ['h3.1', 'h3.2', 'h3.3', 'p.3', 'p.4', 'p.5'].forEach(k => {
   MOVE[`volunteer.${k}`] = 'Ways to help';
 });
+
 [
   'p.6', 'h2.1', 'legend.1', 'button.1', 'span.1',
   ...[1, 2, 3, 4, 5, 6, 7, 8].map(n => `label.${n}`),
   ...Array.from({ length: 11 }, (_, i) => `option.${i + 1}`)
-].forEach(k => { MOVE[`volunteer.${k}`] = 'Registration form'; });
+].forEach(k => { MOVE[`volunteer.${k}`] = 'Sign up'; });
 
 /* ---- HIDE: field id -> why it must not be edited ------------------------
    A hidden field still exists, still saves if something already wrote to it,
@@ -124,7 +145,7 @@ const HIDE = {};
    by whichever was saved first. The declared slots are the ones that cover all
    ten slides, so they are the ones that stay. */
 [[6, 3, 11, 1], [7, 13, 12, 2], [8, 21, 13, 3]].forEach(([h2, p, a, slide]) => {
-  const why = `edits the same element as index.slide.${slide}.* — use the Photo banner section`;
+  const why = `edits the same element as index.slide.${slide}.* — use the Photo slider section`;
   HIDE[`index.h2.${h2}`] = why;
   HIDE[`index.p.${p}`]   = why;
   HIDE[`index.a.${a}`]   = why;
@@ -132,13 +153,67 @@ const HIDE = {};
 
 /* The ‹ and › on the slider. Punctuation the browser draws, not copy — and
    replacing either with a word breaks the round buttons they sit in. */
+/* The four board cards in about.html — Chairperson, Vice Chairperson,
+   Secretary, Treasurer — are a PLACEHOLDER for a list that has no fixed length.
+   The board is admin-managed data now: it is added on the Board screen, one
+   member at a time, and assets/js/main.js rebuilds the whole grid from
+   /api/board the moment there is one. Offering four fixed name-shaped rows here
+   suggests the board is exactly four people with exactly those titles, and
+   anything typed into them is thrown away as soon as a real trustee exists.
+
+   So the rows go, and SECTION_NOTES points at the Board screen instead. The
+   text above the cards — the "Governance" label, the "Our Board" heading and
+   its description — stays, because that is real copy on the page whatever the
+   board looks like. */
+[['div.1', 'h3.5', 'p.15'],   // Chairperson
+ ['div.2', 'h3.6', 'p.17'],   // Vice Chairperson
+ ['div.3', 'h3.7', 'p.19'],   // Secretary
+ ['div.4', 'h3.8', 'p.21']    // Treasurer
+].forEach(ids => ids.forEach(k => {
+  HIDE[`about.${k}`] = 'a placeholder board card — board members are added on the Board screen';
+}));
+
 HIDE['index.button.1'] = 'the slider’s ‹ arrow — punctuation, not copy';
 HIDE['index.button.2'] = 'the slider’s › arrow — punctuation, not copy';
+
+/* Names the generator produces that a person would not use.
+   "Search & sharing" is four fields nobody can see on the page — the browser
+   tab title, and the text WhatsApp and Facebook show when the page is shared —
+   so the name has to say that, or it reads as a search box. Unlike RENAME
+   these are not page-specific; they mean the same thing everywhere. */
+const PLAIN = {
+  'Search & sharing':  'Page title & share text',
+  /* Header and footer are one thing to whoever edits them: the parts that are
+     on every page. They were two sections only because the generator names a
+     section after the region it found the field in. Merged, they read top of
+     page then bottom of page, in that order, because sections sort by where
+     they sit in the document. */
+  'Header / navigation': 'On every page — menu & footer',
+  'Footer':              'On every page — menu & footer',
+  'Story photograph':    'Photo in the story'
+};
+
+/* A line shown at the top of a section, where the rows alone do not tell the
+   whole story — usually because the real content is managed on another screen. */
+const SECTION_NOTES = {
+  about: {
+    'Governance': {
+      text: 'The board itself is a list with no fixed length, so it is not edited here. Add, reorder and remove trustees on the Board screen — photograph, role and bio included — and this block on the site is built from that. The three rows below are the heading and intro above the cards.',
+      link: { href: '/portal/admin/board', label: 'Open the Board screen' }
+    }
+  },
+  'press-release': {
+    'News list': {
+      text: 'Press items are a list with no fixed length. Add and edit coverage on the Press screen; the row below is only the note shown while that list is empty.',
+      link: { href: '/portal/admin/press', label: 'Open the Press screen' }
+    }
+  }
+};
 
 const STRANDED = 'Older duplicate fields';
 
 module.exports = {
-  HERO, RENAME, MOVE, HIDE, STRANDED,
+  RENAME, MOVE, HIDE, PLAIN, SECTION_NOTES, STRANDED,
   renameFor: page => RENAME[page] || {},
   sectionFor: id => MOVE[id] || null,
   hiddenReason: id => HIDE[id] || null

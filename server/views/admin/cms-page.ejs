@@ -126,6 +126,18 @@
       <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
         <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
         <div class="cms-body">
+          <%# Some blocks on the site are a LIST with no fixed length — the board,
+              press coverage — and those live on their own screen with an Add
+              button. Without a line saying so, the three rows left here read as
+              "this is all there is". %>
+          <% if (group.note) { %>
+            <p class="cms-note">
+              <%= group.note.text %>
+              <% if (group.note.link) { %>
+                <a class="textlink" href="<%= group.note.link.href %>"><%= group.note.link.label %> ↗</a>
+              <% } %>
+            </p>
+          <% } %>
           <% if (group.fields.some(function (f) { return f.strandedReason; })) { %>
             <p class="cms-hint" style="margin:0 0 14px">
               Leftovers from an older version of this editor. Each of these edits
