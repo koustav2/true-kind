@@ -152,6 +152,26 @@ slots.push({
   fit: 'cover'
 });
 
+/* The three cost tiers on Donate — "Where a contribution goes". Each card is a
+   figure, a name and a sentence; a photograph of the thing that figure pays for
+   makes it concrete. Numbered rather than named after the amount, because the
+   amount is itself editable: a slot called "the ₹1,500 tier" becomes a lie the
+   first time somebody reprices it. */
+[1, 2, 3].forEach(n => {
+  slots.push({
+    id: `donate.photo.tier${n}`,
+    page: 'donate',
+    group: 'Where a contribution goes',
+    label: `Cost tier ${n} — photograph`,
+    help: `The ${['first', 'second', 'third'][n - 1]} card under "Where a contribution goes". `
+        + 'Landscape, 1200x675 or wider. Leave empty and the card shows no picture at all — '
+        + 'it does not reserve a blank frame.',
+    container: `.tier-card:nth-child(${n}) .tier-media`,
+    fit: 'cover',
+    preset: true            // the container already carries the slot classes
+  });
+});
+
 /* The Chairperson's own page has a dedicated portrait area. */
 slots.push({
   id: 'chairperson.photo.portrait',
