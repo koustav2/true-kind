@@ -325,8 +325,8 @@ process.env.ADMIN_PASSWORD = 'admin123';
   // was added or removed — so this number is unchanged by that work, which is
   // the property it exists to guard. If it moves, a field's identity changed,
   // which is the one thing that must never happen silently.
-  check('total field count matches the registry as committed (628)',
-    cms.FIELDS.length === 628, `now ${cms.FIELDS.length}`);
+  check('total field count matches the registry as committed (629)',
+    cms.FIELDS.length === 629, `now ${cms.FIELDS.length}`);
 
   /* ---- 10. the editor is in the same order as the page ------------------- */
 

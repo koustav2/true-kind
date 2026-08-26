@@ -131,6 +131,27 @@ slots.push({
   fit: 'cover'
 });
 
+/* The Donate page HERO photograph — beside the headline, same arrangement as
+   About Us and Get Involved above. The page had no photo slot at all until now:
+   its hero was a single column with nowhere for a picture to go, so donate.html
+   was given the same split layout the other two already use.
+
+   `group` is the name the GENERATOR derives from the page's own <h1>, not the
+   plain name the admin shows — sections.js renames that to "Donate". Matching
+   the generated string is what puts the photograph in the same section as the
+   headline it sits beside. */
+slots.push({
+  id: 'donate.photo.hero',
+  page: 'donate',
+  group: 'Every rupee is tracked to a program, not a fundr',
+  label: 'Donate — hero photograph',
+  help: 'Beside the headline at the top of Donate. Landscape, 1600x1200 or wider. '
+      + 'The crop changes between desktop and phone, so keep the subject near the middle. '
+      + 'A photograph of the work a donation pays for does more here than a picture of money.',
+  container: '.hero-split-media',
+  fit: 'cover'
+});
+
 /* The Chairperson's own page has a dedicated portrait area. */
 slots.push({
   id: 'chairperson.photo.portrait',

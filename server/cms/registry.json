@@ -6469,7 +6469,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Donate",
-   "pos": 53
+   "pos": 54
   },
   {
    "id": "donate.p.1",
@@ -6483,7 +6483,7 @@
     "self": true
    },
    "default": "Donate",
-   "pos": 55
+   "pos": 56
   },
   {
    "id": "donate.h1.1",
@@ -6497,7 +6497,7 @@
     "self": true
    },
    "default": "Every rupee is tracked to a program, not a fundraiser.",
-   "pos": 56
+   "pos": 57
   },
   {
    "id": "donate.p.2",
@@ -6511,7 +6511,7 @@
     "self": true
    },
    "default": "You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went.",
-   "pos": 57
+   "pos": 58
   },
   {
    "id": "donate.a.5.href",
@@ -6526,7 +6526,7 @@
     "attr": "href"
    },
    "default": "/portal/donate",
-   "pos": 59
+   "pos": 60
   },
   {
    "id": "donate.a.5",
@@ -6544,7 +6544,7 @@
     "id": "donate.a.5.href",
     "default": "/portal/donate"
    },
-   "pos": 59
+   "pos": 60
   },
   {
    "id": "donate.a.1.href",
@@ -6559,7 +6559,7 @@
     "attr": "href"
    },
    "default": "#bank",
-   "pos": 60
+   "pos": 61
   },
   {
    "id": "donate.a.1",
@@ -6577,7 +6577,7 @@
     "id": "donate.a.1.href",
     "default": "#bank"
    },
-   "pos": 60
+   "pos": 61
   },
   {
    "id": "donate.a.2.href",
@@ -6592,7 +6592,7 @@
     "attr": "href"
    },
    "default": "impact.html",
-   "pos": 61
+   "pos": 62
   },
   {
    "id": "donate.a.2",
@@ -6610,7 +6610,7 @@
     "id": "donate.a.2.href",
     "default": "impact.html"
    },
-   "pos": 61
+   "pos": 62
   },
   {
    "id": "donate.p.3",
@@ -6624,7 +6624,7 @@
     "self": true
    },
    "default": "What it funds",
-   "pos": 66
+   "pos": 81
   },
   {
    "id": "donate.h2.1",
@@ -6638,7 +6638,7 @@
     "self": true
    },
    "default": "Where a contribution goes",
-   "pos": 67
+   "pos": 82
   },
   {
    "id": "donate.p.4",
@@ -6652,7 +6652,7 @@
     "self": true
    },
    "default": "Indicative costs based on how our programs are currently budgeted.",
-   "pos": 68
+   "pos": 83
   },
   {
    "id": "donate.span.1",
@@ -6666,7 +6666,7 @@
     "self": true
    },
    "default": "₹1,500",
-   "pos": 71
+   "pos": 86
   },
   {
    "id": "donate.h3.1",
@@ -6680,7 +6680,7 @@
     "self": true
    },
    "default": "One trainee, one month",
-   "pos": 72
+   "pos": 87
   },
   {
    "id": "donate.p.5",
@@ -6694,7 +6694,7 @@
     "self": true
    },
    "default": "Covers a month of trade or digital-skills training for one participant, including materials and the trainer's time.",
-   "pos": 73
+   "pos": 88
   },
   {
    "id": "donate.a.6.href",
@@ -6709,7 +6709,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=1500&category=Skill%20Development",
-   "pos": 74
+   "pos": 89
   },
   {
    "id": "donate.a.6",
@@ -6727,7 +6727,7 @@
     "id": "donate.a.6.href",
     "default": "/portal/donate?amount=1500&category=Skill%20Development"
    },
-   "pos": 74
+   "pos": 89
   },
   {
    "id": "donate.span.2",
@@ -6741,7 +6741,7 @@
     "self": true
    },
    "default": "₹6,000",
-   "pos": 76
+   "pos": 91
   },
   {
    "id": "donate.h3.2",
@@ -6755,7 +6755,7 @@
     "self": true
    },
    "default": "A community health camp",
-   "pos": 77
+   "pos": 92
   },
   {
    "id": "donate.p.6",
@@ -6769,7 +6769,7 @@
     "self": true
    },
    "default": "Funds a single-day preventive-care camp — screening, basic medicines and a follow-up list for the cases that need one.",
-   "pos": 78
+   "pos": 93
   },
   {
    "id": "donate.a.7.href",
@@ -6784,7 +6784,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety",
-   "pos": 79
+   "pos": 94
   },
   {
    "id": "donate.a.7",
@@ -6802,7 +6802,7 @@
     "id": "donate.a.7.href",
     "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety"
    },
-   "pos": 79
+   "pos": 94
   },
   {
    "id": "donate.span.3",
@@ -6816,7 +6816,7 @@
     "self": true
    },
    "default": "₹25,000",
-   "pos": 81
+   "pos": 96
   },
   {
    "id": "donate.h3.3",
@@ -6830,7 +6830,7 @@
     "self": true
    },
    "default": "A women's collective, start to trading",
-   "pos": 82
+   "pos": 97
   },
   {
    "id": "donate.p.7",
@@ -6844,7 +6844,7 @@
     "self": true
    },
    "default": "Seed support for one savings-and-enterprise collective: training, initial materials and the market introductions that make it stick.",
-   "pos": 83
+   "pos": 98
   },
   {
    "id": "donate.a.8.href",
@@ -6859,7 +6859,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment",
-   "pos": 84
+   "pos": 99
   },
   {
    "id": "donate.a.8",
@@ -6877,7 +6877,7 @@
     "id": "donate.a.8.href",
     "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment"
    },
-   "pos": 84
+   "pos": 99
   },
   {
    "id": "donate.p.9",
@@ -6891,7 +6891,7 @@
     "self": true
    },
    "default": "Direct transfer",
-   "pos": 90
+   "pos": 105
   },
   {
    "id": "donate.h2.2",
@@ -6905,7 +6905,7 @@
     "self": true
    },
    "default": "Bank account details",
-   "pos": 91
+   "pos": 106
   },
   {
    "id": "donate.p.10",
@@ -6919,7 +6919,7 @@
     "self": true
    },
    "default": "NEFT, IMPS, UPI-to-account or a standing instruction from your bank all work.",
-   "pos": 92
+   "pos": 107
   },
   {
    "id": "donate.dt.1",
@@ -6933,7 +6933,7 @@
     "self": true
    },
    "default": "Account name",
-   "pos": 95
+   "pos": 110
   },
   {
    "id": "donate.dd.1",
@@ -6947,7 +6947,7 @@
     "self": true
    },
    "default": "True Kind Foundation",
-   "pos": 96
+   "pos": 111
   },
   {
    "id": "donate.dt.2",
@@ -6961,7 +6961,7 @@
     "self": true
    },
    "default": "Account number",
-   "pos": 98
+   "pos": 113
   },
   {
    "id": "donate.dd.2",
@@ -6975,7 +6975,7 @@
     "self": true
    },
    "default": "096402000000775",
-   "pos": 99
+   "pos": 114
   },
   {
    "id": "donate.dt.3",
@@ -6989,7 +6989,7 @@
     "self": true
    },
    "default": "IFSC code",
-   "pos": 101
+   "pos": 116
   },
   {
    "id": "donate.dd.3",
@@ -7003,7 +7003,7 @@
     "self": true
    },
    "default": "IOBA0000964",
-   "pos": 102
+   "pos": 117
   },
   {
    "id": "donate.dt.4",
@@ -7017,7 +7017,7 @@
     "self": true
    },
    "default": "Bank & branch",
-   "pos": 104
+   "pos": 119
   },
   {
    "id": "donate.dd.4",
@@ -7031,7 +7031,7 @@
     "self": true
    },
    "default": "Indian Overseas Bank, Nalanga Branch (0964)",
-   "pos": 105
+   "pos": 120
   },
   {
    "id": "donate.p.11",
@@ -7045,7 +7045,7 @@
     "self": true
    },
    "default": "After transferring, email <a href=\"mailto:info@truekindfoundation.org?subject=Donation%20made\">info@truekindfoundation.org</a> with the reference number and the program you'd like it assigned to. We'll confirm receipt and send a receipt for your records.",
-   "pos": 106
+   "pos": 121
   },
   {
    "id": "donate.p.13",
@@ -7059,7 +7059,7 @@
     "self": true
    },
    "default": "Other ways to give",
-   "pos": 112
+   "pos": 127
   },
   {
    "id": "donate.h2.3",
@@ -7073,7 +7073,7 @@
     "self": true
    },
    "default": "Not everything useful arrives as money",
-   "pos": 113
+   "pos": 128
   },
   {
    "id": "donate.h3.4",
@@ -7087,7 +7087,7 @@
     "self": true
    },
    "default": "Corporate & CSR partnerships",
-   "pos": 120
+   "pos": 135
   },
   {
    "id": "donate.p.14",
@@ -7101,7 +7101,7 @@
     "self": true
    },
    "default": "Fund a full program cycle, sponsor a skilling centre, or bring your team out for a field day. We'll write the proposal and report against it.",
-   "pos": 121
+   "pos": 136
   },
   {
    "id": "donate.h3.5",
@@ -7115,7 +7115,7 @@
     "self": true
    },
    "default": "Equipment & in-kind",
-   "pos": 127
+   "pos": 142
   },
   {
    "id": "donate.p.15",
@@ -7129,7 +7129,7 @@
     "self": true
    },
    "default": "Working laptops, sewing machines, teaching materials, medical supplies. Tell us what you have and we'll tell you honestly whether we can use it.",
-   "pos": 128
+   "pos": 143
   },
   {
    "id": "donate.h3.6",
@@ -7143,7 +7143,7 @@
     "self": true
    },
    "default": "Your time",
-   "pos": 135
+   "pos": 150
   },
   {
    "id": "donate.p.16",
@@ -7157,7 +7157,7 @@
     "self": true
    },
    "default": "A skilled volunteer who shows up every month is worth more to a program than most one-off cheques. <a href=\"volunteer.html\" class=\"textlink\">Sign up here</a>.",
-   "pos": 136
+   "pos": 151
   },
   {
    "id": "donate.p.17",
@@ -7171,7 +7171,7 @@
     "self": true
    },
    "default": "Before you give",
-   "pos": 142
+   "pos": 157
   },
   {
    "id": "donate.h2.4",
@@ -7185,7 +7185,7 @@
     "self": true
    },
    "default": "What we'll tell you, unprompted",
-   "pos": 143
+   "pos": 158
   },
   {
    "id": "donate.p.18",
@@ -7199,7 +7199,7 @@
     "self": true
    },
    "default": "Transparency isn't a page on a website. It's what we send you afterwards.",
-   "pos": 144
+   "pos": 159
   },
   {
    "id": "donate.span.4",
@@ -7213,7 +7213,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 147
+   "pos": 162
   },
   {
    "id": "donate.h3.7",
@@ -7227,7 +7227,7 @@
     "self": true
    },
    "default": "Which program it went to",
-   "pos": 148
+   "pos": 163
   },
   {
    "id": "donate.p.19",
@@ -7241,7 +7241,7 @@
     "self": true
    },
    "default": "Contributions are assigned to a named program, not a general pool, unless you specifically ask us to allocate it where it's most needed.",
-   "pos": 149
+   "pos": 164
   },
   {
    "id": "donate.span.5",
@@ -7255,7 +7255,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 151
+   "pos": 166
   },
   {
    "id": "donate.h3.8",
@@ -7269,7 +7269,7 @@
     "self": true
    },
    "default": "What share reached the field",
-   "pos": 152
+   "pos": 167
   },
   {
    "id": "donate.p.20",
@@ -7283,7 +7283,7 @@
     "self": true
    },
    "default": "We publish the split between program spend and admin, audit and reporting — and we don't quietly reclassify overheads to make it look better.",
-   "pos": 153
+   "pos": 168
   },
   {
    "id": "donate.span.6",
@@ -7297,7 +7297,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 155
+   "pos": 170
   },
   {
    "id": "donate.h3.9",
@@ -7311,7 +7311,7 @@
     "self": true
    },
    "default": "What didn't work",
-   "pos": 156
+   "pos": 171
   },
   {
    "id": "donate.p.21",
@@ -7325,7 +7325,7 @@
     "self": true
    },
    "default": "If the program you funded underperformed, that appears in the report too. You'll hear it from us before you hear it anywhere else.",
-   "pos": 157
+   "pos": 172
   },
   {
    "id": "donate.h2.5",
@@ -7339,7 +7339,7 @@
     "self": true
    },
    "default": "Questions before you give? Ask them.",
-   "pos": 161
+   "pos": 176
   },
   {
    "id": "donate.a.3.href",
@@ -7354,7 +7354,7 @@
     "attr": "href"
    },
    "default": "contact.html",
-   "pos": 163
+   "pos": 178
   },
   {
    "id": "donate.a.3",
@@ -7372,7 +7372,7 @@
     "id": "donate.a.3.href",
     "default": "contact.html"
    },
-   "pos": 163
+   "pos": 178
   },
   {
    "id": "donate.a.4.href",
@@ -7387,7 +7387,7 @@
     "attr": "href"
    },
    "default": "tel:+917370067005",
-   "pos": 164
+   "pos": 179
   },
   {
    "id": "donate.a.4",
@@ -7405,7 +7405,25 @@
     "id": "donate.a.4.href",
     "default": "tel:+917370067005"
    },
-   "pos": 164
+   "pos": 179
+  },
+  {
+   "id": "donate.photo.hero",
+   "page": "donate",
+   "scope": "donate",
+   "group": "Every rupee is tracked to a program, not a fundr",
+   "label": "Donate — hero photograph",
+   "help": "Beside the headline at the top of Donate. Landscape, 1600x1200 or wider. The crop changes between desktop and phone, so keep the subject near the middle. A photograph of the work a donation pays for does more here than a picture of money.",
+   "role": "photograph",
+   "type": "image",
+   "target": {
+    "selector": "[data-cms-image=\"donate.photo.hero\"]"
+   },
+   "default": {
+    "src": "",
+    "alt": ""
+   },
+   "pos": 76
   },
   {
    "id": "donate.video.appeal",
@@ -7427,7 +7445,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 85
+   "pos": 100
   },
   {
    "id": "volunteer.meta.title",
