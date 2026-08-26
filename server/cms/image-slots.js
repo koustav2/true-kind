@@ -16,6 +16,19 @@
 
    `container` is a CSS selector in the target page. `fit` picks the CSS
    object-fit. `round` marks the circular ones (avatars) so they crop correctly.
+
+   `group` is the SECTION of the admin page editor this photograph belongs in —
+   the same group name the surrounding text fields carry, so the picture and the
+   words that sit next to it on the real page are edited together. It replaces
+   the separate Photographs tab, where a picture was one menu away from its own
+   caption.
+
+   That name is a string match against groups the generator derives from the
+   page's own headings, so editing a heading in the HTML can leave one of these
+   pointing at a section that no longer exists. build-registry.js checks for
+   exactly that and warns; it does not fail, because an orphaned group is a
+   cosmetic problem (the photo gets its own small section) rather than a broken
+   one. Check the build output when you change a heading.
    ========================================================================== */
 
 const PROGRAMMES = [
@@ -36,6 +49,7 @@ for (const page of ['index', 'work']) {
     slots.push({
       id: `${page}.photo.${key}`,
       page,
+      group: name,
       label: `${name} — photograph`,
       help: 'Replaces the line illustration on this card. Landscape crops work best.',
       container: `.work-card:nth-child(${i + 1}) .work-media`,
@@ -61,6 +75,7 @@ for (const page of ['index', 'work']) {
 slots.push({
   id: 'about.photo.hero',
   page: 'about',
+  group: 'Kindness, run like an institution.',   // the About hero heading
   label: 'About Us — hero photograph',
   help: 'Beside the headline at the top of About Us. Landscape, 1600x1200 or wider. '
       + 'The crop changes between desktop and phone, so keep the subject near the middle. '
@@ -76,6 +91,7 @@ slots.push({
 slots.push({
   id: 'about.photo.story',
   page: 'about',
+  group: 'Story photograph',                     // shared with about.story.caption
   label: 'About Us — photograph',
   help: 'Landscape, ideally 1600x900 or wider. Replaces the outline drawing under the story.',
   container: '.about-figure-media',
@@ -94,6 +110,7 @@ slots.push({
   slots.push({
     id: `about.icon.${key}`,
     page: 'about',
+    group: 'Mission, vision & how we earn trust',
     label: `${name} — icon / logo`,
     help: 'Square PNG with a transparent background works best. Shown at 46px, so keep it simple. Leave empty for the current line drawing.',
     container: `.mvv-card:nth-child(${i + 1}) .mvv-icon`,
@@ -106,9 +123,31 @@ slots.push({
 slots.push({
   id: 'volunteer.photo.hero',
   page: 'volunteer',
+  group: 'Join the people doing the work.',      // the Get Involved hero heading
   label: 'Get Involved — hero photograph',
   help: 'Beside the headline at the top of Get Involved. Landscape, 1600x1200 or wider. '
       + 'A real photograph of volunteers at work is worth far more here than a bought one.',
+  container: '.hero-split-media',
+  fit: 'cover'
+});
+
+/* The Donate page HERO photograph — beside the headline, same arrangement as
+   About Us and Get Involved above. The page had no photo slot at all until now:
+   its hero was a single column with nowhere for a picture to go, so donate.html
+   was given the same split layout the other two already use.
+
+   `group` is the name the GENERATOR derives from the page's own <h1>, not the
+   plain name the admin shows — sections.js renames that to "Donate". Matching
+   the generated string is what puts the photograph in the same section as the
+   headline it sits beside. */
+slots.push({
+  id: 'donate.photo.hero',
+  page: 'donate',
+  group: 'Every rupee is tracked to a program, not a fundr',
+  label: 'Donate — hero photograph',
+  help: 'Beside the headline at the top of Donate. Landscape, 1600x1200 or wider. '
+      + 'The crop changes between desktop and phone, so keep the subject near the middle. '
+      + 'A photograph of the work a donation pays for does more here than a picture of money.',
   container: '.hero-split-media',
   fit: 'cover'
 });
@@ -117,6 +156,7 @@ slots.push({
 slots.push({
   id: 'chairperson.photo.portrait',
   page: 'chairperson-message',
+  group: 'A note from our Chairperson.',         // the page's own heading
   label: "Chairperson — portrait photograph",
   help: 'Portrait orientation. Appears beside the message.',
   container: '.cp-portrait',
@@ -129,6 +169,7 @@ slots.push({
   slots.push({
     id: `index.photo.voice${n}`,
     page: 'index',
+    group: 'From people in the programs',
     label: `Voices quote ${n} — participant photograph`,
     help: 'Only add this where you have the person\'s written consent. Leave empty to keep initials.',
     container: `.voice-card:nth-child(${n}) .avatar`,
@@ -151,6 +192,7 @@ slots.push({
   slots.push({
     id: `index.slide.${n}.image`,
     page: 'index',
+    group: 'Homepage banner',                    // shared with the slide's text slots
     label: `Homepage slider — slide ${n} photograph`,
     /* Slides 1-3 SHIP WITH A PICTURE — the three generated backgrounds in
        assets/img/ (see tools/make-demo-banners.py) — so the banner is present and

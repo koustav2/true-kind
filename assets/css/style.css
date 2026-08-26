@@ -1720,30 +1720,62 @@ fieldset.field{ border:none; padding:0; margin:0; }
 /* --------------------------------------------------------------------------
    15. PRESS
    -------------------------------------------------------------------------- */
-.press-list{ display:grid; border-top:1px solid var(--rule); }
-.press-card{
-  display:grid; grid-template-columns:9rem 1fr; gap:var(--sp-6);
-  padding:var(--sp-6) 0;
-  border-bottom:1px solid var(--rule);
+/* Two cards per row, wrapping — 2 / 2 / 2 / n.
+   Each card is a stacked unit: photograph on top, then source, headline,
+   excerpt, and the date as a footer rule. The previous shape sat the thumbnail
+   in a fixed 9rem column beside the text, which read as a list of rows rather
+   than a set of clippings, and reserved that column even on an item with no
+   photograph — leaving a hole on every entry the client had no image for.
+   Card chrome follows .work-card so a press card and a programme card are
+   recognisably the same object. */
+.press-list{
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:var(--sp-6) var(--sp-5);
+  /* Cards size to their own content rather than stretching to the tallest in
+     the row. An entry with no photograph would otherwise be padded out to the
+     height of one that has one, leaving a hole the width of the card between
+     its excerpt and its date. */
   align-items:start;
 }
-.press-date{
-  font-family:var(--font-mono); font-size:var(--fs-xs);
-  color:var(--text-mute); line-height:1.6; padding-top:3px;
+.press-card{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  overflow:hidden; padding:0;
+  display:flex; flex-direction:column;
+  transition:border-color var(--dur) var(--ease);
 }
+.press-card:hover{ border-color:var(--rule-strong); }
 .press-thumb{
-  width:100%; aspect-ratio:4/3; object-fit:cover;
-  border-radius:var(--radius); border:1px solid var(--rule);
-  display:block; margin-bottom:var(--sp-3); background:var(--paper-2);
+  width:100%; aspect-ratio:16/9; object-fit:cover;
+  border-bottom:1px solid var(--rule);
+  display:block; margin:0; background:var(--paper-2);
+}
+.press-body{
+  padding:var(--sp-5);
+  display:flex; flex-direction:column; gap:var(--sp-3); flex:1;
 }
 .press-tag{
   font-family:var(--font-mono); font-size:var(--fs-label);
   text-transform:uppercase; letter-spacing:0.16em;
-  color:var(--green); display:inline-block; margin-bottom:var(--sp-3);
+  color:var(--green); display:block; margin:0;
 }
-.press-card h3{ margin-bottom:var(--sp-3); }
-.press-card p{ margin:0 0 var(--sp-4); color:var(--text-soft); font-size:var(--fs-sm); }
-@media (max-width:640px){ .press-card{ grid-template-columns:1fr; gap:var(--sp-3); } }
+.press-card h3{ margin:0; font-size:1.05rem; }
+/* Separate classes for the excerpt and the date rather than one `.press-card p`
+   rule: a type-qualified selector would outrank the plain `.press-date` class
+   and silently reset the footer's own margins and colour. */
+.press-excerpt{
+  margin:0; color:var(--text-soft); font-size:var(--fs-sm);
+}
+/* Pinned to the bottom so a row of cards keeps its dates on one line however
+   long the excerpts run. */
+.press-date{
+  font-family:var(--font-mono); font-size:var(--fs-xs);
+  color:var(--text-mute); line-height:1.6;
+  margin:auto 0 0; padding-top:var(--sp-3);
+  border-top:1px solid var(--rule);
+}
+@media (max-width:680px){ .press-list{ grid-template-columns:1fr; } }
 
 .note-box{
   text-align:center; padding:var(--sp-7) var(--sp-5);
@@ -1755,13 +1787,72 @@ fieldset.field{ border:none; padding:0; margin:0; }
    used to sit here were invented examples whose body copy was instructions to
    the client ("Replace with a short summary…"), published to the public. An
    honest blank beats fabricated coverage on a non-profit that solicits
-   donations. assets/js/content.js rebuilds .press-list from the CMS as soon as
-   real items exist, so this is only ever the fallback. */
+   donations. The press module in assets/js/main.js rebuilds .press-list from
+   /api/press as soon as real items exist, so this is only ever the fallback. */
 .press-empty{
+  grid-column:1 / -1;
   margin:0; padding:var(--sp-6) 0;
   color:var(--text-soft); font-size:var(--fs-lede);
   border-top:1px solid var(--rule);
 }
+
+/* --------------------------------------------------------------------------
+   15b. GALLERY
+
+   Photographs from events, three across on desktop and one on a phone. Every
+   tile is a button rather than a link: it opens the picture full size instead
+   of going anywhere, and a button is what a screen reader should announce for
+   that. The title sits under the picture rather than over it — laid over a
+   photograph, no colour is legible against every possible image.
+   -------------------------------------------------------------------------- */
+.gallery-grid{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:var(--sp-6) var(--sp-5); align-items:start;
+}
+.gallery-tile{
+  display:flex; flex-direction:column; gap:var(--sp-3);
+  padding:0; border:0; background:none; text-align:left; cursor:zoom-in;
+  font:inherit; color:inherit; width:100%;
+}
+.gallery-tile img{
+  width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+  border-radius:var(--radius); border:1px solid var(--rule);
+  background:var(--paper-2);
+  transition:border-color var(--dur) var(--ease);
+}
+.gallery-tile:hover img, .gallery-tile:focus-visible img{ border-color:var(--rule-strong); }
+.gallery-title{ font-size:var(--fs-sm); color:var(--text-soft); line-height:1.5; }
+.gallery-empty{
+  grid-column:1 / -1; margin:0; padding:var(--sp-6) 0;
+  color:var(--text-soft); font-size:var(--fs-lede);
+  border-top:1px solid var(--rule);
+}
+@media (max-width:900px){ .gallery-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:560px){ .gallery-grid{ grid-template-columns:1fr; } }
+
+/* The full-size view. Fixed, dark, and dismissed by the close button, a click
+   on the backdrop or Escape — three ways out, because a picture that traps you
+   is worse than no picture. */
+.gallery-lightbox{
+  position:fixed; inset:0; z-index:80; display:none;
+  align-items:center; justify-content:center; padding:clamp(16px,4vw,48px);
+  background:rgba(16,31,41,.92);
+}
+.gallery-lightbox.on{ display:flex; }
+.gallery-lightbox figure{ margin:0; max-width:min(1100px,100%); max-height:100%; }
+.gallery-lightbox img{
+  max-width:100%; max-height:78vh; object-fit:contain; display:block;
+  border-radius:var(--radius);
+}
+.gallery-lightbox figcaption{
+  color:#fff; font-size:var(--fs-sm); margin-top:var(--sp-4); text-align:center;
+}
+.gallery-close{
+  position:absolute; top:clamp(10px,2vw,20px); right:clamp(10px,2vw,20px);
+  width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.35);
+  background:none; color:#fff; font-size:1.6rem; line-height:1; cursor:pointer;
+}
+.gallery-close:hover, .gallery-close:focus-visible{ background:rgba(255,255,255,.14); }
 
 /* --------------------------------------------------------------------------
    16. CHAIRPERSON

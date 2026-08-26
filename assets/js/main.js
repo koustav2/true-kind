@@ -458,25 +458,19 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       var el = document.createElement("div");
       el.className = "press-card";
 
-      var meta = document.createElement("div");
+      /* Photograph first, and only if there is one — no empty frame and no
+         reserved column on an item the client has no image for. */
       if (item.photo) {
         var img = document.createElement("img");
         img.className = "press-thumb";
         img.src = item.photo;
         img.alt = "";
         img.loading = "lazy";
-        meta.appendChild(img);
+        el.appendChild(img);
       }
-      var when = formatDate(item.date);
-      if (when) {
-        var date = document.createElement("p");
-        date.className = "press-date";
-        date.textContent = when;
-        meta.appendChild(date);
-      }
-      el.appendChild(meta);
 
       var body = document.createElement("div");
+      body.className = "press-body";
       if (item.source) {
         var tag = document.createElement("span");
         tag.className = "press-tag";
@@ -499,8 +493,18 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       body.appendChild(h);
       if (item.excerpt) {
         var p = document.createElement("p");
+        p.className = "press-excerpt";
         p.textContent = item.excerpt;
         body.appendChild(p);
+      }
+      /* The date closes the card rather than sitting under the thumbnail, so
+         it reads as a dateline and stays aligned across a row. */
+      var when = formatDate(item.date);
+      if (when) {
+        var date = document.createElement("p");
+        date.className = "press-date";
+        date.textContent = when;
+        body.appendChild(date);
       }
       el.appendChild(body);
       return el;
@@ -519,6 +523,91 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
         document.dispatchEvent(new CustomEvent("press:rendered"));
       })
       .catch(function () { /* the placeholder note stays */ });
+  })();
+
+  /* ----------------------------------------------------------------------
+     Gallery
+
+     Same three rules as the board and press lists above:
+
+     1. The note already in gallery.html is the fallback and is never removed
+        speculatively — only once we hold at least one real photograph.
+     2. Everything the admin typed is written with textContent.
+     3. A row with no photograph is skipped: a tile with no picture is not a
+        tile, and the server already filters those out.
+
+     Each tile is a button that opens the picture full size, because a gallery
+     people cannot look at properly is a wall of thumbnails.
+     ---------------------------------------------------------------------- */
+  (function gallery() {
+    var grid = document.querySelector(".gallery-grid");
+    if (!grid) return;
+
+    var lightbox = null;
+
+    function open(src, title) {
+      if (!lightbox) {
+        lightbox = document.createElement("div");
+        lightbox.className = "gallery-lightbox";
+        lightbox.setAttribute("role", "dialog");
+        lightbox.setAttribute("aria-modal", "true");
+        lightbox.innerHTML =
+          '<button type="button" class="gallery-close" aria-label="Close">\u00d7</button>' +
+          '<figure><img alt=""><figcaption></figcaption></figure>';
+        lightbox.addEventListener("click", function (e) {
+          if (e.target === lightbox || e.target.className === "gallery-close") close();
+        });
+        document.body.appendChild(lightbox);
+      }
+      lightbox.querySelector("img").src = src;
+      lightbox.querySelector("img").alt = title || "";
+      lightbox.querySelector("figcaption").textContent = title || "";
+      lightbox.classList.add("on");
+      document.body.style.overflow = "hidden";
+      lightbox.querySelector(".gallery-close").focus();
+    }
+    function close() {
+      if (!lightbox) return;
+      lightbox.classList.remove("on");
+      document.body.style.overflow = "";
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close();
+    });
+
+    function tile(item) {
+      var el = document.createElement("button");
+      el.type = "button";
+      el.className = "gallery-tile";
+
+      var img = document.createElement("img");
+      img.src = item.photo;
+      img.alt = item.title || "";
+      img.loading = "lazy";
+      el.appendChild(img);
+
+      var cap = document.createElement("span");
+      cap.className = "gallery-title";
+      cap.textContent = item.title || "";
+      el.appendChild(cap);
+
+      el.addEventListener("click", function () { open(item.photo, item.title); });
+      return el;
+    }
+
+    fetch(API_BASE + "/gallery", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var items = data && data.items;
+        if (!items || !items.length) return;       // keep the note
+        var frag = document.createDocumentFragment();
+        items.forEach(function (item) { if (item && item.photo) frag.appendChild(tile(item)); });
+        if (!frag.childNodes.length) return;
+        grid.textContent = "";
+        grid.appendChild(frag);
+        document.dispatchEvent(new CustomEvent("gallery:rendered"));
+      })
+      .catch(function () { /* the note stays */ });
   })();
 
   /* ----------------------------------------------------------------------

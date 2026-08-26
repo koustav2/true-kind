@@ -35,6 +35,7 @@
       <li><a href="impact.html" data-cms="global.header.a.4">Our Impact</a></li>
       <li><a href="volunteer.html" data-cms="global.header.a.5">Get Involved</a></li>
       <li><a href="press-release.html" data-cms="global.header.a.6">Press</a></li>
+      <li><a href="gallery.html" data-cms="global.header.a.8">Gallery</a></li>
       <li><a href="contact.html" data-cms="global.header.a.7">Contact</a></li>
     </ul>
     <a class="nav-donate" href="/portal/donate" data-nav-donate="">
@@ -49,16 +50,41 @@
 <main id="main-content">
 
 <section class="inner-hero">
-  <div class="wrap">
-    <nav class="breadcrumb" aria-label="Breadcrumb" data-cms="donate.nav.1"><a href="index.html">Home</a> / Donate</nav>
-    <p class="eyebrow" data-cms="donate.p.1">Donate</p>
-    <h1 data-cms="donate.h1.1">Every rupee is tracked to a program, not a fundraiser.</h1>
-    <p class="lede" data-cms="donate.p.2">You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went.</p>
-    <div class="btn-row mt-6">
-      <a href="/portal/donate" class="btn btn-primary" data-cms="donate.a.5">Donate online</a>
-      <a href="#bank" class="btn btn-ghost" data-cms="donate.a.1">See bank details</a>
-      <a href="impact.html" class="btn btn-ghost" data-cms="donate.a.2">Read our impact reporting</a>
+  <div class="wrap hero-split">
+    <div class="hero-split-text">
+      <nav class="breadcrumb" aria-label="Breadcrumb" data-cms="donate.nav.1"><a href="index.html">Home</a> / Donate</nav>
+      <p class="eyebrow" data-cms="donate.p.1">Donate</p>
+      <h1 data-cms="donate.h1.1">Every rupee is tracked to a program, not a fundraiser.</h1>
+      <p class="lede" data-cms="donate.p.2">You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went.</p>
+      <div class="btn-row mt-6">
+        <a href="/portal/donate" class="btn btn-primary" data-cms="donate.a.5">Donate online</a>
+        <a href="#bank" class="btn btn-ghost" data-cms="donate.a.1">See bank details</a>
+        <a href="impact.html" class="btn btn-ghost" data-cms="donate.a.2">Read our impact reporting</a>
+      </div>
     </div>
+    <!--
+      The hero photograph slot. Empty until somebody uploads one in the admin,
+      and while it is empty the line drawing stands in — same arrangement as
+      About Us and Get Involved, so the page never shows a hole.
+    -->
+    <div class="hero-split-media hero-split-mark cms-photo-slot">
+      <svg viewBox="0 0 120 96" aria-hidden="true" role="presentation">
+        <path class="hs-leaf" d="M16 80 C16 61, 29 48, 47 45 C45 64, 33 78, 16 80 Z"></path>
+        <g class="hs-p">
+          <circle cx="54" cy="24" r="8.7"></circle>
+          <path d="M54 37.4 C37.2 56.5, 42.2 80, 54 80 C65.8 80, 70.8 56.5, 54 37.4 Z"></path>
+        </g>
+        <g class="hs-b">
+          <circle cx="76" cy="36" r="6.8"></circle>
+          <path d="M76 46.6 C62.8 61.5, 66.8 80, 76 80 C85.2 80, 89.2 61.5, 76 46.6 Z"></path>
+        </g>
+        <g class="hs-r">
+          <circle cx="94" cy="46" r="5.3"></circle>
+          <path d="M94 54.2 C83.8 65.7, 86.9 80, 94 80 C101.1 80, 104.2 65.7, 94 54.2 Z"></path>
+        </g>
+        <path class="hs-ground" d="M10 80.6h100"></path>
+      </svg>
+    <img class="cms-photo" data-cms-image="donate.photo.hero" alt="" hidden=""></div>
   </div>
 </section>
 

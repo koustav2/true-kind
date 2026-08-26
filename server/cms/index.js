@@ -17,6 +17,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const sections = require('./sections');   // plain section names, moves, hides
 
 const REGISTRY_PATH = path.join(__dirname, 'registry.json');
 
@@ -34,7 +35,8 @@ const BY_ID = new Map(FIELDS.map(f => [f.id, f]));
    it to ~10 rows instead of 545 means a page edit is a single row write and the
    public bundle is a single row read. */
 const PAGE_KEYS = (registry.pages || []).map(p => p.name);
-const rowKeyFor = field => (field.page === 'global' ? 'cms:global' : `cms:${field.page}`);
+const rowKeyForPage = page => (page === 'global' ? 'cms:global' : `cms:${page}`);
+const rowKeyFor = field => rowKeyForPage(field.page);
 const ALL_ROW_KEYS = ['cms:global', ...PAGE_KEYS.map(p => `cms:${p}`)];
 
 /* ---- shaping for the admin UI -------------------------------------------- */
@@ -60,69 +62,165 @@ function truncateGroup(name, max) {
   return safe.trimEnd() + '…';
 }
 
+/* Rows inside a section are in the order they appear on the page — the same
+   rule the sections themselves follow, using the position build-registry.js
+   stamped on each field.
+
+   This replaced a cleverer scheme that grouped fields by a shared id prefix and
+   pulled photographs to the front of their section. It read well on a programme
+   card and badly everywhere else: merging the header and footer into one
+   section put the footer logo second, above the menu links, because both logos
+   were "photographs" and photographs went first. One rule that matches what the
+   editor is looking at beats two rules that argue.
+
+   Fields with no position are the <head> ones — the browser tab title and the
+   share text. They keep the order they were declared in. */
+function orderGroupFields(fields) {
+  return fields
+    .map((f, i) => ({ f, i }))
+    .sort((a, b) => {
+      const pa = typeof a.f.pos === 'number' ? a.f.pos : Infinity;
+      const pb = typeof b.f.pos === 'number' ? b.f.pos : Infinity;
+      return pa - pb || a.i - b.i;
+    })
+    .map(x => x.f);
+}
+
 /* Fields for one page, arranged into the groups the generator derived, with
    `href` companions folded into their parent so the admin sees "Button label"
    and "Button destination" side by side rather than 55 orphan URL rows.
 
-   IMAGES ARE EXCLUDED. Every photograph slot has its own screen now — the
-   Images tab (see imagePages/imageFieldsForPage below) — so a text editor
-   never has to scroll past a "Photographs" group of thumbnails to reach the
-   next paragraph, and a photograph is never filed under two different menus.
-   This is what actually shrinks the page: on the homepage it removes 59 of
-   the 178 fields and the one group that held them all. */
-function groupsForPage(pageName) {
-  const own = FIELDS.filter(f => f.page === pageName && f.type !== 'image');
+   IMAGES ARE INCLUDED, in the section they belong to. They used to be excluded
+   here and given a screen of their own — every photograph on the site in one
+   flat list, one menu away from the text it sits beside. That made the two
+   halves of a single section impossible to edit together and, in practice,
+   made the photo controls hard to find at all: somebody looking for the Get
+   Involved picture opened Get Involved and there was no picture on it.
+   A photograph is now edited exactly where its words are, and only there. */
+/* `storedIds` — the ids this page already has a saved value for. Only hidden
+   fields need it: one that has been written to before must still be visible,
+   or an edit somebody made is trapped where nobody can see or undo it. Pass
+   nothing and hidden fields are simply absent, which is what the counts and
+   the tests want. */
+function groupsForPage(pageName, storedIds) {
+  const stored = storedIds instanceof Set ? storedIds : new Set(storedIds || []);
+  /* The parent's own fields, then any merged child's — with their positions
+     pushed past the parent's so the child's sections land at the bottom rather
+     than interleaving with a page they are not on. */
+  const own = FIELDS.filter(f => f.page === pageName).concat(
+    ...mergedChildren(pageName).map((child, i) =>
+      FIELDS.filter(f => f.page === child).map(f => ({
+        ...f,
+        pos: (typeof f.pos === 'number' ? f.pos : 0) + 1e6 * (i + 1),
+        fromPage: child
+      }))));
   const hrefIds = new Set(own.filter(f => f.role === 'href').map(f => f.id));
+  const rename = sections.renameFor(pageName);
   const order = [];
   const groups = new Map();
+  const add = (name, item) => {
+    if (!groups.has(name)) { groups.set(name, []); order.push(name); }
+    groups.get(name).push(item);
+  };
+
   for (const f of own) {
     if (hrefIds.has(f.id)) continue;                 // attached to its parent below
-    const g = f.group || 'Page';
-    if (!groups.has(g)) { groups.set(g, []); order.push(g); }
+    const hidden = sections.hiddenReason(f.id);
+    if (hidden && !stored.has(f.id)) continue;       // see sections.js for why each one
+
     const item = { ...f };
     const companion = own.find(x => x.id === f.id + '.href');
     if (companion) item.hrefField = companion;
-    groups.get(g).push(item);
+
+    if (hidden) { item.strandedReason = hidden; add(sections.STRANDED, item); continue; }
+    const generated = f.group || 'Page';
+    const map = f.fromPage ? sections.renameFor(f.fromPage) : rename;
+    let name = sections.sectionFor(f.id) || map[generated] || sections.PLAIN[generated] || generated;
+    /* A merged child's sections carry the page name, so it is obvious which
+       page they belong to — except the one already named after the page. */
+    if (f.fromPage) {
+      const label = pageLabel(f.fromPage);
+      name = name === label ? label : `${label} — ${name.charAt(0).toLowerCase()}${name.slice(1)}`;
+    }
+    add(name, item);
   }
-  // Video last: it is additive, not a correction to copy. (Photographs used to
-  // get the same treatment; it can no longer appear here at all — see above.)
-  const idx = order.indexOf('Video');
-  if (idx > -1) { order.splice(idx, 1); order.push('Video'); }
+
+  /* Sections come out in the order they appear ON THE PAGE, using the position
+     build-registry.js stamped on each field. A section sits where its earliest
+     field sits. Head fields (the browser tab title and the share text) carry no
+     position and sort to the top, ahead of the page body.
+
+     'Video' used to be pinned last on every page. It is a real block in a real
+     place, so it now sorts like everything else. */
+  const at = name => {
+    const ps = groups.get(name).map(f => f.pos).filter(p => typeof p === 'number');
+    return ps.length ? Math.min(...ps) : -1;         // -1 = <head>, sorts first
+  };
+  order.sort((a, b) => at(a) - at(b));
+
+  /* Except the stranded duplicates, which are cleanup rather than content and
+     belong out of the way at the bottom. */
+  const s = order.indexOf(sections.STRANDED);
+  if (s > -1) { order.splice(s, 1); order.push(sections.STRANDED); }
+
+  const notes = (sections.SECTION_NOTES || {})[pageName] || {};
   return order.map(name => ({
     name,
-    short: truncateGroup(name, 44),
-    fields: groups.get(name)
+    /* 64, not 44. The old limit was sized for section names lifted straight
+       off the page — whole sentences. Names are written by hand now, and the
+       longest ("Chairperson's Message — page title & share text") is 47. */
+    short: truncateGroup(name, 64),
+    note: notes[name] || null,
+    fields: orderGroupFields(groups.get(name))
   }));
 }
 
-/* How many fields the Pages editor will actually show for this page — used for
-   the sidebar count. Deliberately NOT "every field with this page name": that
-   count includes images (their own tab now) and href companions (folded into
-   their parent field, not a row of their own), and showing it next to a page
-   whose editor no longer has a Photographs group at all reads as a typo the
-   moment someone counts. */
-function textFieldCount(pageName) {
-  return groupsForPage(pageName).reduce((n, g) => n + g.fields.length, 0);
+/* How many rows the Pages editor will actually draw for this page — used for
+   the sidebar count. Deliberately NOT "every field with this page name": href
+   companions are folded into their parent field rather than getting a row of
+   their own, so the raw total reads as a typo the moment somebody counts what
+   is on screen. Photographs ARE counted, because they are now on screen. */
+function editorFieldCount(pageName, storedIds) {
+  return groupsForPage(pageName, storedIds).reduce((n, g) => n + g.fields.length, 0);
 }
+
+/* A page whose fields are edited INSIDE another page's editor.
+
+   Chairperson's Message is its own HTML file with its own web address, so the
+   registry keeps it as its own page — but nobody using the admin thinks of it
+   that way. It is reached from About Us, its own breadcrumb reads
+   "Home / About Us / Chairperson's Message", and it is not in the top menu.
+   So it gets no row in the sidebar: its sections are listed at the bottom of
+   the About Us editor, each prefixed with the page name, and every value still
+   saves into that page's own database row and reaches its own web address.
+
+   This is the only mechanism in here that lets one editor write to two pages,
+   so it is deliberately a short, explicit list rather than something inferred. */
+const MERGED_INTO = { 'chairperson-message': 'about' };
+
+const mergedChildren = parent =>
+  Object.keys(MERGED_INTO).filter(c => MERGED_INTO[c] === parent);
+
+const pageLabel = name => {
+  const p = (registry.pages || []).find(x => x.name === name);
+  return (p && p.label) || name;
+};
 
 function pageList() {
   const pages = [{ name: 'global', label: 'Header & footer (all pages)', file: null }];
   for (const p of (registry.pages || [])) pages.push({ ...p });
-  return pages.map(p => ({ ...p, count: FIELDS.filter(f => f.page === p.name && f.role !== 'href').length }));
+
+  // A merged child has no row of its own — it is edited inside its parent.
+  const merged = new Set(Object.keys(MERGED_INTO));
+  return pages
+    .filter(p => !merged.has(p.name))
+    .map(p => ({ ...p, count: FIELDS.filter(f => f.page === p.name && f.role !== 'href').length }));
 }
 
-/* ---- images tab ------------------------------------------------------------
-   Every photograph on the site in one flat list, instead of one buried inside
-   each page's own editor. 32 fields total across the whole site — few enough
-   that this needs no grouping or sub-navigation of its own; it is genuinely
-   the short list. */
-function imagePages() {
-  const withImages = new Set(FIELDS.filter(f => f.type === 'image').map(f => f.page));
-  return pageList().filter(p => withImages.has(p.name));
-}
-function imageFieldsForPage(pageName) {
-  return FIELDS.filter(f => f.page === pageName && f.type === 'image');
-}
+/* The Photographs tab that used to live here is gone. Its two helpers
+   (imagePages / imageFieldsForPage) went with it — every photograph is now a
+   field in its own section of the Pages editor, so there is nothing left that
+   needs the "all images, flat, by page" view they existed to build. */
 
 /* ---- validation ---------------------------------------------------------- */
 
@@ -246,10 +344,14 @@ async function readRow(SiteContent, key) {
    always populated with what the visitor currently sees — whether that came
    from the database or from the original HTML. */
 async function valuesForPage(SiteContent, pageName) {
-  const stored = await readRow(SiteContent, pageName === 'global' ? 'cms:global' : `cms:${pageName}`);
+  const pages = [pageName, ...mergedChildren(pageName)];
+  const rows = await Promise.all(pages.map(p => readRow(SiteContent, rowKeyForPage(p))));
+  const stored = Object.assign({}, ...rows);
   const out = {};
-  for (const f of FIELDS.filter(f => f.page === pageName)) {
-    out[f.id] = Object.prototype.hasOwnProperty.call(stored, f.id) ? stored[f.id] : f.default;
+  for (const p of pages) {
+    for (const f of FIELDS.filter(f => f.page === p)) {
+      out[f.id] = Object.prototype.hasOwnProperty.call(stored, f.id) ? stored[f.id] : f.default;
+    }
   }
   return { values: out, stored };
 }
@@ -258,41 +360,64 @@ async function valuesForPage(SiteContent, pageName) {
    accepted, and each is validated by its own declared type. Returns which ids
    changed and any per-field errors, so the form can redisplay them in place. */
 async function savePatch(SiteContent, pageName, patch) {
-  const key = pageName === 'global' ? 'cms:global' : `cms:${pageName}`;
+  /* One editor may cover more than one page (see MERGED_INTO), so a field is
+     written to ITS OWN page's row, never to the row of the screen it was typed
+     on. Anything outside that set is still refused. */
+  const allowed = new Set([pageName, ...mergedChildren(pageName)]);
   const errors = {};
-  const accepted = {};
+  const byPage = new Map();                                // page -> {id: value}
 
   for (const [id, raw] of Object.entries(patch || {})) {
     const field = BY_ID.get(id);
     if (!field) continue;                                  // unknown id: ignore silently
-    if (field.page !== pageName) continue;                 // cross-page write: refuse
+    if (!allowed.has(field.page)) continue;                // cross-page write: refuse
     const res = coerce(field, raw);
     if (res.error) { errors[id] = res.error; continue; }
-    accepted[id] = res.value;
+    if (!byPage.has(field.page)) byPage.set(field.page, {});
+    byPage.get(field.page)[id] = res.value;
   }
 
-  const [row] = await SiteContent.findOrCreate({ where: { key }, defaults: { data: {} } });
-  const before = row.data || {};
-  const changed = Object.keys(accepted).filter(id => JSON.stringify(before[id]) !== JSON.stringify(accepted[id]));
+  const changed = [];
+  let saved = 0;
+  for (const [page, accepted] of byPage) {
+    const [row] = await SiteContent.findOrCreate({
+      where: { key: rowKeyForPage(page) }, defaults: { data: {} }
+    });
+    const before = row.data || {};
+    for (const id of Object.keys(accepted)) {
+      if (JSON.stringify(before[id]) !== JSON.stringify(accepted[id])) changed.push(id);
+    }
+    // Whole-object reassignment: Sequelize does not mark an in-place mutation of
+    // a JSON column as dirty, so `row.data[id] = v` would not persist.
+    row.data = { ...before, ...accepted };
+    await row.save();
+    saved += Object.keys(accepted).length;
+  }
 
-  // Whole-object reassignment: Sequelize does not mark an in-place mutation of a
-  // JSON column as dirty, so `row.data[id] = v` would not persist.
-  row.data = { ...before, ...accepted };
-  await row.save();
-
-  return { changed, errors, saved: Object.keys(accepted).length };
+  return { changed, errors, saved };
 }
 
 /* Reset fields back to the original HTML by deleting the stored override. */
 async function resetFields(SiteContent, pageName, ids) {
-  const key = pageName === 'global' ? 'cms:global' : `cms:${pageName}`;
-  const row = await SiteContent.findOne({ where: { key } });
-  if (!row) return { cleared: 0 };
-  const data = { ...(row.data || {}) };
+  // Same routing as savePatch: an id belongs to its own page's row.
+  const allowed = new Set([pageName, ...mergedChildren(pageName)]);
+  const byPage = new Map();
+  for (const id of ids) {
+    const field = BY_ID.get(id);
+    const page = field && allowed.has(field.page) ? field.page : null;
+    if (!page) continue;
+    if (!byPage.has(page)) byPage.set(page, []);
+    byPage.get(page).push(id);
+  }
   let cleared = 0;
-  for (const id of ids) if (Object.prototype.hasOwnProperty.call(data, id)) { delete data[id]; cleared++; }
-  row.data = data;
-  await row.save();
+  for (const [page, list] of byPage) {
+    const row = await SiteContent.findOne({ where: { key: rowKeyForPage(page) } });
+    if (!row) continue;
+    const data = { ...(row.data || {}) };
+    for (const id of list) if (Object.prototype.hasOwnProperty.call(data, id)) { delete data[id]; cleared++; }
+    row.data = data;
+    await row.save();
+  }
   return { cleared };
 }
 
@@ -319,8 +444,9 @@ async function bundleForPage(SiteContent, pageName) {
 }
 
 module.exports = {
-  registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor,
-  groupsForPage, textFieldCount, pageList, imagePages, imageFieldsForPage,
+  registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor, rowKeyForPage, sections,
+  MERGED_INTO, mergedChildren,
+  groupsForPage, editorFieldCount, pageList,
   valuesForPage, savePatch, resetFields, bundleForPage,
   sanitizeRichtext, safeUrl, safeMediaPath, safeEmbedUrl, coerce
 };

@@ -1,0 +1,107 @@
+<%- include('../partials/head') %><%- include('../partials/nav', { active: 'gallery' }) %>
+<%#
+  Gallery.
+
+  One form per item, same as the board and press pages: a photograph upload is
+  multipart and cannot be batched with the others without re-posting every file
+  on every save, and a mistake in one row must not discard the edits in another.
+
+  Every form's action carries ?_csrf= as well as the hidden field. The CSRF
+  guard runs before multer, so on a multipart POST the hidden field has not been
+  parsed yet — the query string is the only copy it can see. Do not remove it.
+%>
+<style>
+.gl-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.gl-card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column}
+.gl-card.add{border-style:dashed;border-color:var(--rule-strong);padding:20px 22px}
+.gl-shot{aspect-ratio:4/3;background:var(--paper-2);border-bottom:1px solid var(--rule)}
+.gl-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.gl-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.gl-body label{margin:0}
+.gl-row{display:grid;gap:10px;grid-template-columns:1fr 1fr;align-items:end}
+.gl-check{display:flex;align-items:center;gap:8px;margin:0;font-size:.85rem}
+.gl-check input{width:auto;margin:0;accent-color:var(--purple)}
+.gl-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:14px;
+  border-top:1px solid var(--rule)}
+.gl-hint{font-size:.76rem;color:var(--text-soft);margin:0}
+.gl-hidden{position:absolute;margin:10px;padding:3px 8px;border-radius:100px;
+  background:var(--ink);color:#fff;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase}
+</style>
+
+<div class="wrap">
+<p class="eyebrow">Website</p>
+<h1 style="margin-bottom:6px">Gallery</h1>
+<p class="muted" style="margin:0 0 20px;max-width:70ch">
+  Photographs from events your team has run. These appear on the public
+  <b>Gallery</b> page, in the order below — lowest number first.
+  Untick <i>Show on the website</i> to take one off the page without deleting it.
+  <br>
+  <b>While this list is empty</b> the Gallery page shows a short note instead.
+</p>
+
+<% if (saved) { %><div class="alert ok">Saved.</div><% } %>
+<% if (error === 'title') { %><div class="alert err">A title is required.</div><% } %>
+<% if (error === 'photo') { %><div class="alert err">Choose a photograph — a gallery item is a picture, so it cannot be added without one.</div><% } %>
+
+<div class="gl-grid">
+  <% items.forEach(m => { %>
+    <div class="gl-card">
+      <div class="gl-shot">
+        <% if (!m.visible) { %><span class="gl-hidden">Hidden</span><% } %>
+        <% if (m.photoUrl) { %><img src="<%= m.photoUrl %>" alt=""><% } %>
+      </div>
+      <form class="gl-body" method="post" action="/portal/admin/gallery/<%= m.id %>?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div><label>Title *</label><input name="title" value="<%= m.title %>" required maxlength="200"></div>
+
+        <div>
+          <label>Replace the photograph</label>
+          <input type="file" name="photo" accept="image/*">
+          <p class="gl-hint">Leave empty to keep the current one.</p>
+        </div>
+
+        <div class="gl-row">
+          <div><label>Order</label><input type="number" name="sortOrder" value="<%= m.sortOrder %>" min="0" max="999"></div>
+          <label class="gl-check" style="padding-bottom:12px">
+            <input type="checkbox" name="visible" <%= m.visible ? 'checked' : '' %>> Show on the website
+          </label>
+        </div>
+
+        <div class="gl-acts">
+          <button class="btn btn-primary btn-sm" type="submit">Save changes</button>
+        </div>
+      </form>
+      <%# Delete is its own form: a submit button inside the edit form would post
+          the edits to the delete route. %>
+      <form method="post" action="/portal/admin/gallery/<%= m.id %>/delete" style="padding:0 18px 18px"
+            onsubmit="return confirm('Delete “<%= m.title %>”? The photograph is removed from the server too.')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm" type="submit">Delete</button>
+      </form>
+    </div>
+  <% }) %>
+
+  <div class="gl-card add">
+    <form method="post" action="/portal/admin/gallery?_csrf=<%= csrfToken %>" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <h3 style="margin:0 0 4px">Add a photograph</h3>
+      <p class="muted" style="margin:0 0 12px">A picture and a title. That is all.</p>
+
+      <label>Photograph *</label>
+      <input type="file" name="photo" accept="image/*" required>
+      <p class="gl-hint" style="margin-bottom:12px">Up to 6 MB. JPG, PNG or WebP. Landscape crops sit best in the grid.</p>
+
+      <label>Title *</label>
+      <input name="title" required maxlength="200" placeholder="Health camp at Gelpur, March 2026">
+
+      <label class="gl-check" style="margin-top:14px"><input type="checkbox" name="visible" checked> Show on the website</label>
+
+      <div class="gl-acts">
+        <button class="btn btn-purple btn-sm" type="submit">Add to the gallery</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+</body></html>

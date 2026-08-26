@@ -5,6 +5,32 @@
   const edited = new Set(editedIds);
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  /* Plain words for the tag names the registry generator produces. "bold value"
+     is a <b>; on this site every one of them is a headline figure, so it is a
+     Big number. Nobody editing the site thinks in elements. */
+  const ROLE_NAMES = {
+    'text': 'Text', 'link': 'Link', 'link text': 'Link', 'quote': 'Quote',
+    'bold value': 'Big number', 'section label': 'Small label', 'intro paragraph': 'Intro',
+    'button label': 'Button', 'form label': 'Form label', 'list item': 'List item',
+    'heading (h1)': 'Heading', 'heading (h2)': 'Heading',
+    'heading (h3)': 'Heading', 'heading (h4)': 'Heading',
+    'image': 'Image', 'photograph': 'Photograph'
+  };
+
+  /* THE FIX FOR "WHICH ONE IS THIS?".
+     The Footer had thirteen rows all labelled "link", the homepage banner three
+     called "heading (H2)". The label named the HTML tag, which is the one thing
+     about a field nobody needs. Showing what the field currently SAYS makes
+     every row identifiable at a glance — and taking it from the live value
+     rather than baking it into the registry means it can never go stale. */
+  const preview = f => {
+    const v = values[f.id];
+    if (v == null || typeof v === 'object') return '';        // images and videos
+    const t = String(v).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    return t.length > 46 ? t.slice(0, 46).replace(/\s+\S*$/, '') + '…' : t;
+  };
 %>
 <div class="wrap">
 <p class="eyebrow">Website</p>
@@ -28,13 +54,16 @@
   <!-- page picker -->
   <nav class="cms-side">
     <% pages.forEach(function(p){ %>
-      <a href="/portal/admin/cms/page/<%= p.name %>" class="<%= p.name === page.name ? 'on' : '' %>">
+      <a href="/portal/admin/cms/page/<%= p.name %>" class="<%= p.name === page.name ? 'on' : '' %><%= p.under ? ' sub' : '' %>">
         <span><%= p.label %></span><span class="n"><%= p.count %></span>
       </a>
       <% if (p.name === 'global') { %><span class="sep">Pages</span><% } %>
     <% }) %>
-    <span class="sep">Files</span>
-    <a href="/portal/admin/cms/media"><span>Media library</span></a>
+    <%# "Files / Media library" used to sit here. It is the same screen the
+        Website menu already lists as "Media", one tab above — the same link
+        twice on one page. And since a photo can now be uploaded straight into
+        its slot, nobody needs to go there to put a picture on the site at all;
+        it is only for reusing or deleting files. One listing is enough. %>
   </nav>
 
   <!-- the fields -->
@@ -48,11 +77,11 @@
       </p>
     <% } %>
 
-    <label class="cms-idstoggle">
-      <input type="checkbox" id="idsToggle">
-      Show technical field names
-      <span class="cms-hint" style="margin:0">— only useful if you're describing a problem to a developer.</span>
-    </label>
+    <%# "Show technical field names" used to sit here, above the first section:
+        a bare checkbox as the first thing on the screen, for something almost
+        nobody needs. It reveals the grey ids (about.photo.hero) and is only
+        useful when describing a problem to a developer, so it lives at the
+        bottom now, after the content. %>
 
     <form method="post" action="/portal/admin/cms/page/<%= page.name %>" id="cmsForm" class="cms-ids-off">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -72,14 +101,22 @@
            only when there is more than one keeps the single cases clean.
       %>
       <%
-        var groupShort = String(group.short || '').trim();
         var names = group.fields.map(function (f) {
-          var base = f.label || (f.role.charAt(0).toUpperCase() + f.role.slice(1));
-          if (groupShort && base.indexOf(groupShort) === 0) {
-            var rest = base.slice(groupShort.length).replace(/^\s*[—–-]\s*/, '').trim();
-            if (rest) base = rest.charAt(0).toUpperCase() + rest.slice(1);
+          /* Strip the prefix using the field's GENERATED group, not the section
+             heading shown above it — sections carry plain names now, so the two
+             are usually different strings and matching on the visible one would
+             leave the whole old page heading sitting in every label. */
+          var generated = String(f.group || '').trim();
+          var base = String(f.label || '');
+          if (generated && base.indexOf(generated) === 0) {
+            var rest = base.slice(generated.length).replace(/^\s*[—–-]\s*/, '').trim();
+            if (rest) base = rest;
           }
-          return base;
+          if (!base) base = f.role || 'Field';
+          var friendly = ROLE_NAMES[base.toLowerCase()];
+          if (!friendly) return base.charAt(0).toUpperCase() + base.slice(1);
+          var p = preview(f);
+          return p ? friendly + ' — ' + p : friendly;
         });
         var seen = {}, total = {};
         names.forEach(function (n) { total[n] = (total[n] || 0) + 1; });
@@ -89,9 +126,34 @@
           return n + ' ' + seen[n];
         });
       %>
-      <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
+      <%# Open by default: the first section, and any section carrying a note.
+          A note that says "these are added on another screen" is the one thing
+          on the page somebody must not miss, and a collapsed section hides it. %>
+      <details class="cms-group" <%= (gi === 0 || group.note) ? 'open' : '' %>>
         <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
         <div class="cms-body">
+          <%# Some blocks on the site are a LIST with no fixed length — the board,
+              press coverage — and those live on their own screen with an Add
+              button. Without a line saying so, the three rows left here read as
+              "this is all there is". %>
+          <% if (group.note) { %>
+            <div class="cms-note">
+              <p><%= group.note.text %></p>
+              <%# A real button, not an underlined word in a sentence. The whole
+                  point of this note is to send someone to the screen that has an
+                  Add on it, and a text link reads as a footnote. %>
+              <% if (group.note.link) { %>
+                <a class="btn btn-purple btn-sm" href="<%= group.note.link.href %>"><%= group.note.link.label %> →</a>
+              <% } %>
+            </div>
+          <% } %>
+          <% if (group.fields.some(function (f) { return f.strandedReason; })) { %>
+            <p class="cms-hint" style="margin:0 0 14px">
+              Leftovers from an older version of this editor. Each of these edits
+              something that now has a proper field of its own somewhere above.
+              Clearing a value here hands that element back to its real field.
+            </p>
+          <% } %>
 
           <% group.fields.forEach(function(f, fi){ %>
           <div class="cms-field">
@@ -113,7 +175,9 @@
               <% if (edited.has(f.id)) { %><span class="pill info">edited</span><% } %>
               <span class="key"><%= f.id %></span>
             </div>
-            <% if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
+            <% if (f.strandedReason) { %>
+              <p class="cms-hint">Not shown as an editable field any more — <%= f.strandedReason %>. It still has a saved value, which is why it is here. Clear it and this row goes away.</p>
+            <% } else if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
 
             <% if (f.type === 'text' || f.type === 'url') { %>
               <input type="text" id="<%= f.id %>" name="<%= f.id %>" value="<%= val(f.id) %>"
@@ -127,16 +191,39 @@
               <p class="cms-hint">This one contains formatting. Keep the tags (&lt;em&gt;, &lt;b&gt;, &lt;a&gt;…) and edit the words between them. Anything else is stripped when you save.</p>
 
             <% } else if (f.type === 'image') { %>
+              <%#
+                The photograph, edited in the section it belongs to. This markup
+                already existed; nothing ever reached it, because groupsForPage()
+                filtered images out and sent them to a tab of their own.
+
+                The alt box carries the field's own id so the <label> above it
+                has something real to point at — the file itself is chosen
+                through the picker, so there is no input to label otherwise.
+              %>
               <% var im = val(f.id) || {}; %>
-              <div class="row2">
+              <div class="cms-photo-row">
+                <div class="cms-photo-thumb <%= im.src ? 'has-file' : '' %>" id="<%= f.id %>_thumb">
+                  <img id="<%= f.id %>_prev" src="<%= im.src || '' %>" alt="" <%= im.src ? '' : 'hidden' %>
+                       onerror="this.hidden=true">
+                  <span class="cms-photo-none" id="<%= f.id %>_none" <%= im.src ? 'hidden' : '' %>>No photograph</span>
+                </div>
                 <div>
                   <input type="hidden" name="<%= f.id %>[src]" id="<%= f.id %>_src" value="<%= im.src || '' %>">
-                  <input type="text" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
+                  <div class="cms-photo-actions">
+                    <%# Upload straight into the slot. Before this the only route
+                        was Media library -> upload -> come back -> pick, and an
+                        empty library made the picker open on "Nothing uploaded
+                        yet", which reads as "you cannot put a photo here". %>
+                    <button type="button" class="btn btn-purple btn-sm" data-upload="<%= f.id %>">Upload a photo…</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>">Use an uploaded one…</button>
+                    <%# Clearing a slot has to be possible from the same place it
+                        was filled. Without this the only way back is the bulk
+                        "reset everything on this page" button at the bottom. %>
+                    <button type="button" class="btn btn-ghost btn-sm" data-clearimg="<%= f.id %>" <%= im.src ? '' : 'hidden' %>>Remove</button>
+                  </div>
+                  <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
+                  <input type="text" id="<%= f.id %>" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
                   <p class="cms-hint">Alt text. Describe what is in the picture.</p>
-                </div>
-                <div class="media-preview">
-                  <img id="<%= f.id %>_prev" src="<%= im.src || '' %>" alt="" onerror="this.style.visibility='hidden'">
-                  <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>">Change…</button>
                 </div>
               </div>
 
@@ -152,11 +239,18 @@
                   <a href="#" data-vmode="embed"  class="<%= vd.mode === 'embed'  ? 'on' : '' %>">YouTube / Vimeo link</a>
                   <a href="#" data-vmode=""       class="<%= !vd.mode ? 'on' : '' %>">No video</a>
                 </div>
+                <%# The upload controls sit OUTSIDE the tab panes, on purpose.
+                    They used to live inside the "Uploaded file" pane, which is
+                    hidden until that tab is chosen — so on an empty slot, the
+                    button that puts a video there could not be clicked at all.
+                    Uploading now switches the slot to "Uploaded file" by itself. %>
+                <div class="media-preview">
+                  <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
+                  <button type="button" class="btn btn-purple btn-sm" data-upload-video="<%= f.id %>">Upload a video…</button>
+                  <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Use an uploaded one…</button>
+                </div>
+                <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
                 <div data-vpane="upload" <%= vd.mode === 'upload' ? '' : 'hidden' %>>
-                  <div class="media-preview">
-                    <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
-                    <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Choose a video…</button>
-                  </div>
                   <p class="cms-hint">Up to 200 MB, .mp4 / .webm / .mov. Your server pays the bandwidth for every play.</p>
                 </div>
                 <div data-vpane="embed" <%= vd.mode === 'embed' ? '' : 'hidden' %>>
@@ -202,6 +296,10 @@
 </div>
 </div>
 
+<!-- one hidden file input, shared by every photo row -->
+<input type="file" id="photoUpload" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+<input type="file" id="videoUpload" accept="video/mp4,video/webm,video/quicktime" hidden>
+
 <!-- media picker -->
 <div id="picker" hidden style="position:fixed;inset:0;background:rgba(16,31,41,.5);z-index:50;overflow:auto;padding:30px 16px">
   <div class="card" style="max-width:820px;margin:0 auto">
@@ -209,7 +307,7 @@
       <h3 style="margin:0;flex:1">Choose a file</h3>
       <button type="button" class="btn btn-ghost btn-sm" id="pickerClose">Close</button>
     </div>
-    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet. <a class="textlink" href="/portal/admin/cms/media">Upload something first ↗</a></p>
+    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet — close this and use <strong>Upload a photo…</strong> on the field itself.</p>
     <div class="media-grid" id="pickerGrid"></div>
     <p class="muted" style="margin-top:14px"><a class="textlink" href="/portal/admin/cms/media">Manage the media library ↗</a></p>
   </div>
@@ -222,21 +320,15 @@
   "use strict";
   var MEDIA = <%- JSON.stringify(media) %>;
   var CSRF  = <%- JSON.stringify(csrfToken) %>;
+  /* Declared here rather than beside the beforeunload handler at the bottom:
+     the Remove-photograph handler above also has to mark the form dirty. */
+  var form = document.getElementById('cmsForm');
 
-  /* ---- show/hide the technical field id, remembered per browser ---- */
-  (function () {
-    var form = document.getElementById('cmsForm');
-    var toggle = document.getElementById('idsToggle');
-    try {
-      var want = localStorage.getItem('cms-show-ids') === '1';
-      toggle.checked = want;
-      form.classList.toggle('cms-ids-off', !want);
-    } catch (e) {}
-    toggle.addEventListener('change', function () {
-      form.classList.toggle('cms-ids-off', !toggle.checked);
-      try { localStorage.setItem('cms-show-ids', toggle.checked ? '1' : '0'); } catch (e) {}
-    });
-  })();
+  /* The "Show technical field names" checkbox that used to sit here is gone.
+     It was the first control on the screen, for something almost nobody needs:
+     the grey ids (about.photo.hero) beside every row. The ids are still in the
+     HTML — a developer can read one from the page source when someone reports
+     a problem — but `cms-ids-off` is now permanent, so they never show. */
 
   /* ---- video mode tabs ---- */
   document.querySelectorAll('[data-video]').forEach(function (box) {
@@ -270,6 +362,111 @@
         msg.textContent = 'Recognised: ' + d.provider + ' video ' + d.id;
         msg.style.color = '';
       }).catch(function () { msg.textContent = 'Could not reach the server to check that link.'; });
+    });
+  });
+
+  /* ---- upload straight into a slot ----
+     Posts to the same endpoint the Media library uses, so the file lands in the
+     library as well and can be reused elsewhere. The CSRF token goes in a
+     header: this is multipart, and the guard runs before multer, so a _csrf
+     form field would still be invisible to it at that point. */
+  var photoInput = document.getElementById('photoUpload');
+  var videoInput = document.getElementById('videoUpload');
+  var uploadTarget = null;
+
+  function wireUpload(attr, input, label) {
+    document.querySelectorAll('[' + attr + ']').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        uploadTarget = btn.getAttribute(attr);
+        input.value = '';            // so picking the same file twice still fires
+        input.click();
+      });
+    });
+    input.addEventListener('change', function () { send(input, label, attr); });
+  }
+  wireUpload('data-upload', photoInput, 'Upload a photo…');
+  wireUpload('data-upload-video', videoInput, 'Upload a video…');
+
+  function send(input, label, attr) {
+    var file = input.files && input.files[0];
+    if (!file || !uploadTarget) return;
+    var id = uploadTarget;
+    var err = document.querySelector('[data-uperr="' + id + '"]');
+    var btn = document.querySelector('[' + attr + '="' + id + '"]');
+    if (err) { err.hidden = true; err.textContent = ''; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+
+    var body = new FormData();
+    body.append('file', file);
+    fetch('/portal/admin/cms/media', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': CSRF, 'X-Requested-With': 'fetch' },
+      body: body
+    })
+      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+      .then(function (d) {
+        if (!d.ok || !d.asset) throw new Error(d.message || 'That file could not be uploaded.');
+        MEDIA.unshift(d.asset);                       // so the picker lists it too
+        var src = document.getElementById(id + '_src');
+        if (src) src.value = d.asset.url;
+        if (d.asset.kind === 'video') {
+          /* A video slot is off until it has a mode. Uploading one has to turn
+             it on, or the file is stored and the block stays hidden. */
+          var mode = document.getElementById(id + '_mode');
+          if (mode) mode.value = 'upload';
+          var lab = document.getElementById(id + '_srclabel');
+          if (lab) lab.textContent = d.asset.original || d.asset.url;
+          var box = document.querySelector('[data-video="' + id + '"]');
+          if (box) {
+            box.querySelectorAll('[data-vmode]').forEach(function (t) {
+              t.classList.toggle('on', t.getAttribute('data-vmode') === 'upload');
+            });
+            box.querySelectorAll('[data-vpane]').forEach(function (pane) {
+              pane.hidden = pane.getAttribute('data-vpane') !== 'upload';
+            });
+          }
+        } else {
+          setPhoto(id, d.asset.url);
+          var clear = document.querySelector('[data-clearimg="' + id + '"]');
+          if (clear) clear.hidden = false;
+        }
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+      })
+      .catch(function (e) {
+        if (err) { err.textContent = e.message || 'That file could not be uploaded.'; err.hidden = false; }
+      })
+      .then(function () {
+        if (btn) { btn.disabled = false; btn.textContent = label; }
+        uploadTarget = null;
+      });
+  }
+
+  /* One place that knows what a filled and an empty photo slot look like, so
+     choosing and clearing cannot drift apart. */
+  function setPhoto(id, url) {
+    var prev  = document.getElementById(id + '_prev');
+    var none  = document.getElementById(id + '_none');
+    var thumb = document.getElementById(id + '_thumb');
+    var pick  = document.querySelector('[data-pick="image"][data-target="' + id + '"]');
+    if (prev) { if (url) { prev.src = url; prev.hidden = false; } else { prev.removeAttribute('src'); prev.hidden = true; } }
+    if (none) none.hidden = !!url;
+    if (thumb) thumb.classList.toggle('has-file', !!url);
+    if (pick) pick.textContent = url ? 'Change…' : 'Choose a photograph…';
+  }
+
+  /* ---- clear a photograph ----
+     Empties the slot in the form only; nothing is written until Save, and the
+     file itself stays in the media library. */
+  document.querySelectorAll('[data-clearimg]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-clearimg');
+      var src = document.getElementById(id + '_src');
+      if (src) src.value = '';
+      setPhoto(id, '');
+      btn.hidden = true;
+      var pick = document.querySelector('[data-pick="image"][data-target="' + id + '"]');
+      if (pick) pick.textContent = 'Choose a photograph…';
+      form.dispatchEvent(new Event('input', { bubbles: true }));
     });
   });
 
@@ -317,8 +514,9 @@
   function choose(m) {
     var src = document.getElementById(target + '_src');
     if (src) src.value = m.url;
-    var prev = document.getElementById(target + '_prev');
-    if (prev) { prev.src = m.url; prev.style.visibility = 'visible'; }
+    if (m.kind === 'image') setPhoto(target, m.url);
+    var clear = document.querySelector('[data-clearimg="' + target + '"]');
+    if (clear) clear.hidden = false;
     var lab = document.getElementById(target + '_srclabel');
     if (lab) lab.textContent = m.original || m.url;
     var mode = document.getElementById(target + '_mode');
@@ -327,7 +525,7 @@
   }
 
   /* Warn before losing edits. */
-  var form = document.getElementById('cmsForm'), dirty = false;
+  var dirty = false;
   form.addEventListener('input', function () { dirty = true; });
   form.addEventListener('submit', function () { dirty = false; });
   window.addEventListener('beforeunload', function (e) {

@@ -499,6 +499,25 @@ const BoardMember = sequelize.define('BoardMember', {
    client asks for it to come off), losing its photograph and details to an
    accidental delete is not recoverable.
    --------------------------------------------------------------------------- */
+/* Gallery — photographs from events the team has run.
+
+   A LIST with no fixed length, so it is a table rather than a set of CMS
+   fields, for the same reason the board and the press list are: a registry of
+   fixed slots cannot express "add one more photograph from Saturday".
+
+   A new table is also the one schema change that is safe here. sequelize.sync()
+   creates tables it has never seen; what it cannot do is add a column to a
+   table that already exists. So a new feature gets its own table and nothing
+   about the existing ones moves. */
+const GalleryItem = sequelize.define('GalleryItem', {
+  _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  title: { type: DataTypes.STRING, allowNull: false },
+  photoUrl:  { type: DataTypes.STRING },          // /uploads/<file>
+  photoFile: { type: DataTypes.STRING },          // on-disk name, so a replace can unlink
+  sortOrder: { type: DataTypes.INTEGER, defaultValue: 0 },
+  visible:   { type: DataTypes.BOOLEAN, defaultValue: true }
+});
+
 const PressItem = sequelize.define('PressItem', {
   _id:   { type: DataTypes.VIRTUAL, get() { return this.id; } },
   title: { type: DataTypes.STRING, allowNull: false },
@@ -530,5 +549,5 @@ module.exports = {
   Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
   BoardMember, MembershipPayment, IdCardProfile, Revocation, VerificationScan,
   CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess,
-  AppointmentLetter, PressItem
+  AppointmentLetter, PressItem, GalleryItem
 };
