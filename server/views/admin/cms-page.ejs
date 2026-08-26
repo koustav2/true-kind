@@ -59,8 +59,11 @@
       </a>
       <% if (p.name === 'global') { %><span class="sep">Pages</span><% } %>
     <% }) %>
-    <span class="sep">Files</span>
-    <a href="/portal/admin/cms/media"><span>Media library</span></a>
+    <%# "Files / Media library" used to sit here. It is the same screen the
+        Website menu already lists as "Media", one tab above — the same link
+        twice on one page. And since a photo can now be uploaded straight into
+        its slot, nobody needs to go there to put a picture on the site at all;
+        it is only for reusing or deleting files. One listing is enough. %>
   </nav>
 
   <!-- the fields -->
@@ -236,8 +239,12 @@
                 <div data-vpane="upload" <%= vd.mode === 'upload' ? '' : 'hidden' %>>
                   <div class="media-preview">
                     <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
-                    <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Choose a video…</button>
+                    <%# Same reasoning as the photo rows: uploading should happen
+                        where the field is, not on another screen. %>
+                    <button type="button" class="btn btn-purple btn-sm" data-upload-video="<%= f.id %>">Upload a video…</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Use an uploaded one…</button>
                   </div>
+                  <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
                   <p class="cms-hint">Up to 200 MB, .mp4 / .webm / .mov. Your server pays the bandwidth for every play.</p>
                 </div>
                 <div data-vpane="embed" <%= vd.mode === 'embed' ? '' : 'hidden' %>>
@@ -285,6 +292,7 @@
 
 <!-- one hidden file input, shared by every photo row -->
 <input type="file" id="photoUpload" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+<input type="file" id="videoUpload" accept="video/mp4,video/webm,video/quicktime" hidden>
 
 <!-- media picker -->
 <div id="picker" hidden style="position:fixed;inset:0;background:rgba(16,31,41,.5);z-index:50;overflow:auto;padding:30px 16px">
@@ -365,23 +373,29 @@
      library as well and can be reused elsewhere. The CSRF token goes in a
      header: this is multipart, and the guard runs before multer, so a _csrf
      form field would still be invisible to it at that point. */
-  var uploadInput = document.getElementById('photoUpload');
+  var photoInput = document.getElementById('photoUpload');
+  var videoInput = document.getElementById('videoUpload');
   var uploadTarget = null;
 
-  document.querySelectorAll('[data-upload]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      uploadTarget = btn.getAttribute('data-upload');
-      uploadInput.value = '';        // so picking the same file twice still fires
-      uploadInput.click();
+  function wireUpload(attr, input, label) {
+    document.querySelectorAll('[' + attr + ']').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        uploadTarget = btn.getAttribute(attr);
+        input.value = '';            // so picking the same file twice still fires
+        input.click();
+      });
     });
-  });
+    input.addEventListener('change', function () { send(input, label, attr); });
+  }
+  wireUpload('data-upload', photoInput, 'Upload a photo…');
+  wireUpload('data-upload-video', videoInput, 'Upload a video…');
 
-  uploadInput.addEventListener('change', function () {
-    var file = uploadInput.files && uploadInput.files[0];
+  function send(input, label, attr) {
+    var file = input.files && input.files[0];
     if (!file || !uploadTarget) return;
     var id = uploadTarget;
     var err = document.querySelector('[data-uperr="' + id + '"]');
-    var btn = document.querySelector('[data-upload="' + id + '"]');
+    var btn = document.querySelector('[' + attr + '="' + id + '"]');
     if (err) { err.hidden = true; err.textContent = ''; }
     if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
 
@@ -398,19 +412,37 @@
         MEDIA.unshift(d.asset);                       // so the picker lists it too
         var src = document.getElementById(id + '_src');
         if (src) src.value = d.asset.url;
-        setPhoto(id, d.asset.url);
-        var clear = document.querySelector('[data-clearimg="' + id + '"]');
-        if (clear) clear.hidden = false;
+        if (d.asset.kind === 'video') {
+          /* A video slot is off until it has a mode. Uploading one has to turn
+             it on, or the file is stored and the block stays hidden. */
+          var mode = document.getElementById(id + '_mode');
+          if (mode) mode.value = 'upload';
+          var lab = document.getElementById(id + '_srclabel');
+          if (lab) lab.textContent = d.asset.original || d.asset.url;
+          var box = document.querySelector('[data-video="' + id + '"]');
+          if (box) {
+            box.querySelectorAll('[data-vmode]').forEach(function (t) {
+              t.classList.toggle('on', t.getAttribute('data-vmode') === 'upload');
+            });
+            box.querySelectorAll('[data-vpane]').forEach(function (pane) {
+              pane.hidden = pane.getAttribute('data-vpane') !== 'upload';
+            });
+          }
+        } else {
+          setPhoto(id, d.asset.url);
+          var clear = document.querySelector('[data-clearimg="' + id + '"]');
+          if (clear) clear.hidden = false;
+        }
         form.dispatchEvent(new Event('input', { bubbles: true }));
       })
       .catch(function (e) {
         if (err) { err.textContent = e.message || 'That file could not be uploaded.'; err.hidden = false; }
       })
       .then(function () {
-        if (btn) { btn.disabled = false; btn.textContent = 'Upload a photo…'; }
+        if (btn) { btn.disabled = false; btn.textContent = label; }
         uploadTarget = null;
       });
-  });
+  }
 
   /* One place that knows what a filled and an empty photo slot look like, so
      choosing and clearing cannot drift apart. */
