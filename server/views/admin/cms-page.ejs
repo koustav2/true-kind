@@ -54,7 +54,7 @@
   <!-- page picker -->
   <nav class="cms-side">
     <% pages.forEach(function(p){ %>
-      <a href="/portal/admin/cms/page/<%= p.name %>" class="<%= p.name === page.name ? 'on' : '' %>">
+      <a href="/portal/admin/cms/page/<%= p.name %>" class="<%= p.name === page.name ? 'on' : '' %><%= p.under ? ' sub' : '' %>">
         <span><%= p.label %></span><span class="n"><%= p.count %></span>
       </a>
       <% if (p.name === 'global') { %><span class="sep">Pages</span><% } %>
@@ -131,12 +131,15 @@
               button. Without a line saying so, the three rows left here read as
               "this is all there is". %>
           <% if (group.note) { %>
-            <p class="cms-note">
-              <%= group.note.text %>
+            <div class="cms-note">
+              <p><%= group.note.text %></p>
+              <%# A real button, not an underlined word in a sentence. The whole
+                  point of this note is to send someone to the screen that has an
+                  Add on it, and a text link reads as a footnote. %>
               <% if (group.note.link) { %>
-                <a class="textlink" href="<%= group.note.link.href %>"><%= group.note.link.label %> ↗</a>
+                <a class="btn btn-purple btn-sm" href="<%= group.note.link.href %>"><%= group.note.link.label %> →</a>
               <% } %>
-            </p>
+            </div>
           <% } %>
           <% if (group.fields.some(function (f) { return f.strandedReason; })) { %>
             <p class="cms-hint" style="margin:0 0 14px">
@@ -201,12 +204,18 @@
                 <div>
                   <input type="hidden" name="<%= f.id %>[src]" id="<%= f.id %>_src" value="<%= im.src || '' %>">
                   <div class="cms-photo-actions">
-                    <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>"><%= im.src ? 'Change…' : 'Choose a photograph…' %></button>
+                    <%# Upload straight into the slot. Before this the only route
+                        was Media library -> upload -> come back -> pick, and an
+                        empty library made the picker open on "Nothing uploaded
+                        yet", which reads as "you cannot put a photo here". %>
+                    <button type="button" class="btn btn-purple btn-sm" data-upload="<%= f.id %>">Upload a photo…</button>
+                    <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>">Use an uploaded one…</button>
                     <%# Clearing a slot has to be possible from the same place it
                         was filled. Without this the only way back is the bulk
                         "reset everything on this page" button at the bottom. %>
                     <button type="button" class="btn btn-ghost btn-sm" data-clearimg="<%= f.id %>" <%= im.src ? '' : 'hidden' %>>Remove</button>
                   </div>
+                  <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
                   <input type="text" id="<%= f.id %>" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
                   <p class="cms-hint">Alt text. Describe what is in the picture.</p>
                 </div>
@@ -274,6 +283,9 @@
 </div>
 </div>
 
+<!-- one hidden file input, shared by every photo row -->
+<input type="file" id="photoUpload" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+
 <!-- media picker -->
 <div id="picker" hidden style="position:fixed;inset:0;background:rgba(16,31,41,.5);z-index:50;overflow:auto;padding:30px 16px">
   <div class="card" style="max-width:820px;margin:0 auto">
@@ -281,7 +293,7 @@
       <h3 style="margin:0;flex:1">Choose a file</h3>
       <button type="button" class="btn btn-ghost btn-sm" id="pickerClose">Close</button>
     </div>
-    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet. <a class="textlink" href="/portal/admin/cms/media">Upload something first ↗</a></p>
+    <p class="muted" id="pickerEmpty" hidden>Nothing uploaded yet — close this and use <strong>Upload a photo…</strong> on the field itself.</p>
     <div class="media-grid" id="pickerGrid"></div>
     <p class="muted" style="margin-top:14px"><a class="textlink" href="/portal/admin/cms/media">Manage the media library ↗</a></p>
   </div>
@@ -346,6 +358,58 @@
         msg.style.color = '';
       }).catch(function () { msg.textContent = 'Could not reach the server to check that link.'; });
     });
+  });
+
+  /* ---- upload straight into a slot ----
+     Posts to the same endpoint the Media library uses, so the file lands in the
+     library as well and can be reused elsewhere. The CSRF token goes in a
+     header: this is multipart, and the guard runs before multer, so a _csrf
+     form field would still be invisible to it at that point. */
+  var uploadInput = document.getElementById('photoUpload');
+  var uploadTarget = null;
+
+  document.querySelectorAll('[data-upload]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      uploadTarget = btn.getAttribute('data-upload');
+      uploadInput.value = '';        // so picking the same file twice still fires
+      uploadInput.click();
+    });
+  });
+
+  uploadInput.addEventListener('change', function () {
+    var file = uploadInput.files && uploadInput.files[0];
+    if (!file || !uploadTarget) return;
+    var id = uploadTarget;
+    var err = document.querySelector('[data-uperr="' + id + '"]');
+    var btn = document.querySelector('[data-upload="' + id + '"]');
+    if (err) { err.hidden = true; err.textContent = ''; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+
+    var body = new FormData();
+    body.append('file', file);
+    fetch('/portal/admin/cms/media', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': CSRF, 'X-Requested-With': 'fetch' },
+      body: body
+    })
+      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+      .then(function (d) {
+        if (!d.ok || !d.asset) throw new Error(d.message || 'That file could not be uploaded.');
+        MEDIA.unshift(d.asset);                       // so the picker lists it too
+        var src = document.getElementById(id + '_src');
+        if (src) src.value = d.asset.url;
+        setPhoto(id, d.asset.url);
+        var clear = document.querySelector('[data-clearimg="' + id + '"]');
+        if (clear) clear.hidden = false;
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+      })
+      .catch(function (e) {
+        if (err) { err.textContent = e.message || 'That file could not be uploaded.'; err.hidden = false; }
+      })
+      .then(function () {
+        if (btn) { btn.disabled = false; btn.textContent = 'Upload a photo…'; }
+        uploadTarget = null;
+      });
   });
 
   /* One place that knows what a filled and an empty photo slot look like, so

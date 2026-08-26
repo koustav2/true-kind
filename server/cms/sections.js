@@ -198,14 +198,14 @@ const PLAIN = {
 const SECTION_NOTES = {
   about: {
     'Governance': {
-      text: 'The board itself is a list with no fixed length, so it is not edited here. Add, reorder and remove trustees on the Board screen — photograph, role and bio included — and this block on the site is built from that. The three rows below are the heading and intro above the cards.',
-      link: { href: '/portal/admin/board', label: 'Open the Board screen' }
+      text: 'The board itself is a list with no fixed length, so it is not edited here. Add, reorder and remove trustees — photograph, role and bio included — and this block on the site is built from that. The rows below are only the heading and intro above the cards.',
+      link: { href: '/portal/admin/board', label: 'Add or edit board members' }
     }
   },
   'press-release': {
     'News list': {
-      text: 'Press items are a list with no fixed length. Add and edit coverage on the Press screen; the row below is only the note shown while that list is empty.',
-      link: { href: '/portal/admin/press', label: 'Open the Press screen' }
+      text: 'Press coverage is a list with no fixed length, so it is not edited here. Add each item — headline, publication, date, link and photograph — and the page builds itself from that. The row below is only the note shown while the list is empty.',
+      link: { href: '/portal/admin/press', label: 'Add or edit press coverage' }
     }
   }
 };

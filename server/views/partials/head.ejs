@@ -276,11 +276,19 @@ img{max-width:100%;height:auto}
 /* A standing note at the top of a section — "this list is edited elsewhere".
    Blue rather than grey: it is orientation, not a caption, and somebody who
    misses it goes looking for rows that are deliberately not here. */
+/* A page that the site reaches through another one — Chairperson's Message
+   sits under About Us — is indented and marked, so the sidebar shows the same
+   shape the site's own breadcrumbs do. */
+.cms-side a.sub{padding-left:30px;position:relative}
+.cms-side a.sub::before{
+  content:"";position:absolute;left:15px;top:50%;width:8px;height:1px;
+  background:var(--rule-strong)}
 .cms-note{
-  margin:0 0 16px;padding:12px 14px;border-radius:var(--radius-sm);
+  margin:0 0 18px;padding:14px 16px;border-radius:var(--radius-sm);
   background:rgba(3,146,212,.07);border:1px solid rgba(3,146,212,.22);
-  color:var(--ink-2);font-size:.86rem;line-height:1.6}
-.cms-note .textlink{white-space:nowrap}
+  color:var(--ink-2);font-size:.86rem;line-height:1.6;
+  display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.cms-note p{margin:0}
 .cms-photo-row{display:grid;gap:14px;align-items:start}
 @media(min-width:680px){.cms-photo-row{grid-template-columns:172px 1fr}}
 .cms-photo-thumb{

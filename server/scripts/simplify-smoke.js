@@ -129,6 +129,11 @@ process.env.ADMIN_PASSWORD = 'admin123';
     /data-pick="image"[^>]*data-target="about\.photo\.hero"/.test(html));
   check('...and a way to clear it again without the bulk reset',
     html.includes('data-clearimg="about.photo.hero"'));
+  /* Uploading used to mean: leave the page, go to the Media library, upload,
+     come back, pick. With an empty library the picker opened on "Nothing
+     uploaded yet", which reads as "you cannot put a photo here". */
+  check('...and a way to upload a file straight into the slot',
+    html.includes('data-upload="about.photo.hero"') && html.includes('id="photoUpload"'));
   // The whole point of the merge: no section called "Photographs" anywhere.
   check('...and NO "Photographs" section heading',
     !/<summary>Photographs</.test(html));
@@ -180,7 +185,27 @@ process.env.ADMIN_PASSWORD = 'admin123';
   /* ---- 3c. hidden duplicates are gone, but never trapped ---------------- */
 
   const HIDDEN = Object.keys(cms.sections.HIDE);
-  check('the duplicate slide fields and slider arrows are hidden', HIDDEN.length === 11, `${HIDDEN.length}`);
+  // Two separate reasons to hide something, checked separately — a bare total
+  // would go green if one set vanished and the other doubled.
+  const slideDupes = ['index.h2.6','index.p.3','index.a.11','index.h2.7','index.p.13','index.a.12',
+                      'index.h2.8','index.p.21','index.a.13','index.button.1','index.button.2'];
+  const boardCards = ['about.div.1','about.h3.5','about.p.15','about.div.2','about.h3.6','about.p.17',
+                      'about.div.3','about.h3.7','about.p.19','about.div.4','about.h3.8','about.p.21'];
+  check('the duplicate slide fields and slider arrows are hidden',
+    slideDupes.every(id => cms.sections.HIDE[id]),
+    slideDupes.filter(id => !cms.sections.HIDE[id]).join(', '));
+  check('the four fixed board cards are hidden — the board is a list, not four posts',
+    boardCards.every(id => cms.sections.HIDE[id]),
+    boardCards.filter(id => !cms.sections.HIDE[id]).join(', '));
+  check('...and nothing else is hidden without being listed here',
+    HIDDEN.length === slideDupes.length + boardCards.length, `${HIDDEN.length}`);
+
+  /* A section whose real content lives on another screen has to say so, with a
+     way to get there — otherwise the rows that remain read as "this is all". */
+  const gov = cms.groupsForPage('about').find(g => g.short === 'Governance');
+  check('Governance points at the Board screen',
+    gov && gov.note && gov.note.link && gov.note.link.href === '/portal/admin/board',
+    gov ? JSON.stringify(gov.note) : 'no Governance section');
   const stillShown = new Set();
   for (const g of cms.groupsForPage('index')) for (const f of g.fields) stillShown.add(f.id);
   check('...and none of them is offered as a row', HIDDEN.every(id => !stillShown.has(id)));

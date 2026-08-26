@@ -163,9 +163,29 @@ function editorFieldCount(pageName, storedIds) {
   return groupsForPage(pageName, storedIds).reduce((n, g) => n + g.fields.length, 0);
 }
 
+/* The sidebar order, and which pages sit UNDER another.
+
+   Chairperson's Message is its own HTML file, so it has to be its own entry —
+   but the site does not present it as a page of its own: it is reached from
+   About Us, and its own breadcrumb reads "Home / About Us / Chairperson's
+   Message". Listed flat at the bottom of the sidebar it looked like a section
+   somebody had detached from About. So it is listed directly under About Us and
+   indented, which is where the site itself puts it. */
+const NESTED_UNDER = { 'chairperson-message': 'about' };
+
 function pageList() {
   const pages = [{ name: 'global', label: 'Header & footer (all pages)', file: null }];
   for (const p of (registry.pages || [])) pages.push({ ...p });
+
+  // Pull each child up to sit directly beneath its parent.
+  for (const [child, parent] of Object.entries(NESTED_UNDER)) {
+    const ci = pages.findIndex(p => p.name === child);
+    const pi = pages.findIndex(p => p.name === parent);
+    if (ci > -1 && pi > -1) {
+      const [row] = pages.splice(ci, 1);
+      pages.splice(pages.findIndex(p => p.name === parent) + 1, 0, { ...row, under: parent });
+    }
+  }
   return pages.map(p => ({ ...p, count: FIELDS.filter(f => f.page === p.name && f.role !== 'href').length }));
 }
 
