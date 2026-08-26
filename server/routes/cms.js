@@ -31,21 +31,20 @@ function wantsJson(req) {
 
 router.get('/', (req, res) => res.redirect('/portal/admin/cms/page/global'));
 
-/* The Pages sidebar shows a TEXT count, not the raw field count — pageList()'s
-   count still includes images (their own tab now) and href companions (folded
-   into their parent row), and showing "178" next to a page whose editor no
-   longer has a Photographs group at all is the first thing anyone would
-   notice was wrong. */
+/* The Pages sidebar shows what the editor will actually DRAW, not the raw field
+   count — pageList()'s count still includes href companions, which are folded
+   into their parent row rather than getting one of their own. A number beside a
+   page that does not match the rows on it is the first thing anyone notices. */
 function sidebarPages() {
-  return cms.pageList().map(p => ({ ...p, count: cms.textFieldCount(p.name) }));
+  return cms.pageList().map(p => ({ ...p, count: cms.editorFieldCount(p.name) }));
 }
 
 /* Stored overrides restricted to ids the Pages editor actually renders on this
-   page — i.e. not images. Without this, editing five photographs and two
-   paragraphs on About would show "2 fields" worth of "edited" pills on screen
-   but a "Reset all 7 edited fields" button at the bottom, five of which are
-   nowhere on the page to look at first. */
-function textEditedIds(pageName, stored) {
+   page. It renders photographs now too, so this returns them as well — but the
+   restriction stays: an id in the database that no longer exists in the
+   registry must not turn up in the "Reset all edited fields" button, pointing
+   at something with no row on screen to look at first. */
+function editedIdsOnScreen(pageName, stored) {
   const shown = new Set();
   for (const g of cms.groupsForPage(pageName)) {
     for (const f of g.fields) {
@@ -69,7 +68,7 @@ router.get('/page/:page', async (req, res) => {
     pages, page,
     groups: cms.groupsForPage(page.name),
     values,
-    editedIds: textEditedIds(page.name, stored),
+    editedIds: editedIdsOnScreen(page.name, stored),
     media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
     saved: req.query.saved, errors: {}
   });
@@ -95,7 +94,7 @@ router.post('/page/:page', async (req, res) => {
     return res.status(400).render('admin/cms-page', {
       title: 'Website content', pages, page,
       groups: cms.groupsForPage(page.name), values,
-      editedIds: textEditedIds(page.name, stored),
+      editedIds: editedIdsOnScreen(page.name, stored),
       media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
       saved: null, errors: result.errors
     });
@@ -105,24 +104,17 @@ router.post('/page/:page', async (req, res) => {
 
 /* ---- images -------------------------------------------------------------- */
 
-/* Every photograph on the site, grouped by the real page it lives on — not the
-   heading-derived groups the Pages editor uses. One screen, no accordions:
-   32 fields across the whole site is short enough to just scroll. */
-router.get('/images', async (req, res) => {
-  const pages = cms.imagePages();
-  const perPage = await Promise.all(pages.map(async p => {
-    const { values } = await cms.valuesForPage(SiteContent, p.name);
-    return { ...p, fields: cms.imageFieldsForPage(p.name).map(f => ({ ...f, value: values[f.id] || {} })) };
-  }));
-  const media = await MediaAsset.findAll({ where: { kind: 'image' }, order: [['createdAt', 'DESC']], limit: 200 });
+/* The Photographs tab is gone. It listed every photograph on the site in one
+   flat screen, which put a picture one menu away from the words it sits next
+   to on the page — you could not edit a section, only half of one. Worse, it
+   made the controls hard to find at all: somebody looking for the Get Involved
+   photograph opened Get Involved and there was no photograph on it.
+   Every image is now a field inside its own section of the Pages editor.
 
-  res.render('admin/cms-images', {
-    title: 'Photographs',
-    pages: perPage,
-    media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
-    saved: req.query.saved
-  });
-});
+   The URL stays and redirects, because it is in browser bookmarks and in the
+   deployment notes. A 404 here would read as "the feature was removed" rather
+   than "it moved". */
+router.get('/images', (req, res) => res.redirect('/portal/admin/cms/page/index'));
 
 /* Put a field back to whatever the original HTML says. */
 router.post('/reset/:page', async (req, res) => {

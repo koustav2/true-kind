@@ -41,7 +41,11 @@ const PAGES = [
   { file: 'work.html',                name: 'work',                label: 'Our Work' },
   { file: 'impact.html',              name: 'impact',              label: 'Our Impact' },
   { file: 'donate.html',              name: 'donate',              label: 'Donate' },
-  { file: 'volunteer.html',           name: 'volunteer',           label: 'Volunteer' },
+  /* Labelled 'Get Involved', matching the nav link and the breadcrumb on the
+     page itself. It read 'Volunteer' here and nowhere else, so the admin
+     looking for the Get Involved photograph had no row by that name to find.
+     `name` stays 'volunteer' — it is the filename and every field id. */
+  { file: 'volunteer.html',           name: 'volunteer',           label: 'Get Involved' },
   { file: 'contact.html',             name: 'contact',             label: 'Contact' },
   { file: 'press-release.html',       name: 'press-release',       label: 'Press' },
   { file: 'chairperson-message.html', name: 'chairperson-message', label: "Chairperson's Message" }
@@ -288,7 +292,11 @@ function processPage(page, entries) {
       $c.append(`<img class="cms-photo" data-cms-image="${slot.id}" alt="" hidden>`);
     }
     entries.push({
-      id: slot.id, page: page.name, scope: page.name, group: 'Photographs',
+      /* The slot says which SECTION of the page it belongs to, so the photo
+         is edited beside that section's own words. It used to be hardcoded
+         to 'Photographs', which is what put every picture on a separate tab
+         from the text it sits next to. */
+      id: slot.id, page: page.name, scope: page.name, group: slot.group || 'Photographs',
       label: slot.label, help: slot.help, role: 'photograph', type: 'image',
       target: { selector: `[data-cms-image="${slot.id}"]` },
       default: { src: '', alt: '' }
@@ -372,6 +380,26 @@ function main() {
   };
   const out = path.join(__dirname, 'registry.json');
   fs.writeFileSync(out, JSON.stringify(registry, null, 1));
+
+  /* A declared photo slot names the section it belongs in (see image-slots.js),
+     and those section names are derived from the page's own headings. Edit a
+     heading and a slot can end up pointing at a section that no longer exists —
+     the photo still saves and still renders, it just gets a small section of its
+     own in the admin instead of sitting with its text. Cosmetic, but invisible
+     unless somebody says so, so say so. */
+  const textGroups = new Map();
+  for (const e of entries) {
+    if (e.type === 'image') continue;
+    if (!textGroups.has(e.page)) textGroups.set(e.page, new Set());
+    textGroups.get(e.page).add(e.group || 'Page');
+  }
+  const orphans = entries.filter(e =>
+    e.type === 'image' && !(textGroups.get(e.page) || new Set()).has(e.group));
+  if (orphans.length) {
+    console.log(`\n  ! ${orphans.length} photo slot(s) name a section that no longer exists:`);
+    for (const o of orphans) console.log(`      ${o.id}  ->  "${o.group}"`);
+    console.log('    Fix the `group` in server/cms/image-slots.js to match the new heading.');
+  }
 
   const byType = {};
   for (const e of entries) byType[e.type] = (byType[e.type] || 0) + 1;

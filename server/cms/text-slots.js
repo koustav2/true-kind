@@ -39,7 +39,7 @@ const slots = [];
     label: `Homepage banner — slide ${n} headline`,
     help: 'A few words, not a sentence. Leave empty and the slide shows the photograph alone.',
     selector: `[data-cms-slide-title="${n}"]`,
-    group: 'Homepage banner text'
+    group: 'Homepage banner'
   });
   slots.push({
     id: `index.slide.${n}.caption`,
@@ -47,7 +47,7 @@ const slots = [];
     label: `Homepage banner — slide ${n} supporting line`,
     help: 'One sentence under the headline. Optional.',
     selector: `[data-cms-slide-caption="${n}"]`,
-    group: 'Homepage banner text'
+    group: 'Homepage banner'
   });
   slots.push({
     id: `index.slide.${n}.cta`,
@@ -55,7 +55,7 @@ const slots = [];
     label: `Homepage banner — slide ${n} button text`,
     help: 'Leave empty for no button. The button appears only when this and the link below are both filled in.',
     selector: `[data-cms-slide-cta="${n}"]`,
-    group: 'Homepage banner text'
+    group: 'Homepage banner'
   });
   slots.push({
     id: `index.slide.${n}.ctaHref`,
@@ -64,22 +64,22 @@ const slots = [];
     help: 'Where the button goes: donate.html, work.html, /portal/donate, or a full https:// address.',
     selector: `[data-cms-slide-cta="${n}"]`,
     attr: 'href',
-    group: 'Homepage banner text'
+    group: 'Homepage banner'
   });
 });
 
 /* Caption under the About-page photograph. Starts empty and hidden, so an
-   uncaptioned picture leaves no blank line under itself. Same reasoning as
-   above: the photograph itself is on the Photographs tab, so this one text
-   row gets its own small, accurately-named group rather than reusing that
-   label for a group with no photograph in it. */
+   uncaptioned picture leaves no blank line under itself. The photograph itself
+   now sits in this same group (see image-slots.js), so picture and caption are
+   edited together — which is why the group is named for the photograph rather
+   than for the caption alone. */
 slots.push({
   id: 'about.story.caption',
   page: 'about',
   label: 'About Us photograph — caption',
   help: 'Optional. Names the place, the programme or the date. Leave empty for no caption.',
   selector: '[data-cms-figcaption="about.story"]',
-  group: 'Photo caption'
+  group: 'Story photograph'
 });
 
 module.exports = slots;

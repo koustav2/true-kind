@@ -127,16 +127,33 @@
               <p class="cms-hint">This one contains formatting. Keep the tags (&lt;em&gt;, &lt;b&gt;, &lt;a&gt;…) and edit the words between them. Anything else is stripped when you save.</p>
 
             <% } else if (f.type === 'image') { %>
+              <%#
+                The photograph, edited in the section it belongs to. This markup
+                already existed; nothing ever reached it, because groupsForPage()
+                filtered images out and sent them to a tab of their own.
+
+                The alt box carries the field's own id so the <label> above it
+                has something real to point at — the file itself is chosen
+                through the picker, so there is no input to label otherwise.
+              %>
               <% var im = val(f.id) || {}; %>
-              <div class="row2">
+              <div class="cms-photo-row">
+                <div class="cms-photo-thumb <%= im.src ? 'has-file' : '' %>" id="<%= f.id %>_thumb">
+                  <img id="<%= f.id %>_prev" src="<%= im.src || '' %>" alt="" <%= im.src ? '' : 'hidden' %>
+                       onerror="this.hidden=true">
+                  <span class="cms-photo-none" id="<%= f.id %>_none" <%= im.src ? 'hidden' : '' %>>No photograph</span>
+                </div>
                 <div>
                   <input type="hidden" name="<%= f.id %>[src]" id="<%= f.id %>_src" value="<%= im.src || '' %>">
-                  <input type="text" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
+                  <div class="cms-photo-actions">
+                    <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>"><%= im.src ? 'Change…' : 'Choose a photograph…' %></button>
+                    <%# Clearing a slot has to be possible from the same place it
+                        was filled. Without this the only way back is the bulk
+                        "reset everything on this page" button at the bottom. %>
+                    <button type="button" class="btn btn-ghost btn-sm" data-clearimg="<%= f.id %>" <%= im.src ? '' : 'hidden' %>>Remove</button>
+                  </div>
+                  <input type="text" id="<%= f.id %>" name="<%= f.id %>[alt]" value="<%= im.alt || '' %>" placeholder="Describe the image for screen readers">
                   <p class="cms-hint">Alt text. Describe what is in the picture.</p>
-                </div>
-                <div class="media-preview">
-                  <img id="<%= f.id %>_prev" src="<%= im.src || '' %>" alt="" onerror="this.style.visibility='hidden'">
-                  <button type="button" class="btn btn-ghost btn-sm" data-pick="image" data-target="<%= f.id %>">Change…</button>
                 </div>
               </div>
 
@@ -222,6 +239,9 @@
   "use strict";
   var MEDIA = <%- JSON.stringify(media) %>;
   var CSRF  = <%- JSON.stringify(csrfToken) %>;
+  /* Declared here rather than beside the beforeunload handler at the bottom:
+     the Remove-photograph handler above also has to mark the form dirty. */
+  var form = document.getElementById('cmsForm');
 
   /* ---- show/hide the technical field id, remembered per browser ---- */
   (function () {
@@ -273,6 +293,35 @@
     });
   });
 
+  /* One place that knows what a filled and an empty photo slot look like, so
+     choosing and clearing cannot drift apart. */
+  function setPhoto(id, url) {
+    var prev  = document.getElementById(id + '_prev');
+    var none  = document.getElementById(id + '_none');
+    var thumb = document.getElementById(id + '_thumb');
+    var pick  = document.querySelector('[data-pick="image"][data-target="' + id + '"]');
+    if (prev) { if (url) { prev.src = url; prev.hidden = false; } else { prev.removeAttribute('src'); prev.hidden = true; } }
+    if (none) none.hidden = !!url;
+    if (thumb) thumb.classList.toggle('has-file', !!url);
+    if (pick) pick.textContent = url ? 'Change…' : 'Choose a photograph…';
+  }
+
+  /* ---- clear a photograph ----
+     Empties the slot in the form only; nothing is written until Save, and the
+     file itself stays in the media library. */
+  document.querySelectorAll('[data-clearimg]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-clearimg');
+      var src = document.getElementById(id + '_src');
+      if (src) src.value = '';
+      setPhoto(id, '');
+      btn.hidden = true;
+      var pick = document.querySelector('[data-pick="image"][data-target="' + id + '"]');
+      if (pick) pick.textContent = 'Choose a photograph…';
+      form.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
   /* ---- media picker ---- */
   var picker = document.getElementById('picker');
   var grid   = document.getElementById('pickerGrid');
@@ -317,8 +366,9 @@
   function choose(m) {
     var src = document.getElementById(target + '_src');
     if (src) src.value = m.url;
-    var prev = document.getElementById(target + '_prev');
-    if (prev) { prev.src = m.url; prev.style.visibility = 'visible'; }
+    if (m.kind === 'image') setPhoto(target, m.url);
+    var clear = document.querySelector('[data-clearimg="' + target + '"]');
+    if (clear) clear.hidden = false;
     var lab = document.getElementById(target + '_srclabel');
     if (lab) lab.textContent = m.original || m.url;
     var mode = document.getElementById(target + '_mode');
@@ -327,7 +377,7 @@
   }
 
   /* Warn before losing edits. */
-  var form = document.getElementById('cmsForm'), dirty = false;
+  var dirty = false;
   form.addEventListener('input', function () { dirty = true; });
   form.addEventListener('submit', function () { dirty = false; });
   window.addEventListener('beforeunload', function (e) {

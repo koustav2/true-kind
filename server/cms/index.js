@@ -60,18 +60,56 @@ function truncateGroup(name, max) {
   return safe.trimEnd() + '…';
 }
 
+/* Every field on one page belongs to a CLUSTER — the field id minus its last
+   segment. `index.slide.3.image`, `.title`, `.caption` and `.cta` are all
+   `index.slide.3`; the three body paragraphs of a card are all `work.p`.
+
+   Clusters are what let a photograph sit with the words it belongs to. Without
+   them, images join their group at the end (they are generated after the text
+   in the registry) and the homepage banner would list ten photographs followed
+   by thirty unrelated text rows, with slide 3's picture nowhere near slide 3's
+   headline. */
+function clusterKey(id) {
+  const i = String(id).lastIndexOf('.');
+  return i === -1 ? id : id.slice(0, i);
+}
+
+/* Order the fields of one group: clusters in the order they first appear, but
+   any cluster holding a photograph comes first, and inside a cluster the
+   photograph leads.
+
+   Picture first is deliberate. On the page itself the image is above the words
+   on a card and beside them in a hero, so leading with it matches what the
+   editor is looking at — and it is the control people could not find at all
+   when it lived on another tab. */
+function orderGroupFields(fields) {
+  const order = [];
+  const clusters = new Map();
+  for (const f of fields) {
+    const k = clusterKey(f.id);
+    if (!clusters.has(k)) { clusters.set(k, { images: [], rest: [] }); order.push(k); }
+    const c = clusters.get(k);
+    (f.type === 'image' ? c.images : c.rest).push(f);
+  }
+  const withPhoto = order.filter(k => clusters.get(k).images.length);
+  const without   = order.filter(k => !clusters.get(k).images.length);
+  return [...withPhoto, ...without]
+    .flatMap(k => [...clusters.get(k).images, ...clusters.get(k).rest]);
+}
+
 /* Fields for one page, arranged into the groups the generator derived, with
    `href` companions folded into their parent so the admin sees "Button label"
    and "Button destination" side by side rather than 55 orphan URL rows.
 
-   IMAGES ARE EXCLUDED. Every photograph slot has its own screen now — the
-   Images tab (see imagePages/imageFieldsForPage below) — so a text editor
-   never has to scroll past a "Photographs" group of thumbnails to reach the
-   next paragraph, and a photograph is never filed under two different menus.
-   This is what actually shrinks the page: on the homepage it removes 59 of
-   the 178 fields and the one group that held them all. */
+   IMAGES ARE INCLUDED, in the section they belong to. They used to be excluded
+   here and given a screen of their own — every photograph on the site in one
+   flat list, one menu away from the text it sits beside. That made the two
+   halves of a single section impossible to edit together and, in practice,
+   made the photo controls hard to find at all: somebody looking for the Get
+   Involved picture opened Get Involved and there was no picture on it.
+   A photograph is now edited exactly where its words are, and only there. */
 function groupsForPage(pageName) {
-  const own = FIELDS.filter(f => f.page === pageName && f.type !== 'image');
+  const own = FIELDS.filter(f => f.page === pageName);
   const hrefIds = new Set(own.filter(f => f.role === 'href').map(f => f.id));
   const order = [];
   const groups = new Map();
@@ -91,17 +129,16 @@ function groupsForPage(pageName) {
   return order.map(name => ({
     name,
     short: truncateGroup(name, 44),
-    fields: groups.get(name)
+    fields: orderGroupFields(groups.get(name))
   }));
 }
 
-/* How many fields the Pages editor will actually show for this page — used for
-   the sidebar count. Deliberately NOT "every field with this page name": that
-   count includes images (their own tab now) and href companions (folded into
-   their parent field, not a row of their own), and showing it next to a page
-   whose editor no longer has a Photographs group at all reads as a typo the
-   moment someone counts. */
-function textFieldCount(pageName) {
+/* How many rows the Pages editor will actually draw for this page — used for
+   the sidebar count. Deliberately NOT "every field with this page name": href
+   companions are folded into their parent field rather than getting a row of
+   their own, so the raw total reads as a typo the moment somebody counts what
+   is on screen. Photographs ARE counted, because they are now on screen. */
+function editorFieldCount(pageName) {
   return groupsForPage(pageName).reduce((n, g) => n + g.fields.length, 0);
 }
 
@@ -111,18 +148,10 @@ function pageList() {
   return pages.map(p => ({ ...p, count: FIELDS.filter(f => f.page === p.name && f.role !== 'href').length }));
 }
 
-/* ---- images tab ------------------------------------------------------------
-   Every photograph on the site in one flat list, instead of one buried inside
-   each page's own editor. 32 fields total across the whole site — few enough
-   that this needs no grouping or sub-navigation of its own; it is genuinely
-   the short list. */
-function imagePages() {
-  const withImages = new Set(FIELDS.filter(f => f.type === 'image').map(f => f.page));
-  return pageList().filter(p => withImages.has(p.name));
-}
-function imageFieldsForPage(pageName) {
-  return FIELDS.filter(f => f.page === pageName && f.type === 'image');
-}
+/* The Photographs tab that used to live here is gone. Its two helpers
+   (imagePages / imageFieldsForPage) went with it — every photograph is now a
+   field in its own section of the Pages editor, so there is nothing left that
+   needs the "all images, flat, by page" view they existed to build. */
 
 /* ---- validation ---------------------------------------------------------- */
 
@@ -320,7 +349,7 @@ async function bundleForPage(SiteContent, pageName) {
 
 module.exports = {
   registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor,
-  groupsForPage, textFieldCount, pageList, imagePages, imageFieldsForPage,
+  groupsForPage, editorFieldCount, pageList,
   valuesForPage, savePatch, resetFields, bundleForPage,
   sanitizeRichtext, safeUrl, safeMediaPath, safeEmbedUrl, coerce
 };

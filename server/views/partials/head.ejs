@@ -268,8 +268,23 @@ img{max-width:100%;height:auto}
 .cms-field label{margin-top:0}
 .cms-field .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 .cms-field .key{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--text-soft)}
-.cms-field .row2{display:grid;gap:10px}
-@media(min-width:680px){.cms-field .row2{grid-template-columns:1fr 260px}}
+/* A photograph field. Picture first, because that is the control people are
+   looking for and the one that used to live on another screen entirely; the
+   alt text is a caption on a decision already made, so it follows.
+   An empty slot draws a dashed frame that says so — a bare button floating in
+   white space reads as a layout bug rather than as an empty picture. */
+.cms-photo-row{display:grid;gap:14px;align-items:start}
+@media(min-width:680px){.cms-photo-row{grid-template-columns:172px 1fr}}
+.cms-photo-thumb{
+  aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;
+  border:1px dashed var(--rule-strong);background:var(--paper-2);
+  display:flex;align-items:center;justify-content:center}
+.cms-photo-thumb.has-file{border-style:solid;background:none}
+.cms-photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cms-photo-none{
+  font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-mute)}
+.cms-photo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .cms-field textarea{min-height:84px;resize:vertical}
 .cms-field textarea.code{font-family:'IBM Plex Mono',monospace;font-size:.8rem;line-height:1.55}
 .cms-err{color:var(--clay-deep);font-size:.8rem;margin-top:6px}

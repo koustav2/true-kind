@@ -103,8 +103,12 @@
        still resolves, but redirects here instead of opening a screen that saved
        into a dead end. */
     { key: 'website', label: 'Website', pages: [
+      /* 'Photographs' used to sit between these two — every image on the site
+         in one flat list, separate from the text it belongs with. Photographs
+         are edited inside their own section of Pages now, so a section is a
+         whole thing rather than two menus. 'Media' stays: that is the file
+         store you upload into, not a place where anything is placed. */
       { key: 'cms',     label: 'Pages',        href: A + '/cms',         gate: 'admin' },
-      { key: 'images',  label: 'Photographs',  href: A + '/cms/images',  gate: 'admin' },
       { key: 'media',   label: 'Media',        href: A + '/cms/media',   gate: 'admin' },
       { key: 'board',   label: 'Board',        href: A + '/board',       gate: 'admin' },
       { key: 'press',   label: 'Press',        href: A + '/press',       gate: 'admin' },
