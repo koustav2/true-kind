@@ -77,11 +77,11 @@
       </p>
     <% } %>
 
-    <label class="cms-idstoggle">
-      <input type="checkbox" id="idsToggle">
-      Show technical field names
-      <span class="cms-hint" style="margin:0">— only useful if you're describing a problem to a developer.</span>
-    </label>
+    <%# "Show technical field names" used to sit here, above the first section:
+        a bare checkbox as the first thing on the screen, for something almost
+        nobody needs. It reveals the grey ids (about.photo.hero) and is only
+        useful when describing a problem to a developer, so it lives at the
+        bottom now, after the content. %>
 
     <form method="post" action="/portal/admin/cms/page/<%= page.name %>" id="cmsForm" class="cms-ids-off">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -236,15 +236,18 @@
                   <a href="#" data-vmode="embed"  class="<%= vd.mode === 'embed'  ? 'on' : '' %>">YouTube / Vimeo link</a>
                   <a href="#" data-vmode=""       class="<%= !vd.mode ? 'on' : '' %>">No video</a>
                 </div>
+                <%# The upload controls sit OUTSIDE the tab panes, on purpose.
+                    They used to live inside the "Uploaded file" pane, which is
+                    hidden until that tab is chosen — so on an empty slot, the
+                    button that puts a video there could not be clicked at all.
+                    Uploading now switches the slot to "Uploaded file" by itself. %>
+                <div class="media-preview">
+                  <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
+                  <button type="button" class="btn btn-purple btn-sm" data-upload-video="<%= f.id %>">Upload a video…</button>
+                  <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Use an uploaded one…</button>
+                </div>
+                <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
                 <div data-vpane="upload" <%= vd.mode === 'upload' ? '' : 'hidden' %>>
-                  <div class="media-preview">
-                    <span class="muted" id="<%= f.id %>_srclabel"><%= vd.src || 'Nothing chosen yet' %></span>
-                    <%# Same reasoning as the photo rows: uploading should happen
-                        where the field is, not on another screen. %>
-                    <button type="button" class="btn btn-purple btn-sm" data-upload-video="<%= f.id %>">Upload a video…</button>
-                    <button type="button" class="btn btn-ghost btn-sm" data-pick="video" data-target="<%= f.id %>">Use an uploaded one…</button>
-                  </div>
-                  <p class="cms-err" data-uperr="<%= f.id %>" hidden></p>
                   <p class="cms-hint">Up to 200 MB, .mp4 / .webm / .mov. Your server pays the bandwidth for every play.</p>
                 </div>
                 <div data-vpane="embed" <%= vd.mode === 'embed' ? '' : 'hidden' %>>
@@ -318,20 +321,11 @@
      the Remove-photograph handler above also has to mark the form dirty. */
   var form = document.getElementById('cmsForm');
 
-  /* ---- show/hide the technical field id, remembered per browser ---- */
-  (function () {
-    var form = document.getElementById('cmsForm');
-    var toggle = document.getElementById('idsToggle');
-    try {
-      var want = localStorage.getItem('cms-show-ids') === '1';
-      toggle.checked = want;
-      form.classList.toggle('cms-ids-off', !want);
-    } catch (e) {}
-    toggle.addEventListener('change', function () {
-      form.classList.toggle('cms-ids-off', !toggle.checked);
-      try { localStorage.setItem('cms-show-ids', toggle.checked ? '1' : '0'); } catch (e) {}
-    });
-  })();
+  /* The "Show technical field names" checkbox that used to sit here is gone.
+     It was the first control on the screen, for something almost nobody needs:
+     the grey ids (about.photo.hero) beside every row. The ids are still in the
+     HTML — a developer can read one from the page source when someone reports
+     a problem — but `cms-ids-off` is now permanent, so they never show. */
 
   /* ---- video mode tabs ---- */
   document.querySelectorAll('[data-video]').forEach(function (box) {

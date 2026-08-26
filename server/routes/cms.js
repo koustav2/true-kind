@@ -63,6 +63,11 @@ function editedIdsOnScreen(pageName, stored) {
 
 router.get('/page/:page', async (req, res) => {
   const wanted = req.params.page;
+  /* A page edited inside another one (Chairperson's Message lives in the About
+     Us editor) keeps its old address working — it is in bookmarks, and a 404
+     would read as "that page was deleted" rather than "it moved". */
+  const host = cms.MERGED_INTO[wanted];
+  if (host) return res.redirect(`/portal/admin/cms/page/${host}`);
   if (!cms.pageList().some(p => p.name === wanted)) {
     return res.status(404).render('error', { title: 'Not found', message: 'No such page in the CMS.' });
   }

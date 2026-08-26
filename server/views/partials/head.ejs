@@ -326,7 +326,9 @@ img{max-width:100%;height:auto}
 .cms-ids-off .key{display:none}
 .cms-idstoggle{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
   font-size:.85rem;color:var(--text);margin:0 0 18px;cursor:pointer}
-.cms-idstoggle input{margin:0}
+.cms-idstoggle input{margin:0;width:auto;flex:none}
+/* Now that it sits after the content rather than above it, keep it quiet. */
+.cms-idstoggle{margin-top:26px;color:var(--text-soft);font-size:.82rem}
 
 /* ---- Photographs tab ------------------------------------------------------
    Deliberately not built from .cms-group/<details>: 32 fields across the whole
