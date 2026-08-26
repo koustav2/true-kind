@@ -84,7 +84,7 @@ app.get('/portal', async (req, res) => {
 
 // Guest donation + guest receipt
 const config = require('./config');
-const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember, PressItem } = require('./models');
+const { Donation, FormConfig, SiteContent, Volunteer, Enquiry, BoardMember, PressItem, GalleryItem } = require('./models');
 const { qrDataUrl, barcodeDataUrl } = require('./utils/codes');
 const verify = require('./utils/verify');
 const { receiptPdf } = require('./utils/pdf');
@@ -384,6 +384,24 @@ app.get('/api/press', async (req, res) => {
       excerpt: m.excerpt || '',
       photo: m.photoUrl || ''
     })) });
+  } catch (e) { res.status(500).json({ ok: false, items: [] }); }
+});
+
+/* Gallery photographs, for the Gallery page.
+   Same reasoning as /api/board and /api/press: a LIST of unknown length, so its
+   own endpoint rather than a fixed set of CMS fields. Only visible rows, and
+   only the two things the page renders — no internal ids, no on-disk filenames.
+   On any failure this returns an empty list and the page keeps its note. */
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const rows = await GalleryItem.findAll({
+      where: { visible: true },
+      order: [['sortOrder', 'ASC'], ['id', 'ASC']]
+    });
+    res.set('Cache-Control', 'no-cache');
+    res.json({ ok: true, items: rows
+      .filter(m => m.photoUrl)          // a tile with no picture is not a tile
+      .map(m => ({ title: m.title, photo: m.photoUrl })) });
   } catch (e) { res.status(500).json({ ok: false, items: [] }); }
 });
 

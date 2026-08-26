@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "node --watch server/server.js",
+    "preview": "node server/scripts/preview.js",
     "seed": "node server/scripts/seed.js",
     "cms:build": "node server/cms/build-registry.js",
     "smoke": "node server/scripts/smoke.js",
@@ -21,7 +22,8 @@
     "letter:smoke": "node server/scripts/letter-smoke.js",
     "banner:render": "node server/scripts/banner-smoke.js",
     "simplify:smoke": "node server/scripts/simplify-smoke.js",
-    "cert:smoke": "node server/scripts/cert-templates-smoke.js"
+    "cert:smoke": "node server/scripts/cert-templates-smoke.js",
+    "gallery:smoke": "node server/scripts/gallery-smoke.js"
   },
   "dependencies": {
     "axios": "^1.7.0",

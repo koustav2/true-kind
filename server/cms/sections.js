@@ -95,6 +95,10 @@ const RENAME = {
     'Page':             'News list',
     'Media enquiries':  'For journalists'
   },
+  gallery: {
+    'From the field.': 'Gallery',
+    'Page':            'Photo grid'
+  },
   'chairperson-message': {
     'A note from our Chairperson.': "Chairperson's Message",
     'Page':                         'The message',
@@ -200,6 +204,12 @@ const SECTION_NOTES = {
     'Governance': {
       text: 'The board itself is a list with no fixed length, so it is not edited here. Add, reorder and remove trustees — photograph, role and bio included — and this block on the site is built from that. The rows below are only the heading and intro above the cards.',
       link: { href: '/portal/admin/board', label: 'Add or edit board members' }
+    }
+  },
+  gallery: {
+    'Photo grid': {
+      text: 'The photographs are a list with no fixed length, so they are not edited here. Add each one — picture and title — and the grid on the page builds itself from that. The row below is only the note shown while the gallery is empty.',
+      link: { href: '/portal/admin/gallery', label: 'Add or edit gallery photos' }
     }
   },
   'press-release': {

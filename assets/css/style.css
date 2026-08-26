@@ -1797,6 +1797,64 @@ fieldset.field{ border:none; padding:0; margin:0; }
 }
 
 /* --------------------------------------------------------------------------
+   15b. GALLERY
+
+   Photographs from events, three across on desktop and one on a phone. Every
+   tile is a button rather than a link: it opens the picture full size instead
+   of going anywhere, and a button is what a screen reader should announce for
+   that. The title sits under the picture rather than over it — laid over a
+   photograph, no colour is legible against every possible image.
+   -------------------------------------------------------------------------- */
+.gallery-grid{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:var(--sp-6) var(--sp-5); align-items:start;
+}
+.gallery-tile{
+  display:flex; flex-direction:column; gap:var(--sp-3);
+  padding:0; border:0; background:none; text-align:left; cursor:zoom-in;
+  font:inherit; color:inherit; width:100%;
+}
+.gallery-tile img{
+  width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+  border-radius:var(--radius); border:1px solid var(--rule);
+  background:var(--paper-2);
+  transition:border-color var(--dur) var(--ease);
+}
+.gallery-tile:hover img, .gallery-tile:focus-visible img{ border-color:var(--rule-strong); }
+.gallery-title{ font-size:var(--fs-sm); color:var(--text-soft); line-height:1.5; }
+.gallery-empty{
+  grid-column:1 / -1; margin:0; padding:var(--sp-6) 0;
+  color:var(--text-soft); font-size:var(--fs-lede);
+  border-top:1px solid var(--rule);
+}
+@media (max-width:900px){ .gallery-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:560px){ .gallery-grid{ grid-template-columns:1fr; } }
+
+/* The full-size view. Fixed, dark, and dismissed by the close button, a click
+   on the backdrop or Escape — three ways out, because a picture that traps you
+   is worse than no picture. */
+.gallery-lightbox{
+  position:fixed; inset:0; z-index:80; display:none;
+  align-items:center; justify-content:center; padding:clamp(16px,4vw,48px);
+  background:rgba(16,31,41,.92);
+}
+.gallery-lightbox.on{ display:flex; }
+.gallery-lightbox figure{ margin:0; max-width:min(1100px,100%); max-height:100%; }
+.gallery-lightbox img{
+  max-width:100%; max-height:78vh; object-fit:contain; display:block;
+  border-radius:var(--radius);
+}
+.gallery-lightbox figcaption{
+  color:#fff; font-size:var(--fs-sm); margin-top:var(--sp-4); text-align:center;
+}
+.gallery-close{
+  position:absolute; top:clamp(10px,2vw,20px); right:clamp(10px,2vw,20px);
+  width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,.35);
+  background:none; color:#fff; font-size:1.6rem; line-height:1; cursor:pointer;
+}
+.gallery-close:hover, .gallery-close:focus-visible{ background:rgba(255,255,255,.14); }
+
+/* --------------------------------------------------------------------------
    16. CHAIRPERSON
    -------------------------------------------------------------------------- */
 .cp-wrap{

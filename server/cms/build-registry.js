@@ -48,6 +48,7 @@ const PAGES = [
   { file: 'volunteer.html',           name: 'volunteer',           label: 'Get Involved' },
   { file: 'contact.html',             name: 'contact',             label: 'Contact' },
   { file: 'press-release.html',       name: 'press-release',       label: 'Press' },
+  { file: 'gallery.html',             name: 'gallery',             label: 'Gallery' },
   { file: 'chairperson-message.html', name: 'chairperson-message', label: "Chairperson's Message" }
 ];
 

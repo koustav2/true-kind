@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  The nine public pages. Absolute URLs, because the sitemap protocol requires
+  The ten public pages. Absolute URLs, because the sitemap protocol requires
   them — a sitemap is fetched by a crawler that has no page to resolve a relative
   path against.
 
@@ -22,6 +22,7 @@
   <url><loc>https://truekindfoundation.org/donate.html</loc><priority>0.9</priority></url>
   <url><loc>https://truekindfoundation.org/volunteer.html</loc><priority>0.8</priority></url>
   <url><loc>https://truekindfoundation.org/contact.html</loc><priority>0.6</priority></url>
+  <url><loc>https://truekindfoundation.org/gallery.html</loc></url>
   <url><loc>https://truekindfoundation.org/press-release.html</loc><priority>0.5</priority></url>
   <url><loc>https://truekindfoundation.org/chairperson-message.html</loc><priority>0.5</priority></url>
 </urlset>

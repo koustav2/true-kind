@@ -42,6 +42,11 @@
    "label": "Press"
   },
   {
+   "name": "gallery",
+   "file": "gallery.html",
+   "label": "Gallery"
+  },
+  {
    "name": "chairperson-message",
    "file": "chairperson-message.html",
    "label": "Chairperson's Message"
@@ -324,6 +329,39 @@
    "pos": 41
   },
   {
+   "id": "global.header.a.8.href",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link destination",
+   "role": "href",
+   "type": "url",
+   "target": {
+    "selector": "[data-cms=\"global.header.a.8\"]",
+    "attr": "href"
+   },
+   "default": "gallery.html",
+   "pos": 43
+  },
+  {
+   "id": "global.header.a.8",
+   "page": "global",
+   "scope": "global.header",
+   "group": "Header / navigation",
+   "label": "Header / navigation — link",
+   "role": "link",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Gallery",
+   "href": {
+    "id": "global.header.a.8.href",
+    "default": "gallery.html"
+   },
+   "pos": 43
+  },
+  {
    "id": "global.header.a.7.href",
    "page": "global",
    "scope": "global.header",
@@ -336,7 +374,7 @@
     "attr": "href"
    },
    "default": "contact.html",
-   "pos": 43
+   "pos": 45
   },
   {
    "id": "global.header.a.7",
@@ -354,7 +392,7 @@
     "id": "global.header.a.7.href",
     "default": "contact.html"
    },
-   "pos": 43
+   "pos": 45
   },
   {
    "id": "global.header.span.1",
@@ -368,7 +406,7 @@
     "self": true
    },
    "default": "Donate",
-   "pos": 45
+   "pos": 47
   },
   {
    "id": "index.p.1",
@@ -382,7 +420,7 @@
     "self": true
    },
    "default": "Registered non-profit · Bhadrak, Odisha",
-   "pos": 52
+   "pos": 54
   },
   {
    "id": "index.h1.1",
@@ -396,7 +434,7 @@
     "self": true
    },
    "default": "Kindness works better when it's <em>organized</em>.",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "index.p.2",
@@ -410,7 +448,7 @@
     "self": true
    },
    "default": "Goodwill is easy to find. What's rare is an organisation that turns it into skilling, livelihoods, education, health and environment programs — and then stays long enough to find out whether they worked.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "index.a.1.href",
@@ -425,7 +463,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 57
+   "pos": 59
   },
   {
    "id": "index.a.1",
@@ -443,7 +481,7 @@
     "id": "index.a.1.href",
     "default": "donate.html"
    },
-   "pos": 57
+   "pos": 59
   },
   {
    "id": "index.a.2.href",
@@ -458,7 +496,7 @@
     "attr": "href"
    },
    "default": "work.html",
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "index.a.2",
@@ -476,7 +514,7 @@
     "id": "index.a.2.href",
     "default": "work.html"
    },
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "index.h2.6",
@@ -490,7 +528,7 @@
     "self": true
    },
    "default": "Skill Development",
-   "pos": 66
+   "pos": 68
   },
   {
    "id": "index.p.3",
@@ -504,7 +542,7 @@
     "self": true
    },
    "default": "Training that ends in a job, and a follow-up six months later to see if it held.",
-   "pos": 67
+   "pos": 69
   },
   {
    "id": "index.a.11.href",
@@ -519,7 +557,7 @@
     "attr": "href"
    },
    "default": "work.html",
-   "pos": 68
+   "pos": 70
   },
   {
    "id": "index.a.11",
@@ -537,7 +575,7 @@
     "id": "index.a.11.href",
     "default": "work.html"
    },
-   "pos": 68
+   "pos": 70
   },
   {
    "id": "index.h2.7",
@@ -551,7 +589,7 @@
     "self": true
    },
    "default": "Women's Empowerment",
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "index.p.13",
@@ -565,7 +603,7 @@
     "self": true
    },
    "default": "An income she controls changes what the whole household can plan for.",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "index.a.12.href",
@@ -580,7 +618,7 @@
     "attr": "href"
    },
    "default": "work.html",
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "index.a.12",
@@ -598,7 +636,7 @@
     "id": "index.a.12.href",
     "default": "work.html"
    },
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "index.h2.8",
@@ -612,7 +650,7 @@
     "self": true
    },
    "default": "Environment",
-   "pos": 80
+   "pos": 82
   },
   {
    "id": "index.p.21",
@@ -626,7 +664,7 @@
     "self": true
    },
    "default": "Cleaner air and shade where people actually live, planted and then maintained.",
-   "pos": 81
+   "pos": 83
   },
   {
    "id": "index.a.13.href",
@@ -641,7 +679,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "index.a.13",
@@ -659,7 +697,7 @@
     "id": "index.a.13.href",
     "default": "donate.html"
    },
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "index.button.1",
@@ -673,7 +711,7 @@
     "self": true
    },
    "default": "‹",
-   "pos": 132
+   "pos": 134
   },
   {
    "id": "index.button.2",
@@ -687,7 +725,7 @@
     "self": true
    },
    "default": "›",
-   "pos": 133
+   "pos": 135
   },
   {
    "id": "index.b.1",
@@ -701,7 +739,7 @@
     "self": true
    },
    "default": "11,400+",
-   "pos": 139
+   "pos": 141
   },
   {
    "id": "index.span.1",
@@ -715,7 +753,7 @@
     "self": true
    },
    "default": "People trained or placed",
-   "pos": 140
+   "pos": 142
   },
   {
    "id": "index.b.2",
@@ -729,7 +767,7 @@
     "self": true
    },
    "default": "3,600+",
-   "pos": 142
+   "pos": 144
   },
   {
    "id": "index.span.2",
@@ -743,7 +781,7 @@
     "self": true
    },
    "default": "Women in livelihood programs",
-   "pos": 143
+   "pos": 145
   },
   {
    "id": "index.b.3",
@@ -757,7 +795,7 @@
     "self": true
    },
    "default": "62",
-   "pos": 145
+   "pos": 147
   },
   {
    "id": "index.span.3",
@@ -771,7 +809,7 @@
     "self": true
    },
    "default": "Partner communities",
-   "pos": 146
+   "pos": 148
   },
   {
    "id": "index.b.4",
@@ -785,7 +823,7 @@
     "self": true
    },
    "default": "9",
-   "pos": 148
+   "pos": 150
   },
   {
    "id": "index.span.4",
@@ -799,7 +837,7 @@
     "self": true
    },
    "default": "States of operation",
-   "pos": 149
+   "pos": 151
   },
   {
    "id": "index.p.4",
@@ -813,7 +851,7 @@
     "self": true
    },
    "default": "Who we are",
-   "pos": 153
+   "pos": 155
   },
   {
    "id": "index.p.5",
@@ -827,7 +865,7 @@
     "self": true
    },
    "default": "We don't treat kindness as a feeling. We treat it as infrastructure — something you can plan, staff, budget and measure.",
-   "pos": 154
+   "pos": 156
   },
   {
    "id": "index.p.6",
@@ -841,7 +879,7 @@
     "self": true
    },
    "default": "True Kind Foundation works with underserved communities on the things that most reliably change a household's trajectory: a usable skill, an income a woman controls, a daughter who stays in school, a neighbourhood with clean air and shade. We keep the program list short on purpose — five things done properly beat fifteen done at a glance.",
-   "pos": 155
+   "pos": 157
   },
   {
    "id": "index.a.3.href",
@@ -856,7 +894,7 @@
     "attr": "href"
    },
    "default": "about.html",
-   "pos": 157
+   "pos": 159
   },
   {
    "id": "index.a.3",
@@ -874,7 +912,7 @@
     "id": "index.a.3.href",
     "default": "about.html"
    },
-   "pos": 157
+   "pos": 159
   },
   {
    "id": "index.b.5",
@@ -888,7 +926,7 @@
     "self": true
    },
    "default": "Origin",
-   "pos": 160
+   "pos": 162
   },
   {
    "id": "index.span.5",
@@ -902,7 +940,7 @@
     "self": true
    },
    "default": "Founded by a small group of educators and community volunteers who decided follow-through mattered more than the launch photo.",
-   "pos": 161
+   "pos": 163
   },
   {
    "id": "index.b.6",
@@ -916,7 +954,7 @@
     "self": true
    },
    "default": "Today",
-   "pos": 163
+   "pos": 165
   },
   {
    "id": "index.span.6",
@@ -930,7 +968,7 @@
     "self": true
    },
    "default": "Year-round skilling centres, women's savings and enterprise collectives, school-linked digital literacy labs, community health camps, and a tree-planting and waste-reduction programme.",
-   "pos": 164
+   "pos": 166
   },
   {
    "id": "index.b.7",
@@ -944,7 +982,7 @@
     "self": true
    },
    "default": "Method",
-   "pos": 166
+   "pos": 168
   },
   {
    "id": "index.span.7",
@@ -958,7 +996,7 @@
     "self": true
    },
    "default": "Every program has a named local partner, a public budget line and a review every six months. When something isn't working, we say so and change it.",
-   "pos": 167
+   "pos": 169
   },
   {
    "id": "index.p.7",
@@ -972,7 +1010,7 @@
     "self": true
    },
    "default": "Where the effort goes",
-   "pos": 172
+   "pos": 174
   },
   {
    "id": "index.h2.1",
@@ -986,7 +1024,7 @@
     "self": true
    },
    "default": "The four numbers our board actually reviews",
-   "pos": 173
+   "pos": 175
   },
   {
    "id": "index.p.8",
@@ -1000,7 +1038,7 @@
     "self": true
    },
    "default": "Not the ones that look best in a newsletter — the ones that tell us whether a program is working.",
-   "pos": 174
+   "pos": 176
   },
   {
    "id": "index.b.12",
@@ -1014,7 +1052,7 @@
     "self": true
    },
    "default": "82",
-   "pos": 184
+   "pos": 186
   },
   {
    "id": "index.span.20",
@@ -1028,7 +1066,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 185
+   "pos": 187
   },
   {
    "id": "index.h3.1",
@@ -1042,7 +1080,7 @@
     "self": true
    },
    "default": "Program completion",
-   "pos": 186
+   "pos": 188
   },
   {
    "id": "index.p.9",
@@ -1056,7 +1094,7 @@
     "self": true
    },
    "default": "Trainees who finish, not just enrol.",
-   "pos": 187
+   "pos": 189
   },
   {
    "id": "index.b.13",
@@ -1070,7 +1108,7 @@
     "self": true
    },
    "default": "68",
-   "pos": 196
+   "pos": 198
   },
   {
    "id": "index.span.21",
@@ -1084,7 +1122,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 197
+   "pos": 199
   },
   {
    "id": "index.h3.2",
@@ -1098,7 +1136,7 @@
     "self": true
    },
    "default": "Placed or self-employed",
-   "pos": 198
+   "pos": 200
   },
   {
    "id": "index.p.10",
@@ -1112,7 +1150,7 @@
     "self": true
    },
    "default": "Within six months of finishing.",
-   "pos": 199
+   "pos": 201
   },
   {
    "id": "index.b.14",
@@ -1126,7 +1164,7 @@
     "self": true
    },
    "default": "74",
-   "pos": 208
+   "pos": 210
   },
   {
    "id": "index.span.22",
@@ -1140,7 +1178,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 209
+   "pos": 211
   },
   {
    "id": "index.h3.3",
@@ -1154,7 +1192,7 @@
     "self": true
    },
    "default": "Funds reaching programs",
-   "pos": 210
+   "pos": 212
   },
   {
    "id": "index.p.11",
@@ -1168,7 +1206,7 @@
     "self": true
    },
    "default": "The rest covers admin, audit and reporting.",
-   "pos": 211
+   "pos": 213
   },
   {
    "id": "index.b.15",
@@ -1182,7 +1220,7 @@
     "self": true
    },
    "default": "91",
-   "pos": 220
+   "pos": 222
   },
   {
    "id": "index.span.23",
@@ -1196,7 +1234,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 221
+   "pos": 223
   },
   {
    "id": "index.h3.4",
@@ -1210,7 +1248,7 @@
     "self": true
    },
    "default": "Would recommend us",
-   "pos": 222
+   "pos": 224
   },
   {
    "id": "index.p.12",
@@ -1224,7 +1262,7 @@
     "self": true
    },
    "default": "Annual survey of program participants.",
-   "pos": 223
+   "pos": 225
   },
   {
    "id": "index.p.14",
@@ -1238,7 +1276,7 @@
     "self": true
    },
    "default": "Our work",
-   "pos": 228
+   "pos": 230
   },
   {
    "id": "index.h2.2",
@@ -1252,7 +1290,7 @@
     "self": true
    },
    "default": "Five programs, one thread",
-   "pos": 229
+   "pos": 231
   },
   {
    "id": "index.p.15",
@@ -1266,7 +1304,7 @@
     "self": true
    },
    "default": "Each one is built to make the others work better — a trained young person, a mother earning her own income, a healthier street.",
-   "pos": 230
+   "pos": 232
   },
   {
    "id": "index.span.8",
@@ -1280,7 +1318,7 @@
     "self": true
    },
    "default": "Skilling",
-   "pos": 234
+   "pos": 236
   },
   {
    "id": "index.h3.5",
@@ -1294,7 +1332,7 @@
     "self": true
    },
    "default": "Skill Development & Employment",
-   "pos": 243
+   "pos": 245
   },
   {
    "id": "index.p.16",
@@ -1308,7 +1346,7 @@
     "self": true
    },
    "default": "Trade and digital-service training built around what local employers are actually hiring for — with placement support that doesn't stop at the certificate.",
-   "pos": 244
+   "pos": 246
   },
   {
    "id": "index.a.4.href",
@@ -1323,7 +1361,7 @@
     "attr": "href"
    },
    "default": "work.html#skilling",
-   "pos": 245
+   "pos": 247
   },
   {
    "id": "index.a.4",
@@ -1341,7 +1379,7 @@
     "id": "index.a.4.href",
     "default": "work.html#skilling"
    },
-   "pos": 245
+   "pos": 247
   },
   {
    "id": "index.span.9",
@@ -1355,7 +1393,7 @@
     "self": true
    },
    "default": "Livelihoods",
-   "pos": 248
+   "pos": 250
   },
   {
    "id": "index.h3.6",
@@ -1369,7 +1407,7 @@
     "self": true
    },
    "default": "Women's Empowerment",
-   "pos": 256
+   "pos": 258
   },
   {
    "id": "index.p.17",
@@ -1383,7 +1421,7 @@
     "self": true
    },
    "default": "Savings collectives, micro-enterprise training and market linkages, so the income stays with the women who earned it.",
-   "pos": 257
+   "pos": 259
   },
   {
    "id": "index.a.5.href",
@@ -1398,7 +1436,7 @@
     "attr": "href"
    },
    "default": "work.html#women",
-   "pos": 258
+   "pos": 260
   },
   {
    "id": "index.a.5",
@@ -1416,7 +1454,7 @@
     "id": "index.a.5.href",
     "default": "work.html#women"
    },
-   "pos": 258
+   "pos": 260
   },
   {
    "id": "index.span.10",
@@ -1430,7 +1468,7 @@
     "self": true
    },
    "default": "Education",
-   "pos": 261
+   "pos": 263
   },
   {
    "id": "index.h3.7",
@@ -1444,7 +1482,7 @@
     "self": true
    },
    "default": "Digital Education Access",
-   "pos": 269
+   "pos": 271
   },
   {
    "id": "index.p.18",
@@ -1458,7 +1496,7 @@
     "self": true
    },
    "default": "Device-light computer and internet literacy labs run alongside government schools, aimed squarely at the rural–urban skills gap.",
-   "pos": 270
+   "pos": 272
   },
   {
    "id": "index.a.6.href",
@@ -1473,7 +1511,7 @@
     "attr": "href"
    },
    "default": "work.html#education",
-   "pos": 271
+   "pos": 273
   },
   {
    "id": "index.a.6",
@@ -1491,7 +1529,7 @@
     "id": "index.a.6.href",
     "default": "work.html#education"
    },
-   "pos": 271
+   "pos": 273
   },
   {
    "id": "index.span.11",
@@ -1505,7 +1543,7 @@
     "self": true
    },
    "default": "Health",
-   "pos": 274
+   "pos": 276
   },
   {
    "id": "index.h3.8",
@@ -1519,7 +1557,7 @@
     "self": true
    },
    "default": "Health & Safety Camps",
-   "pos": 280
+   "pos": 282
   },
   {
    "id": "index.p.19",
@@ -1533,7 +1571,7 @@
     "self": true
    },
    "default": "Preventive-care camps, workplace safety training and first-aid literacy for communities a long way from the nearest clinic.",
-   "pos": 281
+   "pos": 283
   },
   {
    "id": "index.a.7.href",
@@ -1548,7 +1586,7 @@
     "attr": "href"
    },
    "default": "work.html#health",
-   "pos": 282
+   "pos": 284
   },
   {
    "id": "index.a.7",
@@ -1566,7 +1604,7 @@
     "id": "index.a.7.href",
     "default": "work.html#health"
    },
-   "pos": 282
+   "pos": 284
   },
   {
    "id": "index.span.12",
@@ -1580,7 +1618,7 @@
     "self": true
    },
    "default": "Environment",
-   "pos": 285
+   "pos": 287
   },
   {
    "id": "index.h3.9",
@@ -1594,7 +1632,7 @@
     "self": true
    },
    "default": "Environmental Sustainability",
-   "pos": 293
+   "pos": 295
   },
   {
    "id": "index.p.20",
@@ -1608,7 +1646,7 @@
     "self": true
    },
    "default": "Neighbourhood tree-planting, plastic-reduction drives and environment education, co-run with the people who live there.",
-   "pos": 294
+   "pos": 296
   },
   {
    "id": "index.a.8.href",
@@ -1623,7 +1661,7 @@
     "attr": "href"
    },
    "default": "work.html#environment",
-   "pos": 295
+   "pos": 297
   },
   {
    "id": "index.a.8",
@@ -1641,7 +1679,7 @@
     "id": "index.a.8.href",
     "default": "work.html#environment"
    },
-   "pos": 295
+   "pos": 297
   },
   {
    "id": "index.p.22",
@@ -1655,7 +1693,7 @@
     "self": true
    },
    "default": "How we work",
-   "pos": 300
+   "pos": 302
   },
   {
    "id": "index.h2.3",
@@ -1669,7 +1707,7 @@
     "self": true
    },
    "default": "Three commitments we don't compromise on",
-   "pos": 301
+   "pos": 303
   },
   {
    "id": "index.p.23",
@@ -1683,7 +1721,7 @@
     "self": true
    },
    "default": "They decide which programs we take on, and they're the first thing we're held to when one underperforms.",
-   "pos": 302
+   "pos": 304
   },
   {
    "id": "index.span.13",
@@ -1697,7 +1735,7 @@
     "self": true
    },
    "default": "Commitment one",
-   "pos": 305
+   "pos": 307
   },
   {
    "id": "index.h3.10",
@@ -1711,7 +1749,7 @@
     "self": true
    },
    "default": "Local first",
-   "pos": 306
+   "pos": 308
   },
   {
    "id": "index.p.24",
@@ -1725,7 +1763,7 @@
     "self": true
    },
    "default": "Every program is co-designed with a local partner or community leader before it launches — never parachuted in from a head-office plan.",
-   "pos": 307
+   "pos": 309
   },
   {
    "id": "index.span.14",
@@ -1739,7 +1777,7 @@
     "self": true
    },
    "default": "Commitment two",
-   "pos": 309
+   "pos": 311
   },
   {
    "id": "index.h3.11",
@@ -1753,7 +1791,7 @@
     "self": true
    },
    "default": "Follow-through over launch events",
-   "pos": 310
+   "pos": 312
   },
   {
    "id": "index.p.25",
@@ -1767,7 +1805,7 @@
     "self": true
    },
    "default": "We track people for months after a program ends, not just at the graduation photo. That's where the real signal is.",
-   "pos": 311
+   "pos": 313
   },
   {
    "id": "index.span.15",
@@ -1781,7 +1819,7 @@
     "self": true
    },
    "default": "Commitment three",
-   "pos": 313
+   "pos": 315
   },
   {
    "id": "index.h3.12",
@@ -1795,7 +1833,7 @@
     "self": true
    },
    "default": "Say the number, good or bad",
-   "pos": 314
+   "pos": 316
   },
   {
    "id": "index.p.26",
@@ -1809,7 +1847,7 @@
     "self": true
    },
    "default": "Our reports include what didn't work. A donor who trusts the bad news will trust the good news too.",
-   "pos": 315
+   "pos": 317
   },
   {
    "id": "index.p.27",
@@ -1823,7 +1861,7 @@
     "self": true
    },
    "default": "Voices",
-   "pos": 320
+   "pos": 322
   },
   {
    "id": "index.h2.4",
@@ -1837,7 +1875,7 @@
     "self": true
    },
    "default": "From people in the programs",
-   "pos": 321
+   "pos": 323
   },
   {
    "id": "index.p.28",
@@ -1851,7 +1889,7 @@
     "self": true
    },
    "default": "Notes shared with our team — names shortened at each person's request.",
-   "pos": 322
+   "pos": 324
   },
   {
    "id": "index.blockquote.1",
@@ -1865,7 +1903,7 @@
     "self": true
    },
    "default": "\"The digital skills course got me my first paid freelance project within two months of finishing.\"",
-   "pos": 325
+   "pos": 327
   },
   {
    "id": "index.b.8",
@@ -1879,7 +1917,7 @@
     "self": true
    },
    "default": "R.K.",
-   "pos": 330
+   "pos": 332
   },
   {
    "id": "index.span.16",
@@ -1893,7 +1931,7 @@
     "self": true
    },
    "default": "Skilling program graduate",
-   "pos": 331
+   "pos": 333
   },
   {
    "id": "index.blockquote.2",
@@ -1907,7 +1945,7 @@
     "self": true
    },
    "default": "\"Our stitching collective now supplies three local retailers. We set our own prices for the first time.\"",
-   "pos": 333
+   "pos": 335
   },
   {
    "id": "index.b.9",
@@ -1921,7 +1959,7 @@
     "self": true
    },
    "default": "S.M.",
-   "pos": 338
+   "pos": 340
   },
   {
    "id": "index.span.17",
@@ -1935,7 +1973,7 @@
     "self": true
    },
    "default": "Women's collective member",
-   "pos": 339
+   "pos": 341
   },
   {
    "id": "index.blockquote.3",
@@ -1949,7 +1987,7 @@
     "self": true
    },
    "default": "\"The health camp caught my father's blood pressure early. That checkup probably saved us a hospital bill.\"",
-   "pos": 341
+   "pos": 343
   },
   {
    "id": "index.b.10",
@@ -1963,7 +2001,7 @@
     "self": true
    },
    "default": "A.T.",
-   "pos": 346
+   "pos": 348
   },
   {
    "id": "index.span.18",
@@ -1977,7 +2015,7 @@
     "self": true
    },
    "default": "Health camp attendee",
-   "pos": 347
+   "pos": 349
   },
   {
    "id": "index.blockquote.4",
@@ -1991,7 +2029,7 @@
     "self": true
    },
    "default": "\"We planted 400 saplings on our street. A third of them are taller than me now.\"",
-   "pos": 349
+   "pos": 351
   },
   {
    "id": "index.b.11",
@@ -2005,7 +2043,7 @@
     "self": true
    },
    "default": "P.D.",
-   "pos": 354
+   "pos": 356
   },
   {
    "id": "index.span.19",
@@ -2019,7 +2057,7 @@
     "self": true
    },
    "default": "Environment program volunteer",
-   "pos": 355
+   "pos": 357
   },
   {
    "id": "index.h2.5",
@@ -2033,7 +2071,7 @@
     "self": true
    },
    "default": "Every rupee is tracked to a program, not a fundraiser.",
-   "pos": 359
+   "pos": 361
   },
   {
    "id": "index.a.9.href",
@@ -2048,7 +2086,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 361
+   "pos": 363
   },
   {
    "id": "index.a.9",
@@ -2066,7 +2104,7 @@
     "id": "index.a.9.href",
     "default": "donate.html"
    },
-   "pos": 361
+   "pos": 363
   },
   {
    "id": "index.a.10.href",
@@ -2081,7 +2119,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 362
+   "pos": 364
   },
   {
    "id": "index.a.10",
@@ -2099,7 +2137,7 @@
     "id": "index.a.10.href",
     "default": "volunteer.html"
    },
-   "pos": 362
+   "pos": 364
   },
   {
    "id": "index.dt.1",
@@ -2113,7 +2151,7 @@
     "self": true
    },
    "default": "Account name",
-   "pos": 365
+   "pos": 367
   },
   {
    "id": "index.dd.1",
@@ -2127,7 +2165,7 @@
     "self": true
    },
    "default": "True Kind Foundation",
-   "pos": 366
+   "pos": 368
   },
   {
    "id": "index.dt.2",
@@ -2141,7 +2179,7 @@
     "self": true
    },
    "default": "Account number",
-   "pos": 368
+   "pos": 370
   },
   {
    "id": "index.dd.2",
@@ -2155,7 +2193,7 @@
     "self": true
    },
    "default": "096402000000775",
-   "pos": 369
+   "pos": 371
   },
   {
    "id": "index.dt.3",
@@ -2169,7 +2207,7 @@
     "self": true
    },
    "default": "IFSC code",
-   "pos": 371
+   "pos": 373
   },
   {
    "id": "index.dd.3",
@@ -2183,7 +2221,7 @@
     "self": true
    },
    "default": "IOBA0000964",
-   "pos": 372
+   "pos": 374
   },
   {
    "id": "index.dt.4",
@@ -2197,7 +2235,7 @@
     "self": true
    },
    "default": "Bank & branch",
-   "pos": 374
+   "pos": 376
   },
   {
    "id": "index.dd.4",
@@ -2211,7 +2249,7 @@
     "self": true
    },
    "default": "Indian Overseas Bank, Nalanga (0964)",
-   "pos": 375
+   "pos": 377
   },
   {
    "id": "global.footer.img.1",
@@ -2228,7 +2266,7 @@
     "src": "assets/img/logo.png",
     "alt": "True Kind Foundation"
    },
-   "pos": 380
+   "pos": 382
   },
   {
    "id": "global.footer.p.1",
@@ -2242,7 +2280,7 @@
     "self": true
    },
    "default": "An India-based non-profit working on skilling, women's empowerment, digital education, health and environment programs.",
-   "pos": 381
+   "pos": 383
   },
   {
    "id": "global.footer.p.2",
@@ -2256,7 +2294,7 @@
     "self": true
    },
    "default": "Reg. No <b>40232603192</b><br>NGO Darpan ID <b>OR/2026/1126881</b><br>PAN <b>AAFTT5651D</b>",
-   "pos": 382
+   "pos": 384
   },
   {
    "id": "global.footer.h4.1",
@@ -2270,7 +2308,7 @@
     "self": true
    },
    "default": "Organisation",
-   "pos": 389
+   "pos": 391
   },
   {
    "id": "global.footer.a.1.href",
@@ -2285,7 +2323,7 @@
     "attr": "href"
    },
    "default": "about.html",
-   "pos": 392
+   "pos": 394
   },
   {
    "id": "global.footer.a.1",
@@ -2303,7 +2341,7 @@
     "id": "global.footer.a.1.href",
     "default": "about.html"
    },
-   "pos": 392
+   "pos": 394
   },
   {
    "id": "global.footer.a.2.href",
@@ -2318,7 +2356,7 @@
     "attr": "href"
    },
    "default": "chairperson-message.html",
-   "pos": 394
+   "pos": 396
   },
   {
    "id": "global.footer.a.2",
@@ -2336,7 +2374,7 @@
     "id": "global.footer.a.2.href",
     "default": "chairperson-message.html"
    },
-   "pos": 394
+   "pos": 396
   },
   {
    "id": "global.footer.a.3.href",
@@ -2351,7 +2389,7 @@
     "attr": "href"
    },
    "default": "impact.html",
-   "pos": 396
+   "pos": 398
   },
   {
    "id": "global.footer.a.3",
@@ -2369,7 +2407,7 @@
     "id": "global.footer.a.3.href",
     "default": "impact.html"
    },
-   "pos": 396
+   "pos": 398
   },
   {
    "id": "global.footer.a.4.href",
@@ -2384,7 +2422,7 @@
     "attr": "href"
    },
    "default": "press-release.html",
-   "pos": 398
+   "pos": 400
   },
   {
    "id": "global.footer.a.4",
@@ -2402,7 +2440,7 @@
     "id": "global.footer.a.4.href",
     "default": "press-release.html"
    },
-   "pos": 398
+   "pos": 400
   },
   {
    "id": "global.footer.h4.2",
@@ -2416,7 +2454,7 @@
     "self": true
    },
    "default": "Programs",
-   "pos": 400
+   "pos": 402
   },
   {
    "id": "global.footer.a.5.href",
@@ -2431,7 +2469,7 @@
     "attr": "href"
    },
    "default": "work.html#skilling",
-   "pos": 403
+   "pos": 405
   },
   {
    "id": "global.footer.a.5",
@@ -2449,7 +2487,7 @@
     "id": "global.footer.a.5.href",
     "default": "work.html#skilling"
    },
-   "pos": 403
+   "pos": 405
   },
   {
    "id": "global.footer.a.6.href",
@@ -2464,7 +2502,7 @@
     "attr": "href"
    },
    "default": "work.html#women",
-   "pos": 405
+   "pos": 407
   },
   {
    "id": "global.footer.a.6",
@@ -2482,7 +2520,7 @@
     "id": "global.footer.a.6.href",
     "default": "work.html#women"
    },
-   "pos": 405
+   "pos": 407
   },
   {
    "id": "global.footer.a.7.href",
@@ -2497,7 +2535,7 @@
     "attr": "href"
    },
    "default": "work.html#education",
-   "pos": 407
+   "pos": 409
   },
   {
    "id": "global.footer.a.7",
@@ -2515,7 +2553,7 @@
     "id": "global.footer.a.7.href",
     "default": "work.html#education"
    },
-   "pos": 407
+   "pos": 409
   },
   {
    "id": "global.footer.a.8.href",
@@ -2530,7 +2568,7 @@
     "attr": "href"
    },
    "default": "work.html#health",
-   "pos": 409
+   "pos": 411
   },
   {
    "id": "global.footer.a.8",
@@ -2548,7 +2586,7 @@
     "id": "global.footer.a.8.href",
     "default": "work.html#health"
    },
-   "pos": 409
+   "pos": 411
   },
   {
    "id": "global.footer.a.9.href",
@@ -2563,7 +2601,7 @@
     "attr": "href"
    },
    "default": "work.html#environment",
-   "pos": 411
+   "pos": 413
   },
   {
    "id": "global.footer.a.9",
@@ -2581,7 +2619,7 @@
     "id": "global.footer.a.9.href",
     "default": "work.html#environment"
    },
-   "pos": 411
+   "pos": 413
   },
   {
    "id": "global.footer.h4.3",
@@ -2595,7 +2633,7 @@
     "self": true
    },
    "default": "Get in touch",
-   "pos": 413
+   "pos": 415
   },
   {
    "id": "global.footer.a.10.href",
@@ -2610,7 +2648,7 @@
     "attr": "href"
    },
    "default": "mailto:info@truekindfoundation.org",
-   "pos": 416
+   "pos": 418
   },
   {
    "id": "global.footer.a.10",
@@ -2628,7 +2666,7 @@
     "id": "global.footer.a.10.href",
     "default": "mailto:info@truekindfoundation.org"
    },
-   "pos": 416
+   "pos": 418
   },
   {
    "id": "global.footer.a.11.href",
@@ -2643,7 +2681,7 @@
     "attr": "href"
    },
    "default": "tel:+917370067005",
-   "pos": 418
+   "pos": 420
   },
   {
    "id": "global.footer.a.11",
@@ -2661,7 +2699,7 @@
     "id": "global.footer.a.11.href",
     "default": "tel:+917370067005"
    },
-   "pos": 418
+   "pos": 420
   },
   {
    "id": "global.footer.li.1",
@@ -2675,7 +2713,7 @@
     "self": true
    },
    "default": "Plot No 221–245, NH-16, Gelpur,<br>Gopabandhupur, Bhadrak,<br>Odisha – 756181",
-   "pos": 419
+   "pos": 421
   },
   {
    "id": "global.footer.a.12.href",
@@ -2690,7 +2728,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 423
+   "pos": 425
   },
   {
    "id": "global.footer.a.12",
@@ -2708,7 +2746,7 @@
     "id": "global.footer.a.12.href",
     "default": "volunteer.html"
    },
-   "pos": 423
+   "pos": 425
   },
   {
    "id": "global.footer.a.13.href",
@@ -2723,7 +2761,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 425
+   "pos": 427
   },
   {
    "id": "global.footer.a.13",
@@ -2741,7 +2779,7 @@
     "id": "global.footer.a.13.href",
     "default": "donate.html"
    },
-   "pos": 425
+   "pos": 427
   },
   {
    "id": "global.footer.span.1",
@@ -2755,7 +2793,7 @@
     "self": true
    },
    "default": "© <span data-year=\"\">2026</span> True Kind Foundation. All rights reserved.",
-   "pos": 427
+   "pos": 429
   },
   {
    "id": "index.photo.skilling",
@@ -2773,7 +2811,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 241
+   "pos": 243
   },
   {
    "id": "index.photo.livelihoods",
@@ -2791,7 +2829,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 254
+   "pos": 256
   },
   {
    "id": "index.photo.education",
@@ -2809,7 +2847,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 267
+   "pos": 269
   },
   {
    "id": "index.photo.health",
@@ -2827,7 +2865,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 278
+   "pos": 280
   },
   {
    "id": "index.photo.environment",
@@ -2845,7 +2883,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 291
+   "pos": 293
   },
   {
    "id": "index.photo.voice1",
@@ -2863,7 +2901,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 328
+   "pos": 330
   },
   {
    "id": "index.photo.voice2",
@@ -2881,7 +2919,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 336
+   "pos": 338
   },
   {
    "id": "index.photo.voice3",
@@ -2899,7 +2937,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 344
+   "pos": 346
   },
   {
    "id": "index.photo.voice4",
@@ -2917,7 +2955,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 352
+   "pos": 354
   },
   {
    "id": "index.slide.1.image",
@@ -2935,7 +2973,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 64
+   "pos": 66
   },
   {
    "id": "index.slide.2.image",
@@ -2953,7 +2991,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 71
+   "pos": 73
   },
   {
    "id": "index.slide.3.image",
@@ -2971,7 +3009,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 78
+   "pos": 80
   },
   {
    "id": "index.slide.4.image",
@@ -2989,7 +3027,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "index.slide.5.image",
@@ -3007,7 +3045,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 92
+   "pos": 94
   },
   {
    "id": "index.slide.6.image",
@@ -3025,7 +3063,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "index.slide.7.image",
@@ -3043,7 +3081,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 106
+   "pos": 108
   },
   {
    "id": "index.slide.8.image",
@@ -3061,7 +3099,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 113
+   "pos": 115
   },
   {
    "id": "index.slide.9.image",
@@ -3079,7 +3117,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 120
+   "pos": 122
   },
   {
    "id": "index.slide.10.image",
@@ -3097,7 +3135,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 127
+   "pos": 129
   },
   {
    "id": "index.slide.1.title",
@@ -3112,7 +3150,7 @@
     "selector": "[data-cms-slide-title=\"1\"]"
    },
    "default": "",
-   "pos": 66
+   "pos": 68
   },
   {
    "id": "index.slide.1.caption",
@@ -3127,7 +3165,7 @@
     "selector": "[data-cms-slide-caption=\"1\"]"
    },
    "default": "",
-   "pos": 67
+   "pos": 69
   },
   {
    "id": "index.slide.1.cta",
@@ -3142,7 +3180,7 @@
     "selector": "[data-cms-slide-cta=\"1\"]"
    },
    "default": "",
-   "pos": 68
+   "pos": 70
   },
   {
    "id": "index.slide.1.ctaHref",
@@ -3158,7 +3196,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 68
+   "pos": 70
   },
   {
    "id": "index.slide.2.title",
@@ -3173,7 +3211,7 @@
     "selector": "[data-cms-slide-title=\"2\"]"
    },
    "default": "",
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "index.slide.2.caption",
@@ -3188,7 +3226,7 @@
     "selector": "[data-cms-slide-caption=\"2\"]"
    },
    "default": "",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "index.slide.2.cta",
@@ -3203,7 +3241,7 @@
     "selector": "[data-cms-slide-cta=\"2\"]"
    },
    "default": "",
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "index.slide.2.ctaHref",
@@ -3219,7 +3257,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "index.slide.3.title",
@@ -3234,7 +3272,7 @@
     "selector": "[data-cms-slide-title=\"3\"]"
    },
    "default": "",
-   "pos": 80
+   "pos": 82
   },
   {
    "id": "index.slide.3.caption",
@@ -3249,7 +3287,7 @@
     "selector": "[data-cms-slide-caption=\"3\"]"
    },
    "default": "",
-   "pos": 81
+   "pos": 83
   },
   {
    "id": "index.slide.3.cta",
@@ -3264,7 +3302,7 @@
     "selector": "[data-cms-slide-cta=\"3\"]"
    },
    "default": "",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "index.slide.3.ctaHref",
@@ -3280,7 +3318,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "index.slide.4.title",
@@ -3295,7 +3333,7 @@
     "selector": "[data-cms-slide-title=\"4\"]"
    },
    "default": "",
-   "pos": 87
+   "pos": 89
   },
   {
    "id": "index.slide.4.caption",
@@ -3310,7 +3348,7 @@
     "selector": "[data-cms-slide-caption=\"4\"]"
    },
    "default": "",
-   "pos": 88
+   "pos": 90
   },
   {
    "id": "index.slide.4.cta",
@@ -3325,7 +3363,7 @@
     "selector": "[data-cms-slide-cta=\"4\"]"
    },
    "default": "",
-   "pos": 89
+   "pos": 91
   },
   {
    "id": "index.slide.4.ctaHref",
@@ -3341,7 +3379,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 89
+   "pos": 91
   },
   {
    "id": "index.slide.5.title",
@@ -3356,7 +3394,7 @@
     "selector": "[data-cms-slide-title=\"5\"]"
    },
    "default": "",
-   "pos": 94
+   "pos": 96
   },
   {
    "id": "index.slide.5.caption",
@@ -3371,7 +3409,7 @@
     "selector": "[data-cms-slide-caption=\"5\"]"
    },
    "default": "",
-   "pos": 95
+   "pos": 97
   },
   {
    "id": "index.slide.5.cta",
@@ -3386,7 +3424,7 @@
     "selector": "[data-cms-slide-cta=\"5\"]"
    },
    "default": "",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "index.slide.5.ctaHref",
@@ -3402,7 +3440,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "index.slide.6.title",
@@ -3417,7 +3455,7 @@
     "selector": "[data-cms-slide-title=\"6\"]"
    },
    "default": "",
-   "pos": 101
+   "pos": 103
   },
   {
    "id": "index.slide.6.caption",
@@ -3432,7 +3470,7 @@
     "selector": "[data-cms-slide-caption=\"6\"]"
    },
    "default": "",
-   "pos": 102
+   "pos": 104
   },
   {
    "id": "index.slide.6.cta",
@@ -3447,7 +3485,7 @@
     "selector": "[data-cms-slide-cta=\"6\"]"
    },
    "default": "",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "index.slide.6.ctaHref",
@@ -3463,7 +3501,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "index.slide.7.title",
@@ -3478,7 +3516,7 @@
     "selector": "[data-cms-slide-title=\"7\"]"
    },
    "default": "",
-   "pos": 108
+   "pos": 110
   },
   {
    "id": "index.slide.7.caption",
@@ -3493,7 +3531,7 @@
     "selector": "[data-cms-slide-caption=\"7\"]"
    },
    "default": "",
-   "pos": 109
+   "pos": 111
   },
   {
    "id": "index.slide.7.cta",
@@ -3508,7 +3546,7 @@
     "selector": "[data-cms-slide-cta=\"7\"]"
    },
    "default": "",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "index.slide.7.ctaHref",
@@ -3524,7 +3562,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "index.slide.8.title",
@@ -3539,7 +3577,7 @@
     "selector": "[data-cms-slide-title=\"8\"]"
    },
    "default": "",
-   "pos": 115
+   "pos": 117
   },
   {
    "id": "index.slide.8.caption",
@@ -3554,7 +3592,7 @@
     "selector": "[data-cms-slide-caption=\"8\"]"
    },
    "default": "",
-   "pos": 116
+   "pos": 118
   },
   {
    "id": "index.slide.8.cta",
@@ -3569,7 +3607,7 @@
     "selector": "[data-cms-slide-cta=\"8\"]"
    },
    "default": "",
-   "pos": 117
+   "pos": 119
   },
   {
    "id": "index.slide.8.ctaHref",
@@ -3585,7 +3623,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 117
+   "pos": 119
   },
   {
    "id": "index.slide.9.title",
@@ -3600,7 +3638,7 @@
     "selector": "[data-cms-slide-title=\"9\"]"
    },
    "default": "",
-   "pos": 122
+   "pos": 124
   },
   {
    "id": "index.slide.9.caption",
@@ -3615,7 +3653,7 @@
     "selector": "[data-cms-slide-caption=\"9\"]"
    },
    "default": "",
-   "pos": 123
+   "pos": 125
   },
   {
    "id": "index.slide.9.cta",
@@ -3630,7 +3668,7 @@
     "selector": "[data-cms-slide-cta=\"9\"]"
    },
    "default": "",
-   "pos": 124
+   "pos": 126
   },
   {
    "id": "index.slide.9.ctaHref",
@@ -3646,7 +3684,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 124
+   "pos": 126
   },
   {
    "id": "index.slide.10.title",
@@ -3661,7 +3699,7 @@
     "selector": "[data-cms-slide-title=\"10\"]"
    },
    "default": "",
-   "pos": 129
+   "pos": 131
   },
   {
    "id": "index.slide.10.caption",
@@ -3676,7 +3714,7 @@
     "selector": "[data-cms-slide-caption=\"10\"]"
    },
    "default": "",
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "index.slide.10.cta",
@@ -3691,7 +3729,7 @@
     "selector": "[data-cms-slide-cta=\"10\"]"
    },
    "default": "",
-   "pos": 131
+   "pos": 133
   },
   {
    "id": "index.slide.10.ctaHref",
@@ -3707,7 +3745,7 @@
     "attr": "href"
    },
    "default": "",
-   "pos": 131
+   "pos": 133
   },
   {
    "id": "index.video.hero",
@@ -3729,7 +3767,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 136
+   "pos": 138
   },
   {
    "id": "about.meta.title",
@@ -3803,7 +3841,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / About Us",
-   "pos": 52
+   "pos": 54
   },
   {
    "id": "about.p.1",
@@ -3817,7 +3855,7 @@
     "self": true
    },
    "default": "About Us",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "about.h1.1",
@@ -3831,7 +3869,7 @@
     "self": true
    },
    "default": "Kindness, run like an institution.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "about.p.2",
@@ -3845,7 +3883,7 @@
     "self": true
    },
    "default": "Good intentions don't help anyone until somebody follows through on them. Here's who we are, why we started, and what we hold ourselves accountable for.",
-   "pos": 56
+   "pos": 58
   },
   {
    "id": "about.p.3",
@@ -3859,7 +3897,7 @@
     "self": true
    },
    "default": "Our story",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "about.h2.1",
@@ -3873,7 +3911,7 @@
     "self": true
    },
    "default": "Why we exist",
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "about.p.4",
@@ -3887,7 +3925,7 @@
     "self": true
    },
    "default": "True Kind Foundation began with a plain observation: most communities aren't short on people willing to help. They're short on organisations that convert that willingness into something still standing after the first visit.",
-   "pos": 77
+   "pos": 79
   },
   {
    "id": "about.p.5",
@@ -3901,7 +3939,7 @@
     "self": true
    },
    "default": "So we built ours around follow-through. A skilling batch isn't finished when the certificates are handed out — it's finished when we know whether the graduate found work. A health camp isn't a one-day event — it's the doorway into a community we intend to keep showing up for.",
-   "pos": 78
+   "pos": 80
   },
   {
    "id": "about.p.6",
@@ -3915,7 +3953,7 @@
     "self": true
    },
    "default": "We keep the program list short by design: skill development, women's empowerment, digital education, health & safety, and environmental sustainability. Five things done properly beat fifteen done at a glance.",
-   "pos": 79
+   "pos": 81
   },
   {
    "id": "about.h3.1",
@@ -3929,7 +3967,7 @@
     "self": true
    },
    "default": "Registered & accountable",
-   "pos": 90
+   "pos": 92
   },
   {
    "id": "about.dt.1",
@@ -3943,7 +3981,7 @@
     "self": true
    },
    "default": "Registration Number",
-   "pos": 93
+   "pos": 95
   },
   {
    "id": "about.dd.1",
@@ -3957,7 +3995,7 @@
     "self": true
    },
    "default": "40232603192",
-   "pos": 94
+   "pos": 96
   },
   {
    "id": "about.dt.2",
@@ -3971,7 +4009,7 @@
     "self": true
    },
    "default": "NGO Darpan ID",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "about.dd.2",
@@ -3985,7 +4023,7 @@
     "self": true
    },
    "default": "OR/2026/1126881",
-   "pos": 97
+   "pos": 99
   },
   {
    "id": "about.dt.3",
@@ -3999,7 +4037,7 @@
     "self": true
    },
    "default": "PAN",
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "about.dd.3",
@@ -4013,7 +4051,7 @@
     "self": true
    },
    "default": "AAFTT5651D",
-   "pos": 100
+   "pos": 102
   },
   {
    "id": "about.dt.4",
@@ -4027,7 +4065,7 @@
     "self": true
    },
    "default": "Registered Office",
-   "pos": 102
+   "pos": 104
   },
   {
    "id": "about.dd.4",
@@ -4041,7 +4079,7 @@
     "self": true
    },
    "default": "Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "about.p.8",
@@ -4055,7 +4093,7 @@
     "self": true
    },
    "default": "What guides us",
-   "pos": 108
+   "pos": 110
   },
   {
    "id": "about.h2.2",
@@ -4069,7 +4107,7 @@
     "self": true
    },
    "default": "Mission, vision & how we earn trust",
-   "pos": 109
+   "pos": 111
   },
   {
    "id": "about.h3.2",
@@ -4083,7 +4121,7 @@
     "self": true
    },
    "default": "Our Mission",
-   "pos": 116
+   "pos": 118
   },
   {
    "id": "about.p.9",
@@ -4097,7 +4135,7 @@
     "self": true
    },
    "default": "To turn everyday goodwill into structured, measurable programs that give underserved communities real access to skills, income, education, health and a cleaner environment — and to stay with each community long enough to see the results.",
-   "pos": 117
+   "pos": 119
   },
   {
    "id": "about.h3.3",
@@ -4111,7 +4149,7 @@
     "self": true
    },
    "default": "Our Vision",
-   "pos": 124
+   "pos": 126
   },
   {
    "id": "about.p.10",
@@ -4125,7 +4163,7 @@
     "self": true
    },
    "default": "A country where a postal code no longer decides whether someone gets a fair shot — where every young person has a usable skill, every woman has an income of her own, and every neighbourhood breathes cleaner air.",
-   "pos": 125
+   "pos": 127
   },
   {
    "id": "about.h3.4",
@@ -4139,7 +4177,7 @@
     "self": true
    },
    "default": "How We Earn Trust",
-   "pos": 131
+   "pos": 133
   },
   {
    "id": "about.p.11",
@@ -4153,7 +4191,7 @@
     "self": true
    },
    "default": "Every program has a named local partner, a public budget line and a review every six months. We publish what worked and what didn't — a funder who trusts our bad news will trust our good news too.",
-   "pos": 132
+   "pos": 134
   },
   {
    "id": "about.p.12",
@@ -4167,7 +4205,7 @@
     "self": true
    },
    "default": "Governance",
-   "pos": 137
+   "pos": 139
   },
   {
    "id": "about.h2.3",
@@ -4181,7 +4219,7 @@
     "self": true
    },
    "default": "Our Board",
-   "pos": 138
+   "pos": 140
   },
   {
    "id": "about.p.13",
@@ -4195,7 +4233,7 @@
     "self": true
    },
    "default": "The board sets strategy, approves budgets and reviews every program twice a year.",
-   "pos": 139
+   "pos": 141
   },
   {
    "id": "about.div.1",
@@ -4209,7 +4247,7 @@
     "self": true
    },
    "default": "CP",
-   "pos": 142
+   "pos": 144
   },
   {
    "id": "about.h3.5",
@@ -4223,7 +4261,7 @@
     "self": true
    },
    "default": "Chairperson",
-   "pos": 143
+   "pos": 145
   },
   {
    "id": "about.p.15",
@@ -4237,7 +4275,7 @@
     "self": true
    },
    "default": "Sets strategic direction and represents the Foundation publicly.",
-   "pos": 144
+   "pos": 146
   },
   {
    "id": "about.div.2",
@@ -4251,7 +4289,7 @@
     "self": true
    },
    "default": "VC",
-   "pos": 146
+   "pos": 148
   },
   {
    "id": "about.h3.6",
@@ -4265,7 +4303,7 @@
     "self": true
    },
    "default": "Vice Chairperson",
-   "pos": 147
+   "pos": 149
   },
   {
    "id": "about.p.17",
@@ -4279,7 +4317,7 @@
     "self": true
    },
    "default": "Supports governance and deputises for the Chairperson when needed.",
-   "pos": 148
+   "pos": 150
   },
   {
    "id": "about.div.3",
@@ -4293,7 +4331,7 @@
     "self": true
    },
    "default": "SE",
-   "pos": 150
+   "pos": 152
   },
   {
    "id": "about.h3.7",
@@ -4307,7 +4345,7 @@
     "self": true
    },
    "default": "Secretary",
-   "pos": 151
+   "pos": 153
   },
   {
    "id": "about.p.19",
@@ -4321,7 +4359,7 @@
     "self": true
    },
    "default": "Oversees compliance, board records and day-to-day organisational matters.",
-   "pos": 152
+   "pos": 154
   },
   {
    "id": "about.div.4",
@@ -4335,7 +4373,7 @@
     "self": true
    },
    "default": "TR",
-   "pos": 154
+   "pos": 156
   },
   {
    "id": "about.h3.8",
@@ -4349,7 +4387,7 @@
     "self": true
    },
    "default": "Treasurer",
-   "pos": 155
+   "pos": 157
   },
   {
    "id": "about.p.21",
@@ -4363,7 +4401,7 @@
     "self": true
    },
    "default": "Manages accounts, audits and financial reporting to the board.",
-   "pos": 156
+   "pos": 158
   },
   {
    "id": "about.p.23",
@@ -4377,7 +4415,7 @@
     "self": true
    },
    "default": "Leadership",
-   "pos": 159
+   "pos": 161
   },
   {
    "id": "about.h2.4",
@@ -4391,7 +4429,7 @@
     "self": true
    },
    "default": "Hear from our Chairperson",
-   "pos": 160
+   "pos": 162
   },
   {
    "id": "about.p.24",
@@ -4405,7 +4443,7 @@
     "self": true
    },
    "default": "A short note on why this organisation exists, and what we ask of the people who join us.",
-   "pos": 161
+   "pos": 163
   },
   {
    "id": "about.a.1.href",
@@ -4420,7 +4458,7 @@
     "attr": "href"
    },
    "default": "chairperson-message.html",
-   "pos": 162
+   "pos": 164
   },
   {
    "id": "about.a.1",
@@ -4438,7 +4476,7 @@
     "id": "about.a.1.href",
     "default": "chairperson-message.html"
    },
-   "pos": 162
+   "pos": 164
   },
   {
    "id": "about.photo.hero",
@@ -4456,7 +4494,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 70
+   "pos": 72
   },
   {
    "id": "about.photo.story",
@@ -4474,7 +4512,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 87
+   "pos": 89
   },
   {
    "id": "about.icon.mission",
@@ -4492,7 +4530,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 115
+   "pos": 117
   },
   {
    "id": "about.icon.vision",
@@ -4510,7 +4548,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 123
+   "pos": 125
   },
   {
    "id": "about.icon.trust",
@@ -4528,7 +4566,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "about.story.caption",
@@ -4543,7 +4581,7 @@
     "selector": "[data-cms-figcaption=\"about.story\"]"
    },
    "default": "",
-   "pos": 88
+   "pos": 90
   },
   {
    "id": "about.video.story",
@@ -4565,7 +4603,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 80
+   "pos": 82
   },
   {
    "id": "work.meta.title",
@@ -4639,7 +4677,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Our Work",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "work.p.1",
@@ -4653,7 +4691,7 @@
     "self": true
    },
    "default": "Our Work",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "work.h1.1",
@@ -4667,7 +4705,7 @@
     "self": true
    },
    "default": "Five programs, chosen for how they compound.",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "work.p.2",
@@ -4681,7 +4719,7 @@
     "self": true
    },
    "default": "A trained young person earns. An earning mother keeps her daughter in school. A school with a working computer lab produces the next trainee. We picked these five because each one makes the other four go further.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "work.span.1",
@@ -4695,7 +4733,7 @@
     "self": true
    },
    "default": "Skilling",
-   "pos": 62
+   "pos": 64
   },
   {
    "id": "work.h3.1",
@@ -4709,7 +4747,7 @@
     "self": true
    },
    "default": "Skill Development & Employment",
-   "pos": 71
+   "pos": 73
   },
   {
    "id": "work.p.3",
@@ -4723,7 +4761,7 @@
     "self": true
    },
    "default": "Trade and digital-service training designed around what employers within travelling distance are actually hiring for. Batches run year-round; placement support continues for six months after the certificate, because that's when most people quietly fall out of the system.",
-   "pos": 72
+   "pos": 74
   },
   {
    "id": "work.a.1.href",
@@ -4738,7 +4776,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "work.a.1",
@@ -4756,7 +4794,7 @@
     "id": "work.a.1.href",
     "default": "volunteer.html"
    },
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "work.span.2",
@@ -4770,7 +4808,7 @@
     "self": true
    },
    "default": "Livelihoods",
-   "pos": 76
+   "pos": 78
   },
   {
    "id": "work.h3.2",
@@ -4784,7 +4822,7 @@
     "self": true
    },
    "default": "Women's Empowerment",
-   "pos": 84
+   "pos": 86
   },
   {
    "id": "work.p.4",
@@ -4798,7 +4836,7 @@
     "self": true
    },
    "default": "Savings collectives, micro-enterprise training and the unglamorous part nobody funds — market linkages. Products only pay if there's a buyer, so we work on pricing, bulk supply and retailer introductions alongside the skills themselves.",
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "work.a.2.href",
@@ -4813,7 +4851,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 86
+   "pos": 88
   },
   {
    "id": "work.a.2",
@@ -4831,7 +4869,7 @@
     "id": "work.a.2.href",
     "default": "volunteer.html"
    },
-   "pos": 86
+   "pos": 88
   },
   {
    "id": "work.span.3",
@@ -4845,7 +4883,7 @@
     "self": true
    },
    "default": "Education",
-   "pos": 89
+   "pos": 91
   },
   {
    "id": "work.h3.3",
@@ -4859,7 +4897,7 @@
     "self": true
    },
    "default": "Digital Education Access",
-   "pos": 97
+   "pos": 99
   },
   {
    "id": "work.p.5",
@@ -4873,7 +4911,7 @@
     "self": true
    },
    "default": "Device-light computer and internet literacy labs run alongside government schools. Low hardware requirements on purpose — a lab that needs constant power and new machines is a lab that stops running by year two.",
-   "pos": 98
+   "pos": 100
   },
   {
    "id": "work.a.3.href",
@@ -4888,7 +4926,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "work.a.3",
@@ -4906,7 +4944,7 @@
     "id": "work.a.3.href",
     "default": "volunteer.html"
    },
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "work.span.4",
@@ -4920,7 +4958,7 @@
     "self": true
    },
    "default": "Health",
-   "pos": 102
+   "pos": 104
   },
   {
    "id": "work.h3.4",
@@ -4934,7 +4972,7 @@
     "self": true
    },
    "default": "Health & Safety Camps",
-   "pos": 108
+   "pos": 110
   },
   {
    "id": "work.p.6",
@@ -4948,7 +4986,7 @@
     "self": true
    },
    "default": "Preventive-care camps, workplace safety training and first-aid literacy for communities a long way from the nearest clinic. Screening catches the conditions that are cheap to manage early and ruinous to treat late.",
-   "pos": 109
+   "pos": 111
   },
   {
    "id": "work.a.4.href",
@@ -4963,7 +5001,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "work.a.4",
@@ -4981,7 +5019,7 @@
     "id": "work.a.4.href",
     "default": "volunteer.html"
    },
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "work.span.5",
@@ -4995,7 +5033,7 @@
     "self": true
    },
    "default": "Environment",
-   "pos": 113
+   "pos": 115
   },
   {
    "id": "work.h3.5",
@@ -5009,7 +5047,7 @@
     "self": true
    },
    "default": "Environmental Sustainability",
-   "pos": 121
+   "pos": 123
   },
   {
    "id": "work.p.7",
@@ -5023,7 +5061,7 @@
     "self": true
    },
    "default": "Neighbourhood tree-planting, plastic-reduction drives and environment education, co-run with residents. Saplings are counted at planting and again a year later — survival rate is the number that matters, not the number in the ground.",
-   "pos": 122
+   "pos": 124
   },
   {
    "id": "work.a.5.href",
@@ -5038,7 +5076,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 123
+   "pos": 125
   },
   {
    "id": "work.a.5",
@@ -5056,7 +5094,7 @@
     "id": "work.a.5.href",
     "default": "volunteer.html"
    },
-   "pos": 123
+   "pos": 125
   },
   {
    "id": "work.p.9",
@@ -5070,7 +5108,7 @@
     "self": true
    },
    "default": "Every program, same rules",
-   "pos": 128
+   "pos": 130
   },
   {
    "id": "work.h2.1",
@@ -5084,7 +5122,7 @@
     "self": true
    },
    "default": "What a True Kind program has to have",
-   "pos": 129
+   "pos": 131
   },
   {
    "id": "work.p.10",
@@ -5098,7 +5136,7 @@
     "self": true
    },
    "default": "If a proposal can't meet these four, we don't run it — however good the idea sounds.",
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "work.h3.6",
@@ -5112,7 +5150,7 @@
     "self": true
    },
    "default": "A named local partner",
-   "pos": 137
+   "pos": 139
   },
   {
    "id": "work.p.11",
@@ -5126,7 +5164,7 @@
     "self": true
    },
    "default": "Someone who lives there, is accountable for delivery, and can tell us when we're wrong.",
-   "pos": 138
+   "pos": 140
   },
   {
    "id": "work.h3.7",
@@ -5140,7 +5178,7 @@
     "self": true
    },
    "default": "A follow-up window",
-   "pos": 144
+   "pos": 146
   },
   {
    "id": "work.p.12",
@@ -5154,7 +5192,7 @@
     "self": true
    },
    "default": "A defined point months later when we go back and check what actually held.",
-   "pos": 145
+   "pos": 147
   },
   {
    "id": "work.h3.8",
@@ -5168,7 +5206,7 @@
     "self": true
    },
    "default": "A number we can be wrong about",
-   "pos": 151
+   "pos": 153
   },
   {
    "id": "work.p.13",
@@ -5182,7 +5220,7 @@
     "self": true
    },
    "default": "One measure, agreed at the start, that can come back worse than we hoped.",
-   "pos": 152
+   "pos": 154
   },
   {
    "id": "work.h3.9",
@@ -5196,7 +5234,7 @@
     "self": true
    },
    "default": "A public budget line",
-   "pos": 158
+   "pos": 160
   },
   {
    "id": "work.p.14",
@@ -5210,7 +5248,7 @@
     "self": true
    },
    "default": "What it costs, and what share of that reaches the community rather than the office.",
-   "pos": 159
+   "pos": 161
   },
   {
    "id": "work.h2.2",
@@ -5224,7 +5262,7 @@
     "self": true
    },
    "default": "Pick the program you want to back.",
-   "pos": 163
+   "pos": 165
   },
   {
    "id": "work.a.6.href",
@@ -5239,7 +5277,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 165
+   "pos": 167
   },
   {
    "id": "work.a.6",
@@ -5257,7 +5295,7 @@
     "id": "work.a.6.href",
     "default": "donate.html"
    },
-   "pos": 165
+   "pos": 167
   },
   {
    "id": "work.a.7.href",
@@ -5272,7 +5310,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 166
+   "pos": 168
   },
   {
    "id": "work.a.7",
@@ -5290,7 +5328,7 @@
     "id": "work.a.7.href",
     "default": "volunteer.html"
    },
-   "pos": 166
+   "pos": 168
   },
   {
    "id": "work.photo.skilling",
@@ -5308,7 +5346,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 69
+   "pos": 71
   },
   {
    "id": "work.photo.livelihoods",
@@ -5326,7 +5364,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "work.photo.education",
@@ -5344,7 +5382,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 95
+   "pos": 97
   },
   {
    "id": "work.photo.health",
@@ -5362,7 +5400,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 106
+   "pos": 108
   },
   {
    "id": "work.photo.environment",
@@ -5380,7 +5418,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 119
+   "pos": 121
   },
   {
    "id": "work.video.programmes",
@@ -5402,7 +5440,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "impact.meta.title",
@@ -5476,7 +5514,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Our Impact",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "impact.p.1",
@@ -5490,7 +5528,7 @@
     "self": true
    },
    "default": "Our Impact",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "impact.h1.1",
@@ -5504,7 +5542,7 @@
     "self": true
    },
    "default": "What the work has actually moved.",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "impact.p.2",
@@ -5518,7 +5556,7 @@
     "self": true
    },
    "default": "What we count, how we count it, and what the numbers do not tell you.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "impact.p.3",
@@ -5532,7 +5570,7 @@
     "self": true
    },
    "default": "By program",
-   "pos": 60
+   "pos": 62
   },
   {
    "id": "impact.h2.1",
@@ -5546,7 +5584,7 @@
     "self": true
    },
    "default": "Reach across our five programs",
-   "pos": 61
+   "pos": 63
   },
   {
    "id": "impact.b.5",
@@ -5560,7 +5598,7 @@
     "self": true
    },
    "default": "82",
-   "pos": 71
+   "pos": 73
   },
   {
    "id": "impact.span.8",
@@ -5574,7 +5612,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 72
+   "pos": 74
   },
   {
    "id": "impact.h3.1",
@@ -5588,7 +5626,7 @@
     "self": true
    },
    "default": "Program completion",
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "impact.p.4",
@@ -5602,7 +5640,7 @@
     "self": true
    },
    "default": "Trainees who finish, not just enrol.",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "impact.b.6",
@@ -5616,7 +5654,7 @@
     "self": true
    },
    "default": "68",
-   "pos": 83
+   "pos": 85
   },
   {
    "id": "impact.span.9",
@@ -5630,7 +5668,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 84
+   "pos": 86
   },
   {
    "id": "impact.h3.2",
@@ -5644,7 +5682,7 @@
     "self": true
    },
    "default": "Placed or self-employed",
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "impact.p.5",
@@ -5658,7 +5696,7 @@
     "self": true
    },
    "default": "Within six months of finishing.",
-   "pos": 86
+   "pos": 88
   },
   {
    "id": "impact.b.7",
@@ -5672,7 +5710,7 @@
     "self": true
    },
    "default": "74",
-   "pos": 95
+   "pos": 97
   },
   {
    "id": "impact.span.10",
@@ -5686,7 +5724,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "impact.h3.3",
@@ -5700,7 +5738,7 @@
     "self": true
    },
    "default": "Funds reaching programs",
-   "pos": 97
+   "pos": 99
   },
   {
    "id": "impact.p.6",
@@ -5714,7 +5752,7 @@
     "self": true
    },
    "default": "The rest covers admin, audit and reporting.",
-   "pos": 98
+   "pos": 100
   },
   {
    "id": "impact.b.8",
@@ -5728,7 +5766,7 @@
     "self": true
    },
    "default": "91",
-   "pos": 107
+   "pos": 109
   },
   {
    "id": "impact.span.11",
@@ -5742,7 +5780,7 @@
     "self": true
    },
    "default": "%",
-   "pos": 108
+   "pos": 110
   },
   {
    "id": "impact.h3.4",
@@ -5756,7 +5794,7 @@
     "self": true
    },
    "default": "Would recommend us",
-   "pos": 109
+   "pos": 111
   },
   {
    "id": "impact.p.7",
@@ -5770,7 +5808,7 @@
     "self": true
    },
    "default": "Annual survey of program participants.",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "impact.p.9",
@@ -5784,7 +5822,7 @@
     "self": true
    },
    "default": "Headline numbers",
-   "pos": 116
+   "pos": 118
   },
   {
    "id": "impact.h2.2",
@@ -5798,7 +5836,7 @@
     "self": true
    },
    "default": "Since we began tracking",
-   "pos": 117
+   "pos": 119
   },
   {
    "id": "impact.p.10",
@@ -5812,7 +5850,7 @@
     "self": true
    },
    "default": "Cumulative totals across all five programs, reviewed by the board every six months.",
-   "pos": 118
+   "pos": 120
   },
   {
    "id": "impact.b.1",
@@ -5826,7 +5864,7 @@
     "self": true
    },
    "default": "11,400+",
-   "pos": 121
+   "pos": 123
   },
   {
    "id": "impact.span.1",
@@ -5840,7 +5878,7 @@
     "self": true
    },
    "default": "People trained or placed",
-   "pos": 122
+   "pos": 124
   },
   {
    "id": "impact.b.2",
@@ -5854,7 +5892,7 @@
     "self": true
    },
    "default": "3,600+",
-   "pos": 124
+   "pos": 126
   },
   {
    "id": "impact.span.2",
@@ -5868,7 +5906,7 @@
     "self": true
    },
    "default": "Women in livelihood programs",
-   "pos": 125
+   "pos": 127
   },
   {
    "id": "impact.b.3",
@@ -5882,7 +5920,7 @@
     "self": true
    },
    "default": "62",
-   "pos": 127
+   "pos": 129
   },
   {
    "id": "impact.span.3",
@@ -5896,7 +5934,7 @@
     "self": true
    },
    "default": "Partner communities",
-   "pos": 128
+   "pos": 130
   },
   {
    "id": "impact.b.4",
@@ -5910,7 +5948,7 @@
     "self": true
    },
    "default": "9",
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "impact.span.4",
@@ -5924,7 +5962,7 @@
     "self": true
    },
    "default": "States of operation",
-   "pos": 131
+   "pos": 133
   },
   {
    "id": "impact.p.12",
@@ -5938,7 +5976,7 @@
     "self": true
    },
    "default": "Our footprint",
-   "pos": 136
+   "pos": 138
   },
   {
    "id": "impact.h2.3",
@@ -5952,7 +5990,7 @@
     "self": true
    },
    "default": "Where we work across India",
-   "pos": 137
+   "pos": 139
   },
   {
    "id": "impact.p.13",
@@ -5966,7 +6004,7 @@
     "self": true
    },
    "default": "An illustrative map, not a to-scale political boundary.",
-   "pos": 138
+   "pos": 140
   },
   {
    "id": "impact.p.15",
@@ -5980,7 +6018,7 @@
     "self": true
    },
    "default": "Registered & operating from",
-   "pos": 169
+   "pos": 171
   },
   {
    "id": "impact.h3.5",
@@ -5994,7 +6032,7 @@
     "self": true
    },
    "default": "Bhadrak, Odisha",
-   "pos": 170
+   "pos": 172
   },
   {
    "id": "impact.p.16",
@@ -6008,7 +6046,7 @@
     "self": true
    },
    "default": "Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181. Programs expand outward from here as partnerships grow.",
-   "pos": 171
+   "pos": 173
   },
   {
    "id": "impact.div.1",
@@ -6022,7 +6060,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> Odisha <span class=\"muted\">(registered office)</span>",
-   "pos": 173
+   "pos": 175
   },
   {
    "id": "impact.div.2",
@@ -6036,7 +6074,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> West Bengal*",
-   "pos": 176
+   "pos": 178
   },
   {
    "id": "impact.div.3",
@@ -6050,7 +6088,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> Jharkhand*",
-   "pos": 178
+   "pos": 180
   },
   {
    "id": "impact.div.4",
@@ -6064,7 +6102,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> Chhattisgarh*",
-   "pos": 180
+   "pos": 182
   },
   {
    "id": "impact.div.5",
@@ -6078,7 +6116,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> Andhra Pradesh*",
-   "pos": 182
+   "pos": 184
   },
   {
    "id": "impact.div.6",
@@ -6092,7 +6130,7 @@
     "self": true
    },
    "default": "<span class=\"fp-dot\"></span> Maharashtra*",
-   "pos": 184
+   "pos": 186
   },
   {
    "id": "impact.p.17",
@@ -6106,7 +6144,7 @@
     "self": true
    },
    "default": "Methodology",
-   "pos": 190
+   "pos": 192
   },
   {
    "id": "impact.h2.4",
@@ -6120,7 +6158,7 @@
     "self": true
    },
    "default": "How we measure this",
-   "pos": 191
+   "pos": 193
   },
   {
    "id": "impact.p.18",
@@ -6134,7 +6172,7 @@
     "self": true
    },
    "default": "A number is only useful if you can see how it was built.",
-   "pos": 192
+   "pos": 194
   },
   {
    "id": "impact.span.5",
@@ -6148,7 +6186,7 @@
     "self": true
    },
    "default": "Step one",
-   "pos": 195
+   "pos": 197
   },
   {
    "id": "impact.h3.6",
@@ -6162,7 +6200,7 @@
     "self": true
    },
    "default": "Tracked at intake and exit",
-   "pos": 196
+   "pos": 198
   },
   {
    "id": "impact.p.19",
@@ -6176,7 +6214,7 @@
     "self": true
    },
    "default": "Every participant is recorded when they join and followed up at defined milestones afterward — not counted once at the start and quietly forgotten.",
-   "pos": 197
+   "pos": 199
   },
   {
    "id": "impact.span.6",
@@ -6190,7 +6228,7 @@
     "self": true
    },
    "default": "Step two",
-   "pos": 199
+   "pos": 201
   },
   {
    "id": "impact.h3.7",
@@ -6204,7 +6242,7 @@
     "self": true
    },
    "default": "Reviewed twice a year",
-   "pos": 200
+   "pos": 202
   },
   {
    "id": "impact.p.20",
@@ -6218,7 +6256,7 @@
     "self": true
    },
    "default": "The board reviews program numbers every six months, including the ones that missed target. Those get discussed first, not last.",
-   "pos": 201
+   "pos": 203
   },
   {
    "id": "impact.span.7",
@@ -6232,7 +6270,7 @@
     "self": true
    },
    "default": "Step three",
-   "pos": 203
+   "pos": 205
   },
   {
    "id": "impact.h3.8",
@@ -6246,7 +6284,7 @@
     "self": true
    },
    "default": "Reported, not just tallied",
-   "pos": 204
+   "pos": 206
   },
   {
    "id": "impact.p.21",
@@ -6260,7 +6298,7 @@
     "self": true
    },
    "default": "Our annual report publishes the methodology behind each figure, so a funder can see how a number was built rather than taking it on faith.",
-   "pos": 205
+   "pos": 207
   },
   {
    "id": "impact.p.22",
@@ -6274,7 +6312,7 @@
     "self": true
    },
    "default": "Want the detail",
-   "pos": 208
+   "pos": 210
   },
   {
    "id": "impact.h2.5",
@@ -6288,7 +6326,7 @@
     "self": true
    },
    "default": "Request our latest impact report",
-   "pos": 209
+   "pos": 211
   },
   {
    "id": "impact.p.23",
@@ -6302,7 +6340,7 @@
     "self": true
    },
    "default": "We'll send the full report with methodology notes, program-by-program breakdowns and the audited financial summary.",
-   "pos": 210
+   "pos": 212
   },
   {
    "id": "impact.a.1.href",
@@ -6317,7 +6355,7 @@
     "attr": "href"
    },
    "default": "mailto:info@truekindfoundation.org?subject=Impact%20Report%20Request",
-   "pos": 211
+   "pos": 213
   },
   {
    "id": "impact.a.1",
@@ -6335,7 +6373,7 @@
     "id": "impact.a.1.href",
     "default": "mailto:info@truekindfoundation.org?subject=Impact%20Report%20Request"
    },
-   "pos": 211
+   "pos": 213
   },
   {
    "id": "impact.video.report",
@@ -6357,7 +6395,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 111
+   "pos": 113
   },
   {
    "id": "donate.meta.title",
@@ -6431,7 +6469,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Donate",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "donate.p.1",
@@ -6445,7 +6483,7 @@
     "self": true
    },
    "default": "Donate",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "donate.h1.1",
@@ -6459,7 +6497,7 @@
     "self": true
    },
    "default": "Every rupee is tracked to a program, not a fundraiser.",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "donate.p.2",
@@ -6473,7 +6511,7 @@
     "self": true
    },
    "default": "You can give once or set up a standing instruction. Either way, your contribution is assigned to a named program with a published budget line — and you can ask us at any time where it went.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "donate.a.5.href",
@@ -6488,7 +6526,7 @@
     "attr": "href"
    },
    "default": "/portal/donate",
-   "pos": 57
+   "pos": 59
   },
   {
    "id": "donate.a.5",
@@ -6506,7 +6544,7 @@
     "id": "donate.a.5.href",
     "default": "/portal/donate"
    },
-   "pos": 57
+   "pos": 59
   },
   {
    "id": "donate.a.1.href",
@@ -6521,7 +6559,7 @@
     "attr": "href"
    },
    "default": "#bank",
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "donate.a.1",
@@ -6539,7 +6577,7 @@
     "id": "donate.a.1.href",
     "default": "#bank"
    },
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "donate.a.2.href",
@@ -6554,7 +6592,7 @@
     "attr": "href"
    },
    "default": "impact.html",
-   "pos": 59
+   "pos": 61
   },
   {
    "id": "donate.a.2",
@@ -6572,7 +6610,7 @@
     "id": "donate.a.2.href",
     "default": "impact.html"
    },
-   "pos": 59
+   "pos": 61
   },
   {
    "id": "donate.p.3",
@@ -6586,7 +6624,7 @@
     "self": true
    },
    "default": "What it funds",
-   "pos": 64
+   "pos": 66
   },
   {
    "id": "donate.h2.1",
@@ -6600,7 +6638,7 @@
     "self": true
    },
    "default": "Where a contribution goes",
-   "pos": 65
+   "pos": 67
   },
   {
    "id": "donate.p.4",
@@ -6614,7 +6652,7 @@
     "self": true
    },
    "default": "Indicative costs based on how our programs are currently budgeted.",
-   "pos": 66
+   "pos": 68
   },
   {
    "id": "donate.span.1",
@@ -6628,7 +6666,7 @@
     "self": true
    },
    "default": "₹1,500",
-   "pos": 69
+   "pos": 71
   },
   {
    "id": "donate.h3.1",
@@ -6642,7 +6680,7 @@
     "self": true
    },
    "default": "One trainee, one month",
-   "pos": 70
+   "pos": 72
   },
   {
    "id": "donate.p.5",
@@ -6656,7 +6694,7 @@
     "self": true
    },
    "default": "Covers a month of trade or digital-skills training for one participant, including materials and the trainer's time.",
-   "pos": 71
+   "pos": 73
   },
   {
    "id": "donate.a.6.href",
@@ -6671,7 +6709,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=1500&category=Skill%20Development",
-   "pos": 72
+   "pos": 74
   },
   {
    "id": "donate.a.6",
@@ -6689,7 +6727,7 @@
     "id": "donate.a.6.href",
     "default": "/portal/donate?amount=1500&category=Skill%20Development"
    },
-   "pos": 72
+   "pos": 74
   },
   {
    "id": "donate.span.2",
@@ -6703,7 +6741,7 @@
     "self": true
    },
    "default": "₹6,000",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "donate.h3.2",
@@ -6717,7 +6755,7 @@
     "self": true
    },
    "default": "A community health camp",
-   "pos": 75
+   "pos": 77
   },
   {
    "id": "donate.p.6",
@@ -6731,7 +6769,7 @@
     "self": true
    },
    "default": "Funds a single-day preventive-care camp — screening, basic medicines and a follow-up list for the cases that need one.",
-   "pos": 76
+   "pos": 78
   },
   {
    "id": "donate.a.7.href",
@@ -6746,7 +6784,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety",
-   "pos": 77
+   "pos": 79
   },
   {
    "id": "donate.a.7",
@@ -6764,7 +6802,7 @@
     "id": "donate.a.7.href",
     "default": "/portal/donate?amount=6000&category=Health%20%26%20Safety"
    },
-   "pos": 77
+   "pos": 79
   },
   {
    "id": "donate.span.3",
@@ -6778,7 +6816,7 @@
     "self": true
    },
    "default": "₹25,000",
-   "pos": 79
+   "pos": 81
   },
   {
    "id": "donate.h3.3",
@@ -6792,7 +6830,7 @@
     "self": true
    },
    "default": "A women's collective, start to trading",
-   "pos": 80
+   "pos": 82
   },
   {
    "id": "donate.p.7",
@@ -6806,7 +6844,7 @@
     "self": true
    },
    "default": "Seed support for one savings-and-enterprise collective: training, initial materials and the market introductions that make it stick.",
-   "pos": 81
+   "pos": 83
   },
   {
    "id": "donate.a.8.href",
@@ -6821,7 +6859,7 @@
     "attr": "href"
    },
    "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "donate.a.8",
@@ -6839,7 +6877,7 @@
     "id": "donate.a.8.href",
     "default": "/portal/donate?amount=25000&category=Women%27s%20Empowerment"
    },
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "donate.p.9",
@@ -6853,7 +6891,7 @@
     "self": true
    },
    "default": "Direct transfer",
-   "pos": 88
+   "pos": 90
   },
   {
    "id": "donate.h2.2",
@@ -6867,7 +6905,7 @@
     "self": true
    },
    "default": "Bank account details",
-   "pos": 89
+   "pos": 91
   },
   {
    "id": "donate.p.10",
@@ -6881,7 +6919,7 @@
     "self": true
    },
    "default": "NEFT, IMPS, UPI-to-account or a standing instruction from your bank all work.",
-   "pos": 90
+   "pos": 92
   },
   {
    "id": "donate.dt.1",
@@ -6895,7 +6933,7 @@
     "self": true
    },
    "default": "Account name",
-   "pos": 93
+   "pos": 95
   },
   {
    "id": "donate.dd.1",
@@ -6909,7 +6947,7 @@
     "self": true
    },
    "default": "True Kind Foundation",
-   "pos": 94
+   "pos": 96
   },
   {
    "id": "donate.dt.2",
@@ -6923,7 +6961,7 @@
     "self": true
    },
    "default": "Account number",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "donate.dd.2",
@@ -6937,7 +6975,7 @@
     "self": true
    },
    "default": "096402000000775",
-   "pos": 97
+   "pos": 99
   },
   {
    "id": "donate.dt.3",
@@ -6951,7 +6989,7 @@
     "self": true
    },
    "default": "IFSC code",
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "donate.dd.3",
@@ -6965,7 +7003,7 @@
     "self": true
    },
    "default": "IOBA0000964",
-   "pos": 100
+   "pos": 102
   },
   {
    "id": "donate.dt.4",
@@ -6979,7 +7017,7 @@
     "self": true
    },
    "default": "Bank & branch",
-   "pos": 102
+   "pos": 104
   },
   {
    "id": "donate.dd.4",
@@ -6993,7 +7031,7 @@
     "self": true
    },
    "default": "Indian Overseas Bank, Nalanga Branch (0964)",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "donate.p.11",
@@ -7007,7 +7045,7 @@
     "self": true
    },
    "default": "After transferring, email <a href=\"mailto:info@truekindfoundation.org?subject=Donation%20made\">info@truekindfoundation.org</a> with the reference number and the program you'd like it assigned to. We'll confirm receipt and send a receipt for your records.",
-   "pos": 104
+   "pos": 106
   },
   {
    "id": "donate.p.13",
@@ -7021,7 +7059,7 @@
     "self": true
    },
    "default": "Other ways to give",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "donate.h2.3",
@@ -7035,7 +7073,7 @@
     "self": true
    },
    "default": "Not everything useful arrives as money",
-   "pos": 111
+   "pos": 113
   },
   {
    "id": "donate.h3.4",
@@ -7049,7 +7087,7 @@
     "self": true
    },
    "default": "Corporate & CSR partnerships",
-   "pos": 118
+   "pos": 120
   },
   {
    "id": "donate.p.14",
@@ -7063,7 +7101,7 @@
     "self": true
    },
    "default": "Fund a full program cycle, sponsor a skilling centre, or bring your team out for a field day. We'll write the proposal and report against it.",
-   "pos": 119
+   "pos": 121
   },
   {
    "id": "donate.h3.5",
@@ -7077,7 +7115,7 @@
     "self": true
    },
    "default": "Equipment & in-kind",
-   "pos": 125
+   "pos": 127
   },
   {
    "id": "donate.p.15",
@@ -7091,7 +7129,7 @@
     "self": true
    },
    "default": "Working laptops, sewing machines, teaching materials, medical supplies. Tell us what you have and we'll tell you honestly whether we can use it.",
-   "pos": 126
+   "pos": 128
   },
   {
    "id": "donate.h3.6",
@@ -7105,7 +7143,7 @@
     "self": true
    },
    "default": "Your time",
-   "pos": 133
+   "pos": 135
   },
   {
    "id": "donate.p.16",
@@ -7119,7 +7157,7 @@
     "self": true
    },
    "default": "A skilled volunteer who shows up every month is worth more to a program than most one-off cheques. <a href=\"volunteer.html\" class=\"textlink\">Sign up here</a>.",
-   "pos": 134
+   "pos": 136
   },
   {
    "id": "donate.p.17",
@@ -7133,7 +7171,7 @@
     "self": true
    },
    "default": "Before you give",
-   "pos": 140
+   "pos": 142
   },
   {
    "id": "donate.h2.4",
@@ -7147,7 +7185,7 @@
     "self": true
    },
    "default": "What we'll tell you, unprompted",
-   "pos": 141
+   "pos": 143
   },
   {
    "id": "donate.p.18",
@@ -7161,7 +7199,7 @@
     "self": true
    },
    "default": "Transparency isn't a page on a website. It's what we send you afterwards.",
-   "pos": 142
+   "pos": 144
   },
   {
    "id": "donate.span.4",
@@ -7175,7 +7213,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 145
+   "pos": 147
   },
   {
    "id": "donate.h3.7",
@@ -7189,7 +7227,7 @@
     "self": true
    },
    "default": "Which program it went to",
-   "pos": 146
+   "pos": 148
   },
   {
    "id": "donate.p.19",
@@ -7203,7 +7241,7 @@
     "self": true
    },
    "default": "Contributions are assigned to a named program, not a general pool, unless you specifically ask us to allocate it where it's most needed.",
-   "pos": 147
+   "pos": 149
   },
   {
    "id": "donate.span.5",
@@ -7217,7 +7255,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 149
+   "pos": 151
   },
   {
    "id": "donate.h3.8",
@@ -7231,7 +7269,7 @@
     "self": true
    },
    "default": "What share reached the field",
-   "pos": 150
+   "pos": 152
   },
   {
    "id": "donate.p.20",
@@ -7245,7 +7283,7 @@
     "self": true
    },
    "default": "We publish the split between program spend and admin, audit and reporting — and we don't quietly reclassify overheads to make it look better.",
-   "pos": 151
+   "pos": 153
   },
   {
    "id": "donate.span.6",
@@ -7259,7 +7297,7 @@
     "self": true
    },
    "default": "We'll tell you",
-   "pos": 153
+   "pos": 155
   },
   {
    "id": "donate.h3.9",
@@ -7273,7 +7311,7 @@
     "self": true
    },
    "default": "What didn't work",
-   "pos": 154
+   "pos": 156
   },
   {
    "id": "donate.p.21",
@@ -7287,7 +7325,7 @@
     "self": true
    },
    "default": "If the program you funded underperformed, that appears in the report too. You'll hear it from us before you hear it anywhere else.",
-   "pos": 155
+   "pos": 157
   },
   {
    "id": "donate.h2.5",
@@ -7301,7 +7339,7 @@
     "self": true
    },
    "default": "Questions before you give? Ask them.",
-   "pos": 159
+   "pos": 161
   },
   {
    "id": "donate.a.3.href",
@@ -7316,7 +7354,7 @@
     "attr": "href"
    },
    "default": "contact.html",
-   "pos": 161
+   "pos": 163
   },
   {
    "id": "donate.a.3",
@@ -7334,7 +7372,7 @@
     "id": "donate.a.3.href",
     "default": "contact.html"
    },
-   "pos": 161
+   "pos": 163
   },
   {
    "id": "donate.a.4.href",
@@ -7349,7 +7387,7 @@
     "attr": "href"
    },
    "default": "tel:+917370067005",
-   "pos": 162
+   "pos": 164
   },
   {
    "id": "donate.a.4",
@@ -7367,7 +7405,7 @@
     "id": "donate.a.4.href",
     "default": "tel:+917370067005"
    },
-   "pos": 162
+   "pos": 164
   },
   {
    "id": "donate.video.appeal",
@@ -7389,7 +7427,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 83
+   "pos": 85
   },
   {
    "id": "volunteer.meta.title",
@@ -7463,7 +7501,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Get Involved",
-   "pos": 52
+   "pos": 54
   },
   {
    "id": "volunteer.p.1",
@@ -7477,7 +7515,7 @@
     "self": true
    },
    "default": "Be a Volunteer",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "volunteer.h1.1",
@@ -7491,7 +7529,7 @@
     "self": true
    },
    "default": "Join the people doing the work.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "volunteer.p.2",
@@ -7505,7 +7543,7 @@
     "self": true
    },
    "default": "Two hours on a weekend or a whole batch you run yourself — there's a place for both. We take individuals, students and organisation teams. No experience required; follow-through is the only prerequisite.",
-   "pos": 56
+   "pos": 58
   },
   {
    "id": "volunteer.a.1.href",
@@ -7520,7 +7558,7 @@
     "attr": "href"
    },
    "default": "#register",
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "volunteer.a.1",
@@ -7538,7 +7576,7 @@
     "id": "volunteer.a.1.href",
     "default": "#register"
    },
-   "pos": 58
+   "pos": 60
   },
   {
    "id": "volunteer.a.2.href",
@@ -7553,7 +7591,7 @@
     "attr": "href"
    },
    "default": "/portal/signin",
-   "pos": 59
+   "pos": 61
   },
   {
    "id": "volunteer.a.2",
@@ -7571,7 +7609,7 @@
     "id": "volunteer.a.2.href",
     "default": "/portal/signin"
    },
-   "pos": 59
+   "pos": 61
   },
   {
    "id": "volunteer.h3.1",
@@ -7585,7 +7623,7 @@
     "self": true
    },
    "default": "For individuals",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "volunteer.p.3",
@@ -7599,7 +7637,7 @@
     "self": true
    },
    "default": "Help run skilling batches, health camps or tree-plantation drives — or take on admin and event support if that's more your speed. Pick what matches your time and skills.",
-   "pos": 83
+   "pos": 85
   },
   {
    "id": "volunteer.h3.2",
@@ -7613,7 +7651,7 @@
     "self": true
    },
    "default": "For students",
-   "pos": 89
+   "pos": 91
   },
   {
    "id": "volunteer.p.4",
@@ -7627,7 +7665,7 @@
     "self": true
    },
    "default": "Log volunteering hours, build real field experience, and receive a certificate of participation for internship and college applications.",
-   "pos": 90
+   "pos": 92
   },
   {
    "id": "volunteer.h3.3",
@@ -7641,7 +7679,7 @@
     "self": true
    },
    "default": "For organisations",
-   "pos": 95
+   "pos": 97
   },
   {
    "id": "volunteer.p.5",
@@ -7655,7 +7693,7 @@
     "self": true
    },
    "default": "Bring a team for a CSR day, or partner with us on an ongoing program. Tell us your scale and timeline and we'll put together a proposal.",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "volunteer.p.6",
@@ -7669,7 +7707,7 @@
     "self": true
    },
    "default": "Sign up",
-   "pos": 98
+   "pos": 100
   },
   {
    "id": "volunteer.h2.1",
@@ -7683,7 +7721,7 @@
     "self": true
    },
    "default": "Volunteer registration",
-   "pos": 99
+   "pos": 101
   },
   {
    "id": "volunteer.label.1",
@@ -7697,7 +7735,7 @@
     "self": true
    },
    "default": "Full name <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "volunteer.label.2",
@@ -7711,7 +7749,7 @@
     "self": true
    },
    "default": "Email <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 108
+   "pos": 110
   },
   {
    "id": "volunteer.label.3",
@@ -7725,7 +7763,7 @@
     "self": true
    },
    "default": "Phone number <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 113
+   "pos": 115
   },
   {
    "id": "volunteer.label.4",
@@ -7739,7 +7777,7 @@
     "self": true
    },
    "default": "City",
-   "pos": 118
+   "pos": 120
   },
   {
    "id": "volunteer.label.5",
@@ -7753,7 +7791,7 @@
     "self": true
    },
    "default": "I am a <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 122
+   "pos": 124
   },
   {
    "id": "volunteer.option.1",
@@ -7767,7 +7805,7 @@
     "self": true
    },
    "default": "Select one",
-   "pos": 125
+   "pos": 127
   },
   {
    "id": "volunteer.option.2",
@@ -7781,7 +7819,7 @@
     "self": true
    },
    "default": "Student",
-   "pos": 126
+   "pos": 128
   },
   {
    "id": "volunteer.option.3",
@@ -7795,7 +7833,7 @@
     "self": true
    },
    "default": "Working professional",
-   "pos": 127
+   "pos": 129
   },
   {
    "id": "volunteer.option.4",
@@ -7809,7 +7847,7 @@
     "self": true
    },
    "default": "Retired / independent",
-   "pos": 128
+   "pos": 130
   },
   {
    "id": "volunteer.option.5",
@@ -7823,7 +7861,7 @@
     "self": true
    },
    "default": "Representing an organisation",
-   "pos": 129
+   "pos": 131
   },
   {
    "id": "volunteer.option.6",
@@ -7837,7 +7875,7 @@
     "self": true
    },
    "default": "Other",
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "volunteer.label.6",
@@ -7851,7 +7889,7 @@
     "self": true
    },
    "default": "Availability",
-   "pos": 133
+   "pos": 135
   },
   {
    "id": "volunteer.option.7",
@@ -7865,7 +7903,7 @@
     "self": true
    },
    "default": "Select one",
-   "pos": 135
+   "pos": 137
   },
   {
    "id": "volunteer.option.8",
@@ -7879,7 +7917,7 @@
     "self": true
    },
    "default": "Weekends only",
-   "pos": 136
+   "pos": 138
   },
   {
    "id": "volunteer.option.9",
@@ -7893,7 +7931,7 @@
     "self": true
    },
    "default": "Weekdays",
-   "pos": 137
+   "pos": 139
   },
   {
    "id": "volunteer.option.10",
@@ -7907,7 +7945,7 @@
     "self": true
    },
    "default": "Flexible / as needed",
-   "pos": 138
+   "pos": 140
   },
   {
    "id": "volunteer.option.11",
@@ -7921,7 +7959,7 @@
     "self": true
    },
    "default": "One-time event",
-   "pos": 139
+   "pos": 141
   },
   {
    "id": "volunteer.legend.1",
@@ -7935,7 +7973,7 @@
     "self": true
    },
    "default": "Areas you'd like to help with",
-   "pos": 142
+   "pos": 144
   },
   {
    "id": "volunteer.label.7",
@@ -7949,7 +7987,7 @@
     "self": true
    },
    "default": "Anything you'd like us to know",
-   "pos": 157
+   "pos": 159
   },
   {
    "id": "volunteer.label.8",
@@ -7963,7 +8001,7 @@
     "self": true
    },
    "default": "Leave this empty",
-   "pos": 161
+   "pos": 163
   },
   {
    "id": "volunteer.button.1",
@@ -7977,7 +8015,7 @@
     "self": true
    },
    "default": "<span class=\"spinner\" aria-hidden=\"true\"></span>Submit application",
-   "pos": 164
+   "pos": 166
   },
   {
    "id": "volunteer.span.1",
@@ -7991,7 +8029,7 @@
     "self": true
    },
    "default": "We reply to every application, usually within a few working days.",
-   "pos": 166
+   "pos": 168
   },
   {
    "id": "volunteer.photo.hero",
@@ -8009,7 +8047,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 73
+   "pos": 75
   },
   {
    "id": "volunteer.video.invite",
@@ -8031,7 +8069,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "contact.meta.title",
@@ -8105,7 +8143,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Contact Us",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "contact.p.1",
@@ -8119,7 +8157,7 @@
     "self": true
    },
    "default": "Contact Us",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "contact.h1.1",
@@ -8133,7 +8171,7 @@
     "self": true
    },
    "default": "Talk to us.",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "contact.p.2",
@@ -8147,7 +8185,7 @@
     "self": true
    },
    "default": "A question about a program, a partnership proposal, or a donation you want tracked — write in, call, or use the form below.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "contact.p.3",
@@ -8161,7 +8199,7 @@
     "self": true
    },
    "default": "Send a message",
-   "pos": 59
+   "pos": 61
   },
   {
    "id": "contact.h2.1",
@@ -8175,7 +8213,7 @@
     "self": true
    },
    "default": "We usually reply within a few working days",
-   "pos": 60
+   "pos": 62
   },
   {
    "id": "contact.label.1",
@@ -8189,7 +8227,7 @@
     "self": true
    },
    "default": "Full name <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 64
+   "pos": 66
   },
   {
    "id": "contact.label.2",
@@ -8203,7 +8241,7 @@
     "self": true
    },
    "default": "Email <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 69
+   "pos": 71
   },
   {
    "id": "contact.label.3",
@@ -8217,7 +8255,7 @@
     "self": true
    },
    "default": "Subject",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "contact.label.4",
@@ -8231,7 +8269,7 @@
     "self": true
    },
    "default": "Message <span class=\"req\" aria-hidden=\"true\">*</span>",
-   "pos": 78
+   "pos": 80
   },
   {
    "id": "contact.label.5",
@@ -8245,7 +8283,7 @@
     "self": true
    },
    "default": "Leave this empty",
-   "pos": 83
+   "pos": 85
   },
   {
    "id": "contact.button.1",
@@ -8259,7 +8297,7 @@
     "self": true
    },
    "default": "<span class=\"spinner\" aria-hidden=\"true\"></span>Send message",
-   "pos": 86
+   "pos": 88
   },
   {
    "id": "contact.h3.1",
@@ -8273,7 +8311,7 @@
     "self": true
    },
    "default": "Reach us directly",
-   "pos": 91
+   "pos": 93
   },
   {
    "id": "contact.div.1",
@@ -8287,7 +8325,7 @@
     "self": true
    },
    "default": "<b>Registered office</b>Plot No 221–245, NH-16, Gelpur, Gopabandhupur, Bhadrak, Odisha – 756181",
-   "pos": 96
+   "pos": 98
   },
   {
    "id": "contact.b.1",
@@ -8301,7 +8339,7 @@
     "self": true
    },
    "default": "Phone",
-   "pos": 102
+   "pos": 104
   },
   {
    "id": "contact.a.1.href",
@@ -8316,7 +8354,7 @@
     "attr": "href"
    },
    "default": "tel:+917370067005",
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "contact.a.1",
@@ -8334,7 +8372,7 @@
     "id": "contact.a.1.href",
     "default": "tel:+917370067005"
    },
-   "pos": 103
+   "pos": 105
   },
   {
    "id": "contact.b.2",
@@ -8348,7 +8386,7 @@
     "self": true
    },
    "default": "Email",
-   "pos": 109
+   "pos": 111
   },
   {
    "id": "contact.a.2.href",
@@ -8363,7 +8401,7 @@
     "attr": "href"
    },
    "default": "mailto:info@truekindfoundation.org",
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "contact.a.2",
@@ -8381,7 +8419,7 @@
     "id": "contact.a.2.href",
     "default": "mailto:info@truekindfoundation.org"
    },
-   "pos": 110
+   "pos": 112
   },
   {
    "id": "contact.div.2",
@@ -8395,7 +8433,7 @@
     "self": true
    },
    "default": "<b>Office hours</b>Mon–Sat, 10 AM – 6 PM",
-   "pos": 115
+   "pos": 117
   },
   {
    "id": "contact.a.3.href",
@@ -8410,7 +8448,7 @@
     "attr": "href"
    },
    "default": "https://www.google.com/maps/search/?api=1&query=Plot+No+221-245+NH-16+Gelpur+Gopabandhupur+Bhadrak+Odisha+756181",
-   "pos": 118
+   "pos": 120
   },
   {
    "id": "contact.a.3",
@@ -8428,7 +8466,7 @@
     "id": "contact.a.3.href",
     "default": "https://www.google.com/maps/search/?api=1&query=Plot+No+221-245+NH-16+Gelpur+Gopabandhupur+Bhadrak+Odisha+756181"
    },
-   "pos": 118
+   "pos": 120
   },
   {
    "id": "contact.dt.1",
@@ -8442,7 +8480,7 @@
     "self": true
    },
    "default": "Account name",
-   "pos": 121
+   "pos": 123
   },
   {
    "id": "contact.dd.1",
@@ -8456,7 +8494,7 @@
     "self": true
    },
    "default": "True Kind Foundation",
-   "pos": 122
+   "pos": 124
   },
   {
    "id": "contact.dt.2",
@@ -8470,7 +8508,7 @@
     "self": true
    },
    "default": "Account number",
-   "pos": 124
+   "pos": 126
   },
   {
    "id": "contact.dd.2",
@@ -8484,7 +8522,7 @@
     "self": true
    },
    "default": "096402000000775",
-   "pos": 125
+   "pos": 127
   },
   {
    "id": "contact.dt.3",
@@ -8498,7 +8536,7 @@
     "self": true
    },
    "default": "IFSC code",
-   "pos": 127
+   "pos": 129
   },
   {
    "id": "contact.dd.3",
@@ -8512,7 +8550,7 @@
     "self": true
    },
    "default": "IOBA0000964",
-   "pos": 128
+   "pos": 130
   },
   {
    "id": "contact.dt.4",
@@ -8526,7 +8564,7 @@
     "self": true
    },
    "default": "Bank & branch",
-   "pos": 130
+   "pos": 132
   },
   {
    "id": "contact.dd.4",
@@ -8540,7 +8578,7 @@
     "self": true
    },
    "default": "Indian Overseas Bank, Nalanga (0964)",
-   "pos": 131
+   "pos": 133
   },
   {
    "id": "contact.p.4",
@@ -8554,7 +8592,7 @@
     "self": true
    },
    "default": "Donating by transfer? See the <a href=\"donate.html\" class=\"textlink\">donate page</a> for what each amount funds and how to get a receipt.",
-   "pos": 132
+   "pos": 134
   },
   {
    "id": "press-release.meta.title",
@@ -8628,7 +8666,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / Press &amp; Media",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "press-release.p.1",
@@ -8642,7 +8680,7 @@
     "self": true
    },
    "default": "Press & Media",
-   "pos": 53
+   "pos": 55
   },
   {
    "id": "press-release.h1.1",
@@ -8656,7 +8694,7 @@
     "self": true
    },
    "default": "News & coverage.",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "press-release.p.2",
@@ -8670,7 +8708,7 @@
     "self": true
    },
    "default": "Where our work has been covered, and the updates we've published ourselves. The three entries below show the layout — they're waiting on your real coverage.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "press-release.p.3",
@@ -8684,7 +8722,7 @@
     "self": true
    },
    "default": "Coverage and releases will be listed here as they happen.",
-   "pos": 60
+   "pos": 62
   },
   {
    "id": "press-release.p.7",
@@ -8698,7 +8736,7 @@
     "self": true
    },
    "default": "For journalists",
-   "pos": 65
+   "pos": 67
   },
   {
    "id": "press-release.h2.1",
@@ -8712,7 +8750,7 @@
     "self": true
    },
    "default": "Media enquiries",
-   "pos": 66
+   "pos": 68
   },
   {
    "id": "press-release.p.8",
@@ -8726,7 +8764,7 @@
     "self": true
    },
    "default": "We can usually turn around a comment, a figure or a site visit within a couple of working days.",
-   "pos": 67
+   "pos": 69
   },
   {
    "id": "press-release.h3.4",
@@ -8740,7 +8778,7 @@
     "self": true
    },
    "default": "Press contact",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "press-release.a.4.href",
@@ -8755,7 +8793,7 @@
     "attr": "href"
    },
    "default": "mailto:info@truekindfoundation.org?subject=Media%20enquiry",
-   "pos": 76
+   "pos": 78
   },
   {
    "id": "press-release.a.4",
@@ -8773,7 +8811,7 @@
     "id": "press-release.a.4.href",
     "default": "mailto:info@truekindfoundation.org?subject=Media%20enquiry"
    },
-   "pos": 76
+   "pos": 78
   },
   {
    "id": "press-release.a.5.href",
@@ -8788,7 +8826,7 @@
     "attr": "href"
    },
    "default": "tel:+917370067005",
-   "pos": 78
+   "pos": 80
   },
   {
    "id": "press-release.a.5",
@@ -8806,7 +8844,7 @@
     "id": "press-release.a.5.href",
     "default": "tel:+917370067005"
    },
-   "pos": 78
+   "pos": 80
   },
   {
    "id": "press-release.h3.5",
@@ -8820,7 +8858,7 @@
     "self": true
    },
    "default": "Press kit",
-   "pos": 84
+   "pos": 86
   },
   {
    "id": "press-release.p.9",
@@ -8834,7 +8872,7 @@
     "self": true
    },
    "default": "Logo files, boilerplate description, registration details and approved programme photographs, on request.",
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "press-release.h3.6",
@@ -8848,7 +8886,7 @@
     "self": true
    },
    "default": "Site visits",
-   "pos": 90
+   "pos": 92
   },
   {
    "id": "press-release.p.10",
@@ -8862,7 +8900,7 @@
     "self": true
    },
    "default": "We can arrange a visit to an active skilling centre, health camp or collective — with the participants' consent, always.",
-   "pos": 91
+   "pos": 93
   },
   {
    "id": "press.video.reel",
@@ -8884,7 +8922,137 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 58
+   "pos": 60
+  },
+  {
+   "id": "gallery.meta.title",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "Search & sharing",
+   "label": "Browser tab / search title",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "title",
+    "attr": null
+   },
+   "default": "Gallery | True Kind Foundation",
+   "pos": 5
+  },
+  {
+   "id": "gallery.meta.description",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "Search & sharing",
+   "label": "Search-result description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[name=\"description\"]",
+    "attr": "content"
+   },
+   "default": "Photographs from skilling batches, health camps, plantation drives and collective meetings run by True Kind Foundation.",
+   "pos": 6
+  },
+  {
+   "id": "gallery.meta.ogTitle",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "Search & sharing",
+   "label": "Share title (WhatsApp, Facebook)",
+   "role": "meta",
+   "type": "text",
+   "target": {
+    "selector": "meta[property=\"og:title\"]",
+    "attr": "content"
+   },
+   "default": "Gallery | True Kind Foundation",
+   "pos": 10
+  },
+  {
+   "id": "gallery.meta.ogDesc",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "Search & sharing",
+   "label": "Share description",
+   "role": "meta",
+   "type": "textarea",
+   "target": {
+    "selector": "meta[property=\"og:description\"]",
+    "attr": "content"
+   },
+   "default": "Photographs from skilling batches, health camps, plantation drives and collective meetings run by True Kind Foundation.",
+   "pos": 11
+  },
+  {
+   "id": "gallery.nav.1",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "From the field.",
+   "label": "From the field. — text",
+   "role": "text",
+   "type": "richtext",
+   "target": {
+    "self": true
+   },
+   "default": "<a href=\"index.html\">Home</a> / Gallery",
+   "pos": 53
+  },
+  {
+   "id": "gallery.p.1",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "From the field.",
+   "label": "From the field. — section label",
+   "role": "section label",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Gallery",
+   "pos": 55
+  },
+  {
+   "id": "gallery.h1.1",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "From the field.",
+   "label": "From the field. — heading (H1)",
+   "role": "heading (H1)",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "From the field.",
+   "pos": 56
+  },
+  {
+   "id": "gallery.p.2",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "From the field.",
+   "label": "From the field. — intro paragraph",
+   "role": "intro paragraph",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Skilling batches, health camps, plantation drives and collective meetings — photographed as they happened, by the people running them.",
+   "pos": 57
+  },
+  {
+   "id": "gallery.p.3",
+   "page": "gallery",
+   "scope": "gallery",
+   "group": "Page",
+   "label": "Page — text",
+   "role": "text",
+   "type": "text",
+   "target": {
+    "self": true
+   },
+   "default": "Photographs from our events will appear here.",
+   "pos": 61
   },
   {
    "id": "chairperson-message.meta.title",
@@ -8958,7 +9126,7 @@
     "self": true
    },
    "default": "<a href=\"index.html\">Home</a> / <a href=\"about.html\">About Us</a> / Chairperson's Message",
-   "pos": 51
+   "pos": 53
   },
   {
    "id": "chairperson-message.p.1",
@@ -8972,7 +9140,7 @@
     "self": true
    },
    "default": "Chairperson's Message",
-   "pos": 54
+   "pos": 56
   },
   {
    "id": "chairperson-message.h1.1",
@@ -8986,7 +9154,7 @@
     "self": true
    },
    "default": "A note from our Chairperson.",
-   "pos": 55
+   "pos": 57
   },
   {
    "id": "chairperson-message.span.1",
@@ -9000,7 +9168,7 @@
     "self": true
    },
    "default": "Chairperson's photograph",
-   "pos": 65
+   "pos": 67
   },
   {
    "id": "chairperson-message.p.3",
@@ -9014,7 +9182,7 @@
     "self": true
    },
    "default": "Dear friend of True Kind Foundation,",
-   "pos": 68
+   "pos": 70
   },
   {
    "id": "chairperson-message.p.4",
@@ -9028,7 +9196,7 @@
     "self": true
    },
    "default": "Every program on this website started as someone's small decision to show up — a volunteer who kept coming back, a donor who asked hard questions before writing a cheque, a family who let us into their neighbourhood before we'd earned any right to be there. None of what we do works without that first, ordinary act of trust.",
-   "pos": 69
+   "pos": 71
   },
   {
    "id": "chairperson-message.p.5",
@@ -9042,7 +9210,7 @@
     "self": true
    },
    "default": "I want to be honest about what we are: not a large institution, not a finished project, but a group of people trying to do a few things properly rather than many things loosely. We measure what we can. We say plainly when something hasn't worked. We ask for help when we need it. That's the whole method.",
-   "pos": 70
+   "pos": 72
   },
   {
    "id": "chairperson-message.p.6",
@@ -9056,7 +9224,7 @@
     "self": true
    },
    "default": "If you're reading this while deciding whether to volunteer, donate, or simply trust us with your time — thank you for taking that decision seriously. We don't take it lightly either. Kindness, in our experience, is the easy part. Organising it, sustaining it, and being accountable for it is the actual work, and it's the work we've committed ourselves to.",
-   "pos": 71
+   "pos": 73
   },
   {
    "id": "chairperson-message.p.7",
@@ -9070,7 +9238,7 @@
     "self": true
    },
    "default": "Come build it with us.",
-   "pos": 72
+   "pos": 74
   },
   {
    "id": "chairperson-message.div.1",
@@ -9084,7 +9252,7 @@
     "self": true
    },
    "default": "TKF",
-   "pos": 74
+   "pos": 76
   },
   {
    "id": "chairperson-message.b.1",
@@ -9098,7 +9266,7 @@
     "self": true
    },
    "default": "Chairperson",
-   "pos": 76
+   "pos": 78
   },
   {
    "id": "chairperson-message.span.2",
@@ -9112,7 +9280,7 @@
     "self": true
    },
    "default": "True Kind Foundation",
-   "pos": 77
+   "pos": 79
   },
   {
    "id": "chairperson-message.p.8",
@@ -9126,7 +9294,7 @@
     "self": true
    },
    "default": "Take the next step",
-   "pos": 80
+   "pos": 82
   },
   {
    "id": "chairperson-message.h2.1",
@@ -9140,7 +9308,7 @@
     "self": true
    },
    "default": "Two ways to be part of this",
-   "pos": 81
+   "pos": 83
   },
   {
    "id": "chairperson-message.p.9",
@@ -9154,7 +9322,7 @@
     "self": true
    },
    "default": "Give your time, or fund the programs that need it. Both are useful; neither is more welcome than the other.",
-   "pos": 82
+   "pos": 84
   },
   {
    "id": "chairperson-message.a.1.href",
@@ -9169,7 +9337,7 @@
     "attr": "href"
    },
    "default": "volunteer.html",
-   "pos": 84
+   "pos": 86
   },
   {
    "id": "chairperson-message.a.1",
@@ -9187,7 +9355,7 @@
     "id": "chairperson-message.a.1.href",
     "default": "volunteer.html"
    },
-   "pos": 84
+   "pos": 86
   },
   {
    "id": "chairperson-message.a.2.href",
@@ -9202,7 +9370,7 @@
     "attr": "href"
    },
    "default": "donate.html",
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "chairperson-message.a.2",
@@ -9220,7 +9388,7 @@
     "id": "chairperson-message.a.2.href",
     "default": "donate.html"
    },
-   "pos": 85
+   "pos": 87
   },
   {
    "id": "chairperson.photo.portrait",
@@ -9238,7 +9406,7 @@
     "src": "",
     "alt": ""
    },
-   "pos": 66
+   "pos": 68
   },
   {
    "id": "chairperson.video.message",
@@ -9260,7 +9428,7 @@
     "poster": "",
     "caption": ""
    },
-   "pos": 56
+   "pos": 58
   }
  ]
 }

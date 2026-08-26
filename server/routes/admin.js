@@ -6,7 +6,8 @@ const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, 
         UserAccess, VolunteerLogin, CertificateFile, BoardMember,
         MembershipPayment, IdCardProfile, Revocation, VerificationScan,
         CertificateStyle, VisitorCertificate, OfflineDonation, Notice,
-        ManagerAccess, AppointmentLetter, PressItem } = require('../models');
+        ManagerAccess, AppointmentLetter, PressItem, GalleryItem
+} = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const config = require('../config');
@@ -1213,6 +1214,93 @@ router.post('/press/:id/delete', async (req, res) => {
     dropPhoto(file);
   }
   res.redirect('/portal/admin/press?saved=1');
+});
+
+/* ==========================================================================
+   Gallery — photographs from events the team has run.
+
+   Same shape as the press list above, minus the fields a clipping needs and a
+   photograph does not. A gallery row is a picture and a title, so that is all
+   it asks for; anything more is a form nobody finishes.
+
+   The photograph is the point here, not optional decoration — an item with no
+   picture would render as an empty tile — so it is required when adding.
+   ========================================================================== */
+const GALLERY_ORDER = [['sortOrder', 'ASC'], ['id', 'ASC']];
+
+function galleryFields(body) {
+  const order = parseInt(body.sortOrder, 10);
+  return {
+    title: String(body.title == null ? '' : body.title).trim().slice(0, 200),
+    sortOrder: Number.isFinite(order) ? Math.max(0, Math.min(999, order)) : 0,
+    visible: body.visible === 'on' || body.visible === 'true' || body.visible === '1'
+  };
+}
+
+router.get('/gallery', async (req, res) => {
+  const items = await GalleryItem.findAll({ order: GALLERY_ORDER });
+  res.render('admin/gallery', {
+    title: 'Gallery', items,
+    saved: req.query.saved, error: req.query.error
+  });
+});
+
+const galleryPhoto = (req, res, next) => {
+  uploadImage.single('photo')(req, res, err => {
+    if (err) return res.status(err.status || 400).render('error',
+      { title: 'Upload failed', message: uploadErrorMessage(err) });
+    next();
+  });
+};
+
+router.post('/gallery', galleryPhoto, async (req, res) => {
+  const data = galleryFields(req.body);
+  if (!data.title) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/gallery?error=title');
+  }
+  if (!req.file) return res.redirect('/portal/admin/gallery?error=photo');
+  data.photoUrl = '/uploads/' + req.file.filename;
+  data.photoFile = req.file.filename;
+  if (!req.body.sortOrder) {
+    const last = await GalleryItem.max('sortOrder');
+    data.sortOrder = (Number.isFinite(last) ? last : 0) + 10;
+  }
+  await GalleryItem.create(data);
+  res.redirect('/portal/admin/gallery?saved=1');
+});
+
+router.post('/gallery/:id', galleryPhoto, async (req, res) => {
+  const m = await GalleryItem.findByPk(req.params.id);
+  if (!m) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.status(404).send('No such gallery item');
+  }
+  const data = galleryFields(req.body);
+  if (!data.title) {
+    if (req.file) dropPhoto(req.file.filename);
+    return res.redirect('/portal/admin/gallery?error=title');
+  }
+  /* Replacing the picture is allowed; removing it is not. A gallery row with
+     no photograph has nothing to show, so the way to take one off the page is
+     "Show on the website", and the way to be rid of it is Delete. */
+  if (req.file) {
+    dropPhoto(m.photoFile);
+    data.photoUrl = '/uploads/' + req.file.filename;
+    data.photoFile = req.file.filename;
+  }
+  await m.update(data);
+  res.redirect('/portal/admin/gallery?saved=1');
+});
+
+router.post('/gallery/:id/delete', async (req, res) => {
+  const m = await GalleryItem.findByPk(req.params.id);
+  if (m) {
+    const file = m.photoFile;
+    await m.destroy();
+    dropPhoto(file);
+  }
+  res.redirect('/portal/admin/gallery?saved=1');
 });
 
 /* ==========================================================================

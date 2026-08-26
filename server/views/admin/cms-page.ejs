@@ -126,7 +126,10 @@
           return n + ' ' + seen[n];
         });
       %>
-      <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
+      <%# Open by default: the first section, and any section carrying a note.
+          A note that says "these are added on another screen" is the one thing
+          on the page somebody must not miss, and a collapsed section hides it. %>
+      <details class="cms-group" <%= (gi === 0 || group.note) ? 'open' : '' %>>
         <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
         <div class="cms-body">
           <%# Some blocks on the site are a LIST with no fixed length — the board,
