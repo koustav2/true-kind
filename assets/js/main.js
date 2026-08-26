@@ -458,25 +458,19 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       var el = document.createElement("div");
       el.className = "press-card";
 
-      var meta = document.createElement("div");
+      /* Photograph first, and only if there is one — no empty frame and no
+         reserved column on an item the client has no image for. */
       if (item.photo) {
         var img = document.createElement("img");
         img.className = "press-thumb";
         img.src = item.photo;
         img.alt = "";
         img.loading = "lazy";
-        meta.appendChild(img);
+        el.appendChild(img);
       }
-      var when = formatDate(item.date);
-      if (when) {
-        var date = document.createElement("p");
-        date.className = "press-date";
-        date.textContent = when;
-        meta.appendChild(date);
-      }
-      el.appendChild(meta);
 
       var body = document.createElement("div");
+      body.className = "press-body";
       if (item.source) {
         var tag = document.createElement("span");
         tag.className = "press-tag";
@@ -499,8 +493,18 @@ var API_FORMS = { volunteerForm: "/volunteer", contactForm: "/contact" };
       body.appendChild(h);
       if (item.excerpt) {
         var p = document.createElement("p");
+        p.className = "press-excerpt";
         p.textContent = item.excerpt;
         body.appendChild(p);
+      }
+      /* The date closes the card rather than sitting under the thumbnail, so
+         it reads as a dateline and stays aligned across a row. */
+      var when = formatDate(item.date);
+      if (when) {
+        var date = document.createElement("p");
+        date.className = "press-date";
+        date.textContent = when;
+        body.appendChild(date);
       }
       el.appendChild(body);
       return el;

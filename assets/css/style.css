@@ -1720,30 +1720,62 @@ fieldset.field{ border:none; padding:0; margin:0; }
 /* --------------------------------------------------------------------------
    15. PRESS
    -------------------------------------------------------------------------- */
-.press-list{ display:grid; border-top:1px solid var(--rule); }
-.press-card{
-  display:grid; grid-template-columns:9rem 1fr; gap:var(--sp-6);
-  padding:var(--sp-6) 0;
-  border-bottom:1px solid var(--rule);
+/* Two cards per row, wrapping — 2 / 2 / 2 / n.
+   Each card is a stacked unit: photograph on top, then source, headline,
+   excerpt, and the date as a footer rule. The previous shape sat the thumbnail
+   in a fixed 9rem column beside the text, which read as a list of rows rather
+   than a set of clippings, and reserved that column even on an item with no
+   photograph — leaving a hole on every entry the client had no image for.
+   Card chrome follows .work-card so a press card and a programme card are
+   recognisably the same object. */
+.press-list{
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:var(--sp-6) var(--sp-5);
+  /* Cards size to their own content rather than stretching to the tallest in
+     the row. An entry with no photograph would otherwise be padded out to the
+     height of one that has one, leaving a hole the width of the card between
+     its excerpt and its date. */
   align-items:start;
 }
-.press-date{
-  font-family:var(--font-mono); font-size:var(--fs-xs);
-  color:var(--text-mute); line-height:1.6; padding-top:3px;
+.press-card{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  overflow:hidden; padding:0;
+  display:flex; flex-direction:column;
+  transition:border-color var(--dur) var(--ease);
 }
+.press-card:hover{ border-color:var(--rule-strong); }
 .press-thumb{
-  width:100%; aspect-ratio:4/3; object-fit:cover;
-  border-radius:var(--radius); border:1px solid var(--rule);
-  display:block; margin-bottom:var(--sp-3); background:var(--paper-2);
+  width:100%; aspect-ratio:16/9; object-fit:cover;
+  border-bottom:1px solid var(--rule);
+  display:block; margin:0; background:var(--paper-2);
+}
+.press-body{
+  padding:var(--sp-5);
+  display:flex; flex-direction:column; gap:var(--sp-3); flex:1;
 }
 .press-tag{
   font-family:var(--font-mono); font-size:var(--fs-label);
   text-transform:uppercase; letter-spacing:0.16em;
-  color:var(--green); display:inline-block; margin-bottom:var(--sp-3);
+  color:var(--green); display:block; margin:0;
 }
-.press-card h3{ margin-bottom:var(--sp-3); }
-.press-card p{ margin:0 0 var(--sp-4); color:var(--text-soft); font-size:var(--fs-sm); }
-@media (max-width:640px){ .press-card{ grid-template-columns:1fr; gap:var(--sp-3); } }
+.press-card h3{ margin:0; font-size:1.05rem; }
+/* Separate classes for the excerpt and the date rather than one `.press-card p`
+   rule: a type-qualified selector would outrank the plain `.press-date` class
+   and silently reset the footer's own margins and colour. */
+.press-excerpt{
+  margin:0; color:var(--text-soft); font-size:var(--fs-sm);
+}
+/* Pinned to the bottom so a row of cards keeps its dates on one line however
+   long the excerpts run. */
+.press-date{
+  font-family:var(--font-mono); font-size:var(--fs-xs);
+  color:var(--text-mute); line-height:1.6;
+  margin:auto 0 0; padding-top:var(--sp-3);
+  border-top:1px solid var(--rule);
+}
+@media (max-width:680px){ .press-list{ grid-template-columns:1fr; } }
 
 .note-box{
   text-align:center; padding:var(--sp-7) var(--sp-5);
@@ -1755,9 +1787,10 @@ fieldset.field{ border:none; padding:0; margin:0; }
    used to sit here were invented examples whose body copy was instructions to
    the client ("Replace with a short summary…"), published to the public. An
    honest blank beats fabricated coverage on a non-profit that solicits
-   donations. assets/js/content.js rebuilds .press-list from the CMS as soon as
-   real items exist, so this is only ever the fallback. */
+   donations. The press module in assets/js/main.js rebuilds .press-list from
+   /api/press as soon as real items exist, so this is only ever the fallback. */
 .press-empty{
+  grid-column:1 / -1;
   margin:0; padding:var(--sp-6) 0;
   color:var(--text-soft); font-size:var(--fs-lede);
   border-top:1px solid var(--rule);
