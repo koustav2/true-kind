@@ -35,8 +35,14 @@ router.get('/', (req, res) => res.redirect('/portal/admin/cms/page/global'));
    count — pageList()'s count still includes href companions, which are folded
    into their parent row rather than getting one of their own. A number beside a
    page that does not match the rows on it is the first thing anyone notices. */
-function sidebarPages() {
-  return cms.pageList().map(p => ({ ...p, count: cms.editorFieldCount(p.name) }));
+/* `current` + `storedIds` matter for one reason: a hidden field reappears on
+   the page it belongs to once it has a saved value, so the count beside THAT
+   page has to include it or the sidebar disagrees with the rows on screen. */
+function sidebarPages(current, storedIds) {
+  return cms.pageList().map(p => ({
+    ...p,
+    count: cms.editorFieldCount(p.name, p.name === current ? storedIds : null)
+  }));
 }
 
 /* Stored overrides restricted to ids the Pages editor actually renders on this
@@ -46,7 +52,7 @@ function sidebarPages() {
    at something with no row on screen to look at first. */
 function editedIdsOnScreen(pageName, stored) {
   const shown = new Set();
-  for (const g of cms.groupsForPage(pageName)) {
+  for (const g of cms.groupsForPage(pageName, Object.keys(stored))) {
     for (const f of g.fields) {
       shown.add(f.id);
       if (f.hrefField) shown.add(f.hrefField.id);
@@ -56,17 +62,21 @@ function editedIdsOnScreen(pageName, stored) {
 }
 
 router.get('/page/:page', async (req, res) => {
-  const pages = sidebarPages();
-  const page = pages.find(p => p.name === req.params.page);
-  if (!page) return res.status(404).render('error', { title: 'Not found', message: 'No such page in the CMS.' });
+  const wanted = req.params.page;
+  if (!cms.pageList().some(p => p.name === wanted)) {
+    return res.status(404).render('error', { title: 'Not found', message: 'No such page in the CMS.' });
+  }
+  const { values, stored } = await cms.valuesForPage(SiteContent, wanted);
+  const storedIds = Object.keys(stored);
+  const pages = sidebarPages(wanted, storedIds);
+  const page = pages.find(p => p.name === wanted);
 
-  const { values, stored } = await cms.valuesForPage(SiteContent, page.name);
   const media = await MediaAsset.findAll({ order: [['createdAt', 'DESC']], limit: 200 });
 
   res.render('admin/cms-page', {
     title: 'Website content',
     pages, page,
-    groups: cms.groupsForPage(page.name),
+    groups: cms.groupsForPage(page.name, storedIds),
     values,
     editedIds: editedIdsOnScreen(page.name, stored),
     media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
@@ -75,7 +85,7 @@ router.get('/page/:page', async (req, res) => {
 });
 
 router.post('/page/:page', async (req, res) => {
-  const pages = sidebarPages();
+  const pages = sidebarPages(req.params.page);
   const page = pages.find(p => p.name === req.params.page);
   if (!page) return res.status(404).send('Unknown page');
 
@@ -93,7 +103,7 @@ router.post('/page/:page', async (req, res) => {
     const media = await MediaAsset.findAll({ order: [['createdAt', 'DESC']], limit: 200 });
     return res.status(400).render('admin/cms-page', {
       title: 'Website content', pages, page,
-      groups: cms.groupsForPage(page.name), values,
+      groups: cms.groupsForPage(page.name, Object.keys(stored)), values,
       editedIds: editedIdsOnScreen(page.name, stored),
       media: media.map(m => ({ id: m.id, kind: m.kind, url: m.url, original: m.original, alt: m.alt, bytes: m.bytes })),
       saved: null, errors: result.errors

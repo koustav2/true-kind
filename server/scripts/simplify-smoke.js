@@ -155,11 +155,57 @@ process.env.ADMIN_PASSWORD = 'admin123';
 
   /* Photograph first inside its section, and — on the banner — beside its own
      slide rather than in a block of ten at the top. */
-  const banner = cms.groupsForPage('index').find(g => g.name === 'Homepage banner');
+  const banner = cms.groupsForPage('index').find(g => g.name === 'Photo banner — slides');
   check('the banner interleaves each slide\'s photo with that slide\'s text',
     banner && banner.fields[0].id === 'index.slide.1.image'
            && banner.fields[1].id === 'index.slide.1.title',
     banner ? banner.fields.slice(0, 3).map(f => f.id).join(', ') : 'no banner group');
+
+  /* ---- 3b. section names are names, not page copy ----------------------- */
+
+  const badNames = [];
+  for (const p of cms.PAGE_KEYS.concat('global')) {
+    for (const g of cms.groupsForPage(p)) {
+      // "Page" is the generator's no-heading fallback — a bin, not a section.
+      if (g.name === 'Page') badNames.push(`${p}: "Page" (generator fallback)`);
+      // A trailing full stop means the name is a sentence lifted off the page.
+      if (/[.!?]$/.test(g.name)) badNames.push(`${p}: "${g.name}" (page copy)`);
+      // An ellipsis means it was too long to show and got cut.
+      if (g.short.endsWith('…')) badNames.push(`${p}: "${g.short}" (truncated)`);
+    }
+  }
+  check('every section has a plain name — no "Page" bin, no page copy, nothing truncated',
+    badNames.length === 0, badNames.join(' | '));
+
+  /* ---- 3c. hidden duplicates are gone, but never trapped ---------------- */
+
+  const HIDDEN = Object.keys(cms.sections.HIDE);
+  check('the duplicate slide fields and slider arrows are hidden', HIDDEN.length === 11, `${HIDDEN.length}`);
+  const stillShown = new Set();
+  for (const g of cms.groupsForPage('index')) for (const f of g.fields) stillShown.add(f.id);
+  check('...and none of them is offered as a row', HIDDEN.every(id => !stillShown.has(id)));
+  check('...every one carries a written reason', HIDDEN.every(id => (cms.sections.HIDE[id] || '').length > 10));
+
+  /* A hidden field that somebody already saved a value into must come back, or
+     that edit is stranded where it cannot be seen or undone. */
+  const withStored = cms.groupsForPage('index', ['index.h2.6']);
+  const strandedGroup = withStored.find(g => g.name === cms.sections.STRANDED);
+  check('a hidden field with a saved value reappears so it can be cleared',
+    strandedGroup && strandedGroup.fields.some(f => f.id === 'index.h2.6'),
+    strandedGroup ? 'group present, wrong field' : 'no stranded group');
+  check('...and it is the last section, not the first',
+    withStored[withStored.length - 1].name === cms.sections.STRANDED,
+    withStored[withStored.length - 1].name);
+
+  /* ---- 3d. field labels say what the field says ------------------------- */
+
+  r = await call('GET', '/portal/admin/cms/page/global');
+  html = await r.text();
+  // The footer's thirteen links were thirteen rows all labelled "link".
+  check('a footer link is labelled by its own text, not by its HTML tag',
+    html.includes('Link — About Us') && html.includes('Link — Volunteer with us'));
+  check('...and a headline figure reads as a number, not as "bold value"',
+    !/>\s*Bold value\s*</.test(html));
 
   /* ---- 4. the retired Photographs tab redirects, it does not 404 --------- */
 
@@ -233,7 +279,12 @@ process.env.ADMIN_PASSWORD = 'admin123';
       for (const f of g.fields) { onPages.add(f.id); if (f.hrefField) onPages.add(f.hrefField.id); }
     }
   }
-  const orphaned = cms.FIELDS.filter(f => f.role !== 'href' && !onPages.has(f.id));
+  // Deliberately hidden fields are the one allowed exception, and only because
+  // sections.js names each and says why — see 3c, which also proves they come
+  // back the moment one holds a value.
+  const hidden = new Set(Object.keys(cms.sections.HIDE));
+  const orphaned = cms.FIELDS.filter(f =>
+    f.role !== 'href' && !onPages.has(f.id) && !hidden.has(f.id));
   check('every editable field appears on the Pages editor — the only screen now',
     orphaned.length === 0, orphaned.map(f => f.id).join(', '));
   check('...and that includes every photograph',

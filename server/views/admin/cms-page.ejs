@@ -5,6 +5,32 @@
   const edited = new Set(editedIds);
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  /* Plain words for the tag names the registry generator produces. "bold value"
+     is a <b>; on this site every one of them is a headline figure, so it is a
+     Big number. Nobody editing the site thinks in elements. */
+  const ROLE_NAMES = {
+    'text': 'Text', 'link': 'Link', 'link text': 'Link', 'quote': 'Quote',
+    'bold value': 'Big number', 'section label': 'Small label', 'intro paragraph': 'Intro',
+    'button label': 'Button', 'form label': 'Form label', 'list item': 'List item',
+    'heading (h1)': 'Heading', 'heading (h2)': 'Heading',
+    'heading (h3)': 'Heading', 'heading (h4)': 'Heading',
+    'image': 'Image', 'photograph': 'Photograph'
+  };
+
+  /* THE FIX FOR "WHICH ONE IS THIS?".
+     The Footer had thirteen rows all labelled "link", the homepage banner three
+     called "heading (H2)". The label named the HTML tag, which is the one thing
+     about a field nobody needs. Showing what the field currently SAYS makes
+     every row identifiable at a glance — and taking it from the live value
+     rather than baking it into the registry means it can never go stale. */
+  const preview = f => {
+    const v = values[f.id];
+    if (v == null || typeof v === 'object') return '';        // images and videos
+    const t = String(v).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    return t.length > 46 ? t.slice(0, 46).replace(/\s+\S*$/, '') + '…' : t;
+  };
 %>
 <div class="wrap">
 <p class="eyebrow">Website</p>
@@ -72,14 +98,22 @@
            only when there is more than one keeps the single cases clean.
       %>
       <%
-        var groupShort = String(group.short || '').trim();
         var names = group.fields.map(function (f) {
-          var base = f.label || (f.role.charAt(0).toUpperCase() + f.role.slice(1));
-          if (groupShort && base.indexOf(groupShort) === 0) {
-            var rest = base.slice(groupShort.length).replace(/^\s*[—–-]\s*/, '').trim();
-            if (rest) base = rest.charAt(0).toUpperCase() + rest.slice(1);
+          /* Strip the prefix using the field's GENERATED group, not the section
+             heading shown above it — sections carry plain names now, so the two
+             are usually different strings and matching on the visible one would
+             leave the whole old page heading sitting in every label. */
+          var generated = String(f.group || '').trim();
+          var base = String(f.label || '');
+          if (generated && base.indexOf(generated) === 0) {
+            var rest = base.slice(generated.length).replace(/^\s*[—–-]\s*/, '').trim();
+            if (rest) base = rest;
           }
-          return base;
+          if (!base) base = f.role || 'Field';
+          var friendly = ROLE_NAMES[base.toLowerCase()];
+          if (!friendly) return base.charAt(0).toUpperCase() + base.slice(1);
+          var p = preview(f);
+          return p ? friendly + ' — ' + p : friendly;
         });
         var seen = {}, total = {};
         names.forEach(function (n) { total[n] = (total[n] || 0) + 1; });
@@ -92,6 +126,13 @@
       <details class="cms-group" <%= gi === 0 ? 'open' : '' %>>
         <summary><%= group.short %><span class="n"><%= group.fields.length %> field<%= group.fields.length===1?'':'s' %></span></summary>
         <div class="cms-body">
+          <% if (group.fields.some(function (f) { return f.strandedReason; })) { %>
+            <p class="cms-hint" style="margin:0 0 14px">
+              Leftovers from an older version of this editor. Each of these edits
+              something that now has a proper field of its own somewhere above.
+              Clearing a value here hands that element back to its real field.
+            </p>
+          <% } %>
 
           <% group.fields.forEach(function(f, fi){ %>
           <div class="cms-field">
@@ -113,7 +154,9 @@
               <% if (edited.has(f.id)) { %><span class="pill info">edited</span><% } %>
               <span class="key"><%= f.id %></span>
             </div>
-            <% if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
+            <% if (f.strandedReason) { %>
+              <p class="cms-hint">Not shown as an editable field any more — <%= f.strandedReason %>. It still has a saved value, which is why it is here. Clear it and this row goes away.</p>
+            <% } else if (f.help) { %><p class="cms-hint"><%= f.help %></p><% } %>
 
             <% if (f.type === 'text' || f.type === 'url') { %>
               <input type="text" id="<%= f.id %>" name="<%= f.id %>" value="<%= val(f.id) %>"

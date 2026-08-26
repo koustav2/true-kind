@@ -17,6 +17,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const sections = require('./sections');   // plain section names, moves, hides
 
 const REGISTRY_PATH = path.join(__dirname, 'registry.json');
 
@@ -108,24 +109,43 @@ function orderGroupFields(fields) {
    made the photo controls hard to find at all: somebody looking for the Get
    Involved picture opened Get Involved and there was no picture on it.
    A photograph is now edited exactly where its words are, and only there. */
-function groupsForPage(pageName) {
+/* `storedIds` — the ids this page already has a saved value for. Only hidden
+   fields need it: one that has been written to before must still be visible,
+   or an edit somebody made is trapped where nobody can see or undo it. Pass
+   nothing and hidden fields are simply absent, which is what the counts and
+   the tests want. */
+function groupsForPage(pageName, storedIds) {
+  const stored = storedIds instanceof Set ? storedIds : new Set(storedIds || []);
   const own = FIELDS.filter(f => f.page === pageName);
   const hrefIds = new Set(own.filter(f => f.role === 'href').map(f => f.id));
+  const rename = sections.renameFor(pageName);
   const order = [];
   const groups = new Map();
+  const add = (name, item) => {
+    if (!groups.has(name)) { groups.set(name, []); order.push(name); }
+    groups.get(name).push(item);
+  };
+
   for (const f of own) {
     if (hrefIds.has(f.id)) continue;                 // attached to its parent below
-    const g = f.group || 'Page';
-    if (!groups.has(g)) { groups.set(g, []); order.push(g); }
+    const hidden = sections.hiddenReason(f.id);
+    if (hidden && !stored.has(f.id)) continue;       // see sections.js for why each one
+
     const item = { ...f };
     const companion = own.find(x => x.id === f.id + '.href');
     if (companion) item.hrefField = companion;
-    groups.get(g).push(item);
+
+    if (hidden) { item.strandedReason = hidden; add(sections.STRANDED, item); continue; }
+    const generated = f.group || 'Page';
+    add(sections.sectionFor(f.id) || rename[generated] || generated, item);
   }
-  // Video last: it is additive, not a correction to copy. (Photographs used to
-  // get the same treatment; it can no longer appear here at all — see above.)
-  const idx = order.indexOf('Video');
-  if (idx > -1) { order.splice(idx, 1); order.push('Video'); }
+
+  /* Video last: it is additive, not a correction to copy. Stranded duplicates
+     after even that — they are cleanup, not content. */
+  for (const tail of ['Video', sections.STRANDED]) {
+    const i = order.indexOf(tail);
+    if (i > -1) { order.splice(i, 1); order.push(tail); }
+  }
   return order.map(name => ({
     name,
     short: truncateGroup(name, 44),
@@ -138,8 +158,8 @@ function groupsForPage(pageName) {
    companions are folded into their parent field rather than getting a row of
    their own, so the raw total reads as a typo the moment somebody counts what
    is on screen. Photographs ARE counted, because they are now on screen. */
-function editorFieldCount(pageName) {
-  return groupsForPage(pageName).reduce((n, g) => n + g.fields.length, 0);
+function editorFieldCount(pageName, storedIds) {
+  return groupsForPage(pageName, storedIds).reduce((n, g) => n + g.fields.length, 0);
 }
 
 function pageList() {
@@ -348,7 +368,7 @@ async function bundleForPage(SiteContent, pageName) {
 }
 
 module.exports = {
-  registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor,
+  registry, FIELDS, BY_ID, PAGE_KEYS, ALL_ROW_KEYS, rowKeyFor, sections,
   groupsForPage, editorFieldCount, pageList,
   valuesForPage, savePatch, resetFields, bundleForPage,
   sanitizeRichtext, safeUrl, safeMediaPath, safeEmbedUrl, coerce
