@@ -5,3 +5,4 @@ node_modules/
 uploads/*
 !uploads/.gitkeep
 _to_delete_portal_zip.zip
+*.tgz

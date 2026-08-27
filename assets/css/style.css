@@ -1549,6 +1549,17 @@ header.site::after{
 }
 .tier-card h3{ margin:0; }
 .tier-card p{ margin:0; color:var(--text-soft); font-size:var(--fs-sm); flex:1; }
+/* A cost tier's photograph. Unlike the programme cards there is no line drawing
+   to fall back to here — a tier is a number, a name and a sentence, and it reads
+   perfectly well without a picture. So an empty slot takes NO space at all
+   rather than reserving an empty frame, and the card looks exactly as it always
+   has until somebody uploads something. `.has-photo` is set by cms.js. */
+.tier-media{ display:none; }
+.tier-media.has-photo{
+  display:block; position:relative; aspect-ratio:16/9; overflow:hidden;
+  border-radius:var(--radius); border:1px solid var(--rule);
+  background:var(--paper-2); margin-bottom:var(--sp-2);
+}
 @media (max-width:820px){ .tier-grid{ grid-template-columns:1fr; } }
 
 /* --------------------------------------------------------------------------
