@@ -1,0 +1,73 @@
+<%- include('partials/head') %><%- include('partials/nav') %>
+<%#
+  Opens the Razorpay Checkout.js modal on top of this page — the donor/member
+  never leaves the site. This page renders once (from POST /membership or
+  POST /donation), the modal opens automatically, and its result posts to
+  /portal/pay/verify via the hidden form below. Nothing here runs when the
+  gateway is unconfigured — that path redirects straight to /portal/pay/mock
+  instead of ever reaching this view.
+%>
+<div class="auth-wrap"><div class="card" style="text-align:center">
+<% if (testMode) { %>
+  <p class="pill warn" style="display:inline-block;margin-bottom:10px">Test mode — no real money moves</p>
+<% } %>
+<p class="eyebrow">Payment</p>
+<h2>Opening secure payment…</h2>
+<p class="muted">A Razorpay window should open in a moment. If it does not, use the button below.</p>
+<button class="btn btn-primary" id="pay-open" type="button">Pay ₹<%= (amount/100).toLocaleString('en-IN') %></button>
+
+<form method="post" action="/portal/pay/verify" id="verify-form" style="display:none">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="txnId" value="<%= txnId %>">
+  <input type="hidden" name="type" value="<%= type %>">
+  <% if (plan) { %><input type="hidden" name="plan" value="<%= plan %>"><% } %>
+  <input type="hidden" name="razorpay_order_id" id="vf-order">
+  <input type="hidden" name="razorpay_payment_id" id="vf-payment">
+  <input type="hidden" name="razorpay_signature" id="vf-signature">
+</form>
+</div></div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('verify-form');
+  function submitVerify(resp) {
+    document.getElementById('vf-order').value = resp.razorpay_order_id || '';
+    document.getElementById('vf-payment').value = resp.razorpay_payment_id || '';
+    document.getElementById('vf-signature').value = resp.razorpay_signature || '';
+    form.submit();
+  }
+  var options = {
+    key: <%- JSON.stringify(keyId) %>,
+    amount: <%- JSON.stringify(amount) %>,
+    currency: 'INR',
+    order_id: <%- JSON.stringify(orderId) %>,
+    name: 'True Kind Foundation',
+    description: <%- JSON.stringify(type === 'membership' ? 'Membership payment' : 'Donation') %>,
+    prefill: {
+      name: <%- JSON.stringify(typeof name !== 'undefined' ? (name || '') : '') %>,
+      email: <%- JSON.stringify(typeof email !== 'undefined' ? (email || '') : '') %>,
+      contact: <%- JSON.stringify(typeof phone !== 'undefined' ? (phone || '') : '') %>
+    },
+    notes: { txnId: <%- JSON.stringify(txnId) %> },
+    theme: { color: '#6c3fb5' },
+    handler: submitVerify,
+    modal: {
+      ondismiss: function () {
+        if (window.history.length > 1) history.back();
+        else window.location = '/portal';
+      }
+    }
+  };
+  var rzp = new Razorpay(options);
+  rzp.on('payment.failed', function (resp) {
+    // A failed attempt inside the modal — Razorpay already has it (and the
+    // webhook will record it independently); just let the donor try again
+    // rather than silently posting a failure to /verify with no signature.
+    alert('Payment did not go through: ' + ((resp.error && resp.error.description) || 'please try again.'));
+  });
+  document.getElementById('pay-open').addEventListener('click', function () { rzp.open(); });
+  rzp.open();
+})();
+</script>
+</body></html>

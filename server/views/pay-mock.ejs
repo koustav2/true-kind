@@ -1,7 +1,16 @@
 <%- include('partials/head') %><%- include('partials/nav') %>
 <div class="auth-wrap"><div class="card" style="text-align:center">
 <p class="eyebrow">Mock gateway (dev mode)</p>
-<h2>PhonePe is not configured</h2>
-<p class="muted">No merchant keys in .env, so this simulates the gateway. Nothing is charged.</p>
-<a class="btn btn-primary" href="/portal/pay/return?txnId=<%= txnId %>">Simulate successful payment</a>
+<h2>Razorpay is not configured</h2>
+<p class="muted">No API keys in .env, so this simulates the gateway. Nothing is charged.</p>
+<form method="post" action="/portal/pay/verify">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="txnId" value="<%= txnId %>">
+  <input type="hidden" name="type" value="<%= type %>">
+  <% if (plan) { %><input type="hidden" name="plan" value="<%= plan %>"><% } %>
+  <input type="hidden" name="razorpay_order_id" value="<%= orderId %>">
+  <input type="hidden" name="razorpay_payment_id" value="MOCK-<%= txnId %>">
+  <input type="hidden" name="razorpay_signature" value="MOCK">
+  <button class="btn btn-primary" type="submit">Simulate successful payment</button>
+</form>
 </div></div></body></html>

@@ -1,0 +1,44 @@
+<%- include('../partials/head') %><%- include('../partials/nav', {active:'payevents'}) %>
+<%#
+  Razorpay's own account of events, verified but otherwise unfiltered — see
+  PaymentEvent in models/index.js. This is not the Donations list: a row here
+  can exist with no matching Donation at all (a failed membership attempt, an
+  unrecognised notes payload), and that is the point — it is what actually
+  happened at the gateway, not what this app's own tables ended up recording.
+%>
+<div class="wrap">
+<p class="eyebrow">Payments</p><h1 style="margin-bottom:6px">Payment log</h1>
+<p class="muted" style="margin-top:0">Every verified Razorpay webhook delivery, success or failure. Reconcile against <a href="/portal/admin/donations">Donations</a> and <a href="/portal/admin/membership-receipts">Membership receipts</a> for the receipts those produced.</p>
+
+<div class="filters">
+  <span class="filters-lbl">Status</span>
+  <a href="/portal/admin/payment-events<%= mode ? '?mode='+mode : '' %>" class="<%= status==='' ? 'on' : '' %>">All</a>
+  <a href="/portal/admin/payment-events?status=captured<%= mode ? '&mode='+mode : '' %>" class="<%= status==='captured' ? 'on' : '' %>">Captured</a>
+  <a href="/portal/admin/payment-events?status=failed<%= mode ? '&mode='+mode : '' %>" class="<%= status==='failed' ? 'on' : '' %>">Failed</a>
+  <span class="filters-lbl" style="margin-left:14px">Mode</span>
+  <a href="/portal/admin/payment-events<%= status ? '?status='+status : '' %>" class="<%= mode==='' ? 'on' : '' %>">All</a>
+  <a href="/portal/admin/payment-events?mode=live<%= status ? '&status='+status : '' %>" class="<%= mode==='live' ? 'on' : '' %>">Live</a>
+  <a href="/portal/admin/payment-events?mode=test<%= status ? '&status='+status : '' %>" class="<%= mode==='test' ? 'on' : '' %>">Test</a>
+</div>
+
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+<tr><th>Received</th><th>Event</th><th>Mode</th><th>Txn</th><th>Payment ID</th><th>Amount</th><th>Status</th><th>Error</th></tr>
+<% if (!events.length) { %><tr><td colspan="8" class="muted" style="padding:18px">None yet.</td></tr><% } %>
+<% events.forEach(e => { %>
+<tr>
+  <td><%= e.receivedAt.toLocaleString('en-IN') %></td>
+  <td><%= e.event %></td>
+  <td><span class="pill <%= e.mode==='live' ? 'ok' : 'info' %>"><%= e.mode %></span></td>
+  <td class="serial" style="font-size:.76rem"><%= e.txnId || '—' %></td>
+  <td class="serial" style="font-size:.76rem"><%= e.paymentId || '—' %></td>
+  <td><%= e.amount ? '₹' + (e.amount/100).toLocaleString('en-IN') : '—' %></td>
+  <td><span class="pill <%= e.status==='captured' ? 'ok' : (e.status==='failed' ? 'warn' : 'info') %>"><%= e.status %></span></td>
+  <td style="font-size:.8rem">
+    <% if (e.errorCode) { %><%= e.errorCode %><% if (e.errorDescription) { %><br><span class="muted"><%= e.errorDescription %></span><% } %><% } else { %>—<% } %>
+  </td>
+</tr>
+<% }) %>
+</table>
+</div>
+</div></body></html>

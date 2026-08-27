@@ -376,7 +376,7 @@ and there is nothing to run by hand.
 ### Registered but not paid
 
 A signup is a **guest** until the membership fee arrives. That was already true;
-what was missing was any way to record a fee that did not come through PhonePe.
+what was missing was any way to record a fee that did not come through Razorpay.
 
 **Members → New memberships** now shows every unpaid registration with an
 **Unpaid** pill and a **Record payment** panel: plan, how it was paid (cash, bank
@@ -766,15 +766,19 @@ This one variable drives three things, which is why it gets its own step:
 |---|---|
 | the QR URL on every new document | cards print with a dead link, and cannot be recalled |
 | the session cookie's `secure` flag | `http` while TLS is live, or the reverse, and nobody can sign in |
-| the PhonePe return URL | a donor pays and lands nowhere |
+| the Razorpay checkout origin and webhook URL | a donor pays and the confirmation lands nowhere |
 
-### 4. PhonePe
+### 4. Razorpay
 
-Check with PhonePe whether your merchant account pins the redirect domain. Many
-gateways hold an allow-list of return URLs, and a payment that redirects to a
-host they do not recognise is refused **after the money moves** — the worst
-possible time to find out. Ask before taking a real payment on the new domain,
-and test with the mock gateway first (leave `PHONEPE_MERCHANT_ID` empty).
+Register this server's webhook URL (`APP_BASE_URL` + `/portal/pay/webhook`)
+under **both** the Test and Live mode webhook settings in the Razorpay
+dashboard, each with its own signing secret — a mismatched
+`RAZORPAY_WEBHOOK_SECRET` means every payment notification is silently
+rejected as unverified. Test with the mock gateway first (leave
+`RAZORPAY_KEY_ID` empty), then move to test-mode keys before live ones —
+same code path, just which keys are in `.env`. Once live, check
+`/portal/admin/payment-events` after a real payment to confirm the webhook
+actually reached this server.
 
 ### 5. Verify
 

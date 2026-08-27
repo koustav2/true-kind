@@ -6,7 +6,7 @@ const { User, Donation, Certificate, CertificateIssue, SiteContent, FormConfig, 
         UserAccess, VolunteerLogin, CertificateFile, BoardMember,
         MembershipPayment, IdCardProfile, Revocation, VerificationScan,
         CertificateStyle, VisitorCertificate, OfflineDonation, Notice,
-        ManagerAccess, AppointmentLetter, PressItem, GalleryItem
+        ManagerAccess, AppointmentLetter, PressItem, GalleryItem, PaymentEvent
 } = require('../models');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -45,7 +45,7 @@ router.use(async (req, res, next) => {
   res.locals.navCounts = {};
   try {
     const [active, guests, certs, visitorCerts, donations, receipts,
-           newVolunteers, newEnquiries, notices, users, blocked, managers] = await Promise.all([
+           newVolunteers, newEnquiries, notices, users, blocked, managers, paymentEvents] = await Promise.all([
       User.count({ where: { role: 'member', status: 'active' } }),
       User.count({ where: { role: 'member', status: 'guest' } }),
       CertificateIssue.count(),
@@ -57,13 +57,14 @@ router.use(async (req, res, next) => {
       Notice.count({ where: { active: true } }),
       User.count(),
       UserAccess.count({ where: { blocked: true } }),
-      ManagerAccess.count({ where: { active: true } })
+      ManagerAccess.count({ where: { active: true } }),
+      PaymentEvent.count()
     ]);
     res.locals.navCounts = {
       active, guests,
       certificates: certs + visitorCerts,
       donations, receipts: receipts + donations,
-      newVolunteers, newEnquiries, notices, users, blocked, managers
+      newVolunteers, newEnquiries, notices, users, blocked, managers, paymentEvents
     };
   } catch (e) { /* chrome only — leave the counts empty */ }
   next();
@@ -124,8 +125,8 @@ router.get('/members', async (req, res) => {
 /* Record a membership fee taken offline, and activate the member.
    This is the other half of "registered but has not paid": the fee usually
    arrives as cash at an event or as a bank transfer, and until now there was no
-   way to enter one — membership could only be granted by completing a PhonePe
-   checkout. */
+   way to enter one — membership could only be granted by completing a
+   Razorpay checkout. */
 router.post('/members/:id/membership', async (req, res) => {
   const user = await User.findByPk(req.params.id);
   if (!user || user.role !== 'member') return res.status(404).send('No such member');
@@ -729,6 +730,23 @@ router.get('/donations.csv', async (req, res) => {
       (d.amount / 100).toFixed(2), d.gatewayRef || d.txnId].join(','));
   });
   res.send(rows.join('\n'));
+});
+
+/* Razorpay's raw account of events — every webhook delivery, verified,
+   whether or not it matched a Donation/membership this app recognises. See
+   the PaymentEvent comment in models/index.js for why this exists alongside
+   the Donations list rather than instead of it. Admin-only (not grantable to
+   a manager section): this is gateway payload data, including error detail
+   on live failed payments, not something the donations-manager role needs to
+   reconcile receipts. */
+router.get('/payment-events', adminOnly, async (req, res) => {
+  const status = ['captured', 'failed', 'other'].includes(req.query.status) ? req.query.status : '';
+  const mode = ['test', 'live', 'mock'].includes(req.query.mode) ? req.query.mode : '';
+  const where = {};
+  if (status) where.status = status;
+  if (mode) where.mode = mode;
+  const events = await PaymentEvent.findAll({ where, order: [['receivedAt', 'DESC']], limit: 500 });
+  res.render('admin/payment-events', { title: 'Payment log', events, status, mode });
 });
 
 // 4. Website content — RETIRED.

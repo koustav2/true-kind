@@ -52,9 +52,9 @@ function csrfContext(req, res, next) {
    `exempt` — array of path prefixes that legitimately cannot carry a token:
    the public JSON form endpoints, which a visitor reaches with no session at
    all (the token here is session-bound, so there is nothing to bind), and the
-   payment gateway's server-to-server callback, which comes from PhonePe and
-   carries its own signature. Those are protected by rate limiting + honeypot
-   instead. */
+   payment gateway's server-to-server callback, which comes from Razorpay's
+   webhook and carries its own HMAC signature. Those are protected by rate
+   limiting + honeypot instead. */
 function csrfGuard(exempt = []) {
   return function (req, res, next) {
     if (SAFE.has(req.method)) return next();

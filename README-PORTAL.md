@@ -30,13 +30,19 @@ Updates later: `cd /opt/truekind && git pull && docker compose up -d --build`.
 Alternative (no Docker): `deploy/deploy.sh` runs it on the host under pm2 —
 that route needs Postgres published on 127.0.0.1:5432.
 
-## Payments — PhonePe
-Leave `PHONEPE_MERCHANT_ID` empty and every payment runs through a **mock
+## Payments — Razorpay
+Leave `RAZORPAY_KEY_ID` empty and every payment runs through a **mock
 gateway page** (auto-success, nothing charged) so the whole flow works in dev.
-For real payments fill `PHONEPE_MERCHANT_ID`, `PHONEPE_SALT_KEY`,
-`PHONEPE_SALT_INDEX`, and switch `PHONEPE_BASE_URL` from the preprod sandbox
-to `https://api.phonepe.com/apis/hermes`. PhonePe approval requires
-Terms & Conditions, Refund Policy and Privacy Policy pages live on the domain.
+For real payments fill `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and
+`RAZORPAY_WEBHOOK_SECRET` from the Razorpay dashboard — test keys
+(`rzp_test_...`) first, live keys (`rzp_live_...`) only once you're ready to
+take real money; same code either way. Register this server's webhook URL
+(`APP_BASE_URL` + `/portal/pay/webhook`) under **both** the Test and Live
+webhook settings in the dashboard, each with its own secret — see the
+comment above `RAZORPAY_WEBHOOK_SECRET` in `.env.example`. Every verified
+webhook delivery, success or failure, is logged at
+`/portal/admin/payment-events` regardless of whether it matched a donation
+or membership row.
 
 ## What's implemented
 **Member** — signup/signin · "verify your membership" → pay ₹100/month or

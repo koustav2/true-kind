@@ -60,6 +60,24 @@ process.env.ADMIN_PASSWORD = 'admin123';
   const results = [];
   const check = (name, ok) => { results.push(`${ok ? 'PASS' : 'FAIL'} ${name}`); if (!ok) process.exitCode = 1; };
 
+  /* Mock-mode Razorpay: POST /membership or /donation redirects to
+     /portal/pay/mock?txnId=...&orderId=...&type=...[&plan=...] instead of
+     opening a real checkout modal. The mock page's own "Simulate successful
+     payment" button just posts those same fields to /portal/pay/verify — the
+     CSRF token is a per-session secret rather than a per-page nonce, so it
+     can be fetched via ensureToken() (already called by `call`) without ever
+     rendering the mock page itself. */
+  function parseMockUrl(url) {
+    const qs = new URLSearchParams((url || '').split('?')[1] || '');
+    return { txnId: qs.get('txnId'), orderId: qs.get('orderId'), type: qs.get('type'), plan: qs.get('plan') };
+  }
+  async function mockPay(mockUrl, useJar = 'member') {
+    const { txnId, orderId, type, plan } = parseMockUrl(mockUrl);
+    const body = { txnId, type, razorpay_order_id: orderId, razorpay_payment_id: 'MOCK-' + txnId, razorpay_signature: 'MOCK' };
+    if (plan) body.plan = plan;
+    return call('POST', '/portal/pay/verify', body, useJar);
+  }
+
   // static site
   check('static / serves', (await fetch(base + '/')).status === 200);
   check('portal signin renders', (await fetch(base + '/portal/signin')).status === 200);
@@ -81,10 +99,9 @@ process.env.ADMIN_PASSWORD = 'admin123';
   // membership payment (mock)
   r = await call('POST', '/portal/pay/membership', { plan: 'annual' });
   const mockUrl = r.headers.get('location');
-  check('membership initiates mock pay', /\/portal\/pay\/mock\?txnId=/.test(mockUrl));
-  const txn1 = mockUrl.split('txnId=')[1];
-  r = await call('GET', `/portal/pay/return?txnId=${txn1}`);
-  check('membership return succeeds', (await r.text()).includes('Membership active'));
+  check('membership initiates mock pay', /\/portal\/pay\/mock\?/.test(mockUrl) && /type=membership/.test(mockUrl));
+  r = await mockPay(mockUrl);
+  check('membership verify succeeds', (await r.text()).includes('Membership active'));
   r = await call('GET', '/portal/member/card');
   const cardHtml = await r.text();
   check('card shows QR + barcode + serial', cardHtml.includes('data:image/png;base64') && /TKF-M-\d{4}-/.test(cardHtml));
@@ -102,8 +119,7 @@ process.env.ADMIN_PASSWORD = 'admin123';
 
   // member donation
   r = await call('POST', '/portal/pay/donation', { category: 'Environment', amount: '250' });
-  const txn2 = r.headers.get('location').split('txnId=')[1];
-  r = await call('GET', `/portal/pay/return?txnId=${txn2}`);
+  r = await mockPay(r.headers.get('location'));
   check('member donation paid', (await r.text()).includes('Donation received'));
   r = await call('GET', '/portal/member/donations');
   const dHtml = await r.text();
@@ -118,8 +134,9 @@ process.env.ADMIN_PASSWORD = 'admin123';
     phone: '8888888888', address: 'Somewhere', city: 'Bhadrak', pan: 'ABCDE1234F',
     bankName: 'IOB', branchName: 'Nalanga'
   }, 'guest');
-  const txn3 = r.headers.get('location').split('txnId=')[1];
-  r = await call('GET', `/portal/pay/return?txnId=${txn3}`, null, 'guest');
+  const guestMockUrl = r.headers.get('location');
+  const txn3 = parseMockUrl(guestMockUrl).txnId;
+  r = await mockPay(guestMockUrl, 'guest');
   check('guest donation paid', (await r.text()).includes('Donation received'));
   r = await call('GET', `/portal/receipt/${txn3}/pdf`, null, 'guest');
   check('guest receipt PDF', r.headers.get('content-type') === 'application/pdf');

@@ -3,7 +3,7 @@
 
    There are now two ways a membership fee arrives:
 
-     1. The member pays online and PhonePe returns success (routes/payment.js).
+     1. The member pays online and Razorpay confirms it (routes/payment.js).
      2. An admin records a fee taken in cash, by bank transfer, by UPI or by
         cheque (routes/admin.js).
 

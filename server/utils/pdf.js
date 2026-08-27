@@ -93,7 +93,7 @@ async function receiptPdf(res, donation, user) {
    receipt has to state the plan and the period it covers instead. One function
    doing both would print a receipt with empty rows on it. */
 const MODE_LABEL = {
-  online: 'Online (PhonePe)', cash: 'Cash', bank: 'Bank transfer',
+  online: 'Online (Razorpay)', cash: 'Cash', bank: 'Bank transfer',
   upi: 'UPI', cheque: 'Cheque'
 };
 

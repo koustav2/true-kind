@@ -176,7 +176,7 @@ const CertificateFile = sequelize.define('CertificateFile', {
        previous one, so a member's payment history was always exactly one row
        deep.
      - Cash and bank transfers were impossible to record at all. Membership
-       could ONLY be granted by completing a PhonePe checkout, which is not how
+       could ONLY be granted by completing a Razorpay checkout, which is not how
        most of these fees are actually collected.
 
    A table fixes all three. It is a NEW table because the app runs a bare
@@ -531,6 +531,41 @@ const PressItem = sequelize.define('PressItem', {
   visible:  { type: DataTypes.BOOLEAN, defaultValue: true }
 });
 
+/* ---------------------------------------------------------------------------
+   Razorpay event log.
+
+   Every verified webhook delivery lands here, success or failure, whether or
+   not it maps to a Donation/membership this app recognises. Two things drove
+   this rather than just updating Donation.status on a payment.failed event:
+
+     - a failed MEMBERSHIP payment has no row to update. routes/payment.js
+       never persists a membership attempt before it succeeds (only
+       req.session.pending, which is gone the moment the tab closes), so this
+       table is the only place "did this person's payment fail, and why" is
+       ever answered for that flow.
+     - Donation/MembershipPayment record the business outcome (a receipt, an
+       activated membership); this records the GATEWAY'S account of events —
+       an audit trail an admin can read without trusting that every code path
+       that touches a Donation got it right.
+
+   New table, for the usual reason: sequelize.sync() cannot add a column to a
+   live one, and this needs none of the fields already on Donation.
+   --------------------------------------------------------------------------- */
+const PaymentEvent = sequelize.define('PaymentEvent', {
+  _id:       { type: DataTypes.VIRTUAL, get() { return this.id; } },
+  event:     { type: DataTypes.STRING, allowNull: false },   // payment.captured | payment.failed | order.paid | ...
+  mode:      { type: DataTypes.STRING, allowNull: false },   // test | live
+  txnId:     DataTypes.STRING,
+  orderId:   DataTypes.STRING,
+  paymentId: DataTypes.STRING,
+  amount:    DataTypes.INTEGER,        // paise
+  status:    DataTypes.STRING,         // captured | failed | other
+  errorCode: DataTypes.STRING,
+  errorDescription: DataTypes.STRING,
+  payload:   { type: DataTypes.JSON, defaultValue: {} },     // full verified webhook body, for audit
+  receivedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+});
+
 // Associations
 Donation.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 User.hasMany(Donation, { as: 'donations', foreignKey: 'userId' });
@@ -549,5 +584,5 @@ module.exports = {
   Volunteer, Enquiry, MediaAsset, UserAccess, VolunteerLogin, CertificateFile,
   BoardMember, MembershipPayment, IdCardProfile, Revocation, VerificationScan,
   CertificateStyle, VisitorCertificate, OfflineDonation, Notice, ManagerAccess,
-  AppointmentLetter, PressItem, GalleryItem
+  AppointmentLetter, PressItem, GalleryItem, PaymentEvent
 };

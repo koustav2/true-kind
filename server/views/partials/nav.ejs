@@ -79,8 +79,9 @@
     ]},
 
     { key: 'money', label: 'Donations', pages: [
-      { key: 'don',      label: 'Donations', href: A + '/donations', gate: 'donations', total: 'donations' },
-      { key: 'receipts', label: 'Receipts',  href: A + '/receipts',  gate: 'donations', total: 'receipts' }
+      { key: 'don',       label: 'Donations',   href: A + '/donations',       gate: 'donations', total: 'donations' },
+      { key: 'receipts',  label: 'Receipts',    href: A + '/receipts',        gate: 'donations', total: 'receipts' },
+      { key: 'payevents', label: 'Payment log', href: A + '/payment-events',  gate: 'admin',     total: 'paymentEvents' }
     ]},
 
     /* Volunteer applications and contact enquiries are both queues of inbound

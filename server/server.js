@@ -10,6 +10,13 @@ const PORT = process.env.PORT || 3000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('trust proxy', 1); // behind nginx
+// The Razorpay webhook needs the UNTOUCHED request body to verify its HMAC
+// signature (server-to-server, no session, no form field to carry a token) —
+// so its raw bytes are captured here, ahead of and instead of the global
+// express.json() below, which would otherwise JSON.parse the body before the
+// route ever sees the exact bytes Razorpay signed.
+app.use('/portal/pay/webhook', express.raw({ type: 'application/json' }));
+
 // 1mb, not the old 64kb: a CMS save can carry a long article body plus the
 // surrounding block metadata. Same for urlencoded, whose default was 100kb.
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
@@ -58,11 +65,14 @@ app.use((req, res, next) => { res.locals.session = req.session; res.locals.user 
 // CSRF. Exempt only the two public JSON endpoints — a visitor filling in the
 // volunteer or contact form has no session, so there is nothing for a
 // session-bound token to bind to; they are guarded by the rate limiter and
-// honeypot instead — and the PhonePe callback, which is a server-to-server POST
-// carrying its own signature.
+// honeypot instead — and the Razorpay webhook, which is a server-to-server
+// POST carrying its own HMAC signature instead of a session token.
+// /portal/pay/verify is NOT exempt: that one comes from the donor's own
+// browser with a live session, so it carries a real CSRF token like any other
+// form on the site.
 const { csrfContext, csrfGuard } = require('./middleware/csrf');
 app.use(csrfContext);
-app.use(csrfGuard(['/api/volunteer', '/api/contact']));
+app.use(csrfGuard(['/api/volunteer', '/api/contact', '/portal/pay/webhook']));
 
 // Portal
 app.use('/portal', require('./routes/auth'));

@@ -204,10 +204,17 @@ const base = 'http://127.0.0.1:3995';
   }, 'online');
   r = await post('/portal/pay/membership', { plan: 'annual' }, 'online');
   const mockUrl = r.headers.get('location') || '';
-  check('membership checkout reaches the gateway', /\/portal\/pay\/mock\?txnId=/.test(mockUrl), mockUrl);
-  r = await get('/portal/pay/return?txnId=' + mockUrl.split('txnId=')[1], 'online');
+  check('membership checkout reaches the gateway', /\/portal\/pay\/mock\?/.test(mockUrl) &&
+    /txnId=/.test(mockUrl) && /type=membership/.test(mockUrl), mockUrl);
+  const mockQs = new URLSearchParams(mockUrl.split('?')[1] || '');
+  const memTxnId = mockQs.get('txnId'), memOrderId = mockQs.get('orderId');
+  await grabToken('online', mockUrl);
+  r = await post('/portal/pay/verify', {
+    txnId: memTxnId, type: 'membership', plan: 'annual',
+    razorpay_order_id: memOrderId, razorpay_payment_id: 'MOCK-' + memTxnId, razorpay_signature: 'MOCK'
+  }, 'online');
   const payHtml = await r.text();
-  check('the gateway return activates the membership', payHtml.includes('Membership active'));
+  check('the mock checkout + verify round-trip activates the membership', payHtml.includes('Membership active'));
   check('...and shows the receipt number on screen', /TKF-MR-\d{4}-/.test(payHtml));
 
   const onlineUser = await models.User.findOne({ where: { email: 'online@test.org' } });
@@ -303,7 +310,7 @@ const base = 'http://127.0.0.1:3995';
   html = await (await get('/portal/admin/membership-receipts')).text();
   check('the membership receipts page renders', html.includes('Membership receipts'));
   check('...listing every payment', (html.match(/TKF-MR-/g) || []).length >= 3);
-  check('...both the cash and the online one', html.includes('Cash') && html.includes('Online (PhonePe)'));
+  check('...both the cash and the online one', html.includes('Cash') && html.includes('Online (Razorpay)'));
   check('...and separating by-hand from gateway',
     html.includes('by hand') && html.includes('gateway'));
 
